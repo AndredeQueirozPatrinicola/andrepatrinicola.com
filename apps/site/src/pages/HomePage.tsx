@@ -1,24 +1,19 @@
-import { Section } from "../components/Section";
+import { Section } from "../components/Section/Section";
+import { Header } from "../components/Header/Header";
+import { TextType } from "../components/TextType/TextType";
 import { games, projects } from "../content/portfolio";
 
 export function HomePage() {
   return (
     <main className="page-shell">
-      <header className="hero">
-        <p className="eyebrow">Portfolio pessoal</p>
-        <h1>Portfolio</h1>
-        <p className="professional-title">
-          Desenvolvedor de software focado em produtos web e experiencias digitais.
-        </p>
-        <nav className="nav" aria-label="Navegacao principal">
-          <a href="#sobre">Sobre</a>
-          <a href="#projetos">Projetos</a>
-          <a href="#jogos">Jogos</a>
-          <a href="#contato">Contato</a>
-        </nav>
-      </header>
+      
+      <Header id='header'>
+        <h1>
+          <TextType id="header-text-type" text={["Ola, seja bem vindo!"]}/>
+        </h1>
+      </Header>
 
-      <Section id="sobre" title="Sobre">
+      {/* <Section id="sobre" title="Sobre">
         <p>
           Sou um profissional de tecnologia construindo um ecossistema pessoal
           para reunir curriculo, portfolio, estudos e projetos independentes. A
@@ -56,7 +51,7 @@ export function HomePage() {
           Para contato profissional, conecte-se comigo pelos canais que serao
           adicionados nesta secao na proxima versao do site.
         </p>
-      </Section>
+      </Section> */}
     </main>
   );
 }
