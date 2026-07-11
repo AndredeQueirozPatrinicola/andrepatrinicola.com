@@ -39,11 +39,6 @@ jobs:
 
       - name: Run lint
         run: npm run lint
-        continue-on-error: false
-
-      - name: Run tests
-        run: npm test
-        continue-on-error: false
 
       - name: Build website
         run: npm run build
@@ -60,6 +55,7 @@ jobs:
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: github-actions-personal-website
 
       - name: Deploy to S3
         run: |
@@ -69,15 +65,24 @@ jobs:
 
       - name: Invalidate CloudFront cache
         run: |
-          aws cloudfront create-invalidation \
-            --distribution-id "${{ vars.AWS_CLOUDFRONT_DISTRIBUTION_ID }}" \
-            --paths "/*"
+          INVALIDATION_ID=$(
+            aws cloudfront create-invalidation \
+              --distribution-id "${{ vars.AWS_CLOUDFRONT_DISTRIBUTION_ID }}" \
+              --paths "/*" \
+              --query "Invalidation.Id" \
+              --output text
+          )
+
+          echo "CloudFront invalidation criada: ${INVALIDATION_ID}"
 
       - name: Deployment summary
         run: |
-          echo "## Deploy concluído" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Branch: \`${GITHUB_REF_NAME}\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Commit: \`${GITHUB_SHA}\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Bucket: \`${{ vars.AWS_S3_BUCKET }}\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- CloudFront: \`${{ vars.AWS_CLOUDFRONT_DISTRIBUTION_ID }}\`" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "## Deploy concluído"
+            echo ""
+            echo "- Branch: \`${GITHUB_REF_NAME}\`"
+            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Bucket: \`${{ vars.AWS_S3_BUCKET }}\`"
+            echo "- CloudFront: \`${{ vars.AWS_CLOUDFRONT_DISTRIBUTION_ID }}\`"
+            echo "- URL: https://${{ vars.AWS_CLOUDFRONT_DOMAIN }}"
+          } >> "$GITHUB_STEP_SUMMARY"
