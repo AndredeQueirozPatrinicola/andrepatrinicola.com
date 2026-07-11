@@ -1,0 +1,38 @@
+:root {
+  font-family: monospace;
+  color: #000;
+  background: #ffffff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+}
+
+.game-page {
+  display: grid;
+  width: 100vw;
+  height: 100vh;
+  place-items: center;
+}
+
+#game-canvas {
+  display: block;
+  width: min(100vw, 960px);
+  height: auto;
+  max-height: 100vh;
+  image-rendering: pixelated;
+  background: #ffffff;
+}

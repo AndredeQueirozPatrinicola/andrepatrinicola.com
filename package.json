@@ -5,13 +5,22 @@
   "description": "Monorepo pessoal de André de Queiroz.",
   "workspaces": [
     "apps/*",
+    "games/*",
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace @andrepatrinicola/site",
-    "build": "npm run build --workspace @andrepatrinicola/site",
-    "preview": "npm run preview --workspace @andrepatrinicola/site",
-    "lint": "npm run lint --workspace @andrepatrinicola/site"
+    "dev": "npm run dev:site",
+    "dev:site": "npm run dev --workspace @andrepatrinicola/site",
+    "dev:tennis": "npm run dev --workspace @andrepatrinicola/tennis",
+
+    "build": "npm run build:site && npm run build:games && npm run assemble",
+    "build:site": "npm run build --workspace @andrepatrinicola/site",
+    "build:games": "npm run build --workspace @andrepatrinicola/tennis",
+
+    "assemble": "node scripts/assemble-deploy.mjs",
+
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
   },
   "engines": {
     "node": ">=20"
