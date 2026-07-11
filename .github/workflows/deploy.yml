@@ -1,0 +1,83 @@
+name: Deploy website
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production
+      url: https://${{ vars.AWS_CLOUDFRONT_DOMAIN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+        continue-on-error: false
+
+      - name: Run tests
+        run: npm test
+        continue-on-error: false
+
+      - name: Build website
+        run: npm run build
+
+      - name: Verify build output
+        run: |
+          test -f apps/site/dist/index.html || {
+            echo "Erro: apps/site/dist/index.html não foi encontrado."
+            exit 1
+          }
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Deploy to S3
+        run: |
+          aws s3 sync ./apps/site/dist "s3://${{ vars.AWS_S3_BUCKET }}" \
+            --delete \
+            --only-show-errors
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ vars.AWS_CLOUDFRONT_DISTRIBUTION_ID }}" \
+            --paths "/*"
+
+      - name: Deployment summary
+        run: |
+          echo "## Deploy concluído" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Branch: \`${GITHUB_REF_NAME}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: \`${GITHUB_SHA}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Bucket: \`${{ vars.AWS_S3_BUCKET }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- CloudFront: \`${{ vars.AWS_CLOUDFRONT_DISTRIBUTION_ID }}\`" >> "$GITHUB_STEP_SUMMARY"
