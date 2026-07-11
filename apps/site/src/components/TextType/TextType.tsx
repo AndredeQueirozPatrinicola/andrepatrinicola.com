@@ -46,13 +46,8 @@ export function TextType({
   }, [text, currentPhraseIndex, currentCharIndex, typingSpeed]);
 
   return (
-    <section
-      className=""
-      id={id}
-      style={{ whiteSpace: "pre-line" }}
-    >
+    <>
       {currentText}
-      <span aria-hidden="true"></span>
-    </section>
+    </>
   );
 }
