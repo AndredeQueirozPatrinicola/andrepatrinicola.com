@@ -6,7 +6,8 @@ import { NoContentPlaceHolder } from "../components/NoContentPlaceHolder/NoConte
 import { ContentContainer } from "../components/ContentContainer/ContentContainer";
 import { Loader } from "../components/Loader/Loader";
 import { useLoadContent } from "../hooks/useLoadContent";
-// import { games, projects } from "../content/portfolio";
+
+import { GamesPage } from "./GamesPage/GamesPage";
 import { MouseEvent, ReactNode, useEffect, useState } from "react";
 
 export function HomePage() {
@@ -35,7 +36,7 @@ export function HomePage() {
       <Nav id="nav">
         <NavItem id="me" label="Sobre mim" content={null} onClick={onClickNavItem}/>
         <NavItem id="curriculum" label="Curriculo" content={null} onClick={onClickNavItem}/>
-        <NavItem id="games" label="Jogos" content={null} onClick={onClickNavItem}/>
+        <NavItem id="games" label="Jogos" content={<GamesPage onGameClicked={onClickNavItem}/>} onClick={onClickNavItem}/>
         <NavItem id="labs" label="Labs" content={null} onClick={onClickNavItem}/>
       </Nav>
       <ContentContainer id="content-container"> 

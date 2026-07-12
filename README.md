@@ -1,6 +1,6 @@
 # andrepatrinicola.com
 
-Monorepo pessoal de André de Queiroz para site estatico, portfolio, curriculo e uma area futura de jogos de navegador.
+Monorepo pessoal de André de Queiroz para site estatico
 
 ## Estrutura
 

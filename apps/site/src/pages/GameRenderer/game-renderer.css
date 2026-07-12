@@ -1,0 +1,6 @@
+.game-renderer-iframe {
+    width: 100%;
+    min-height: 500px;
+    border-color: #f7f7f7;
+    border: 1px solid #f7f7f7;
+}

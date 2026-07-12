@@ -1,7 +1,7 @@
 :root {
   font-family: monospace;
   color: #000;
-  background: #ffffff;
+  background: #f7f7f7;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -34,5 +34,7 @@ body {
   height: auto;
   max-height: 100vh;
   image-rendering: pixelated;
-  background: #ffffff;
+  background: #f7f7f7;
+  border: 1px solid #d8d8d8;
+  border-radius: 2px;
 }

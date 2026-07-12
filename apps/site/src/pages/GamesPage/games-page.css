@@ -1,0 +1,23 @@
+.games-page{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.game-card{
+    display: flex;
+    flex-direction: column;
+    border: 0.5px solid #d8d8d8;
+    max-width: 18rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+.game-card > *{
+    margin: 5px 0;
+}
+
+.game-card-title, .game-card-description {
+    padding: 0.5rem 1rem;
+}
+

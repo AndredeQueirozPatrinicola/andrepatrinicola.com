@@ -2,14 +2,16 @@
   "name": "andrepatrinicola.com",
   "version": "0.1.0",
   "private": true,
-  "description": "Monorepo pessoal de André de Queiroz.",
   "workspaces": [
     "apps/*",
     "games/*",
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev:site",
+    "dev": "npm run dev:all",
+
+    "dev:all": "concurrently --kill-others-on-fail --names site,tennis \"npm run dev:site\" \"npm run dev:tennis\"",
+
     "dev:site": "npm run dev --workspace @andrepatrinicola/site",
     "dev:tennis": "npm run dev --workspace @andrepatrinicola/tennis",
 
@@ -21,8 +23,5 @@
 
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test --workspaces --if-present"
-  },
-  "engines": {
-    "node": ">=20"
   }
 }
