@@ -8,6 +8,8 @@ export class Game {
     private ball: Ball;
     private platform1: Platform;
     private platform2: Platform;
+    private player: Player;
+    private ai: AI;
 
     public constructor(canvas: HTMLCanvasElement) {
         const context = canvas.getContext('2d');
@@ -18,6 +20,10 @@ export class Game {
 
         this.canvas = canvas;
         this.context = context;
+
+
+        this.player = new Player()
+        this.ai = new AI()
 
         this.ball = new Ball({
             width: 10, 
@@ -31,20 +37,22 @@ export class Game {
 
         this.platform1 = new Platform({
             width: 10, 
-            height: 50,
-            speed: 130,
-            position: new Vector2({x: 0, y: (canvas.height / 2) - 25}),
+            height: 60,
+            speed: 150,
+            position: new Vector2({x: 0, y: (canvas.height / 2) - 50}),
             velocity: new Vector2({x: 0, y: 0}),
-            color: 'black'
+            color: 'black',
+            controller: this.ai
         })
 
         this.platform2 = new Platform({
             width: 10, 
-            height: 50,
-            speed: 130,
-            position: new Vector2({x: canvas.width -10, y: (canvas.height / 2) - 25}),
+            height: 60,
+            speed: 150,
+            position: new Vector2({x: canvas.width -10, y: (canvas.height / 2) - 30}),
             velocity: new Vector2({x: 0, y: 0}),
-            color: 'black'
+            color: 'black',
+            controller: this.ai
         })
     }
 
@@ -80,16 +88,13 @@ export class Game {
     private update(dt: number): void {
         void dt;
 
-        this.platform1.update(this.context, dt);
-        this.platform2.update(this.context, dt);
-        this.ball.update(this.context, dt);
+        if(this.player.input.isKeyDown('enter')){
+            this.switchPlayerMode(this.context)
+        }
 
-        if(this.platform1.onAreaEntered(this.ball)){
-            this.ball.bounce(this.platform1)
-        }
-        if(this.platform2.onAreaEntered(this.ball)){
-            this.ball.bounce(this.platform2)
-        }
+        this.ball.update(this.context, dt);
+        this.platform1.update(this.context, dt, this.ball);
+        this.platform2.update(this.context, dt, this.ball);
     }
 
     private render(): void {
@@ -103,6 +108,26 @@ export class Game {
         this.ball.render(this.context);
         this.platform1.render(this.context);
         this.platform2.render(this.context);
+    }
+
+    private switchPlayerMode(ctx: CanvasRenderingContext2D) {
+        this.platform1 = this.platform1.controller instanceof AI ? new Platform({
+            width: 10, 
+            height: 60,
+            speed: 150,
+            position: new Vector2({x: 0, y: (ctx.canvas.height / 2) - 50}),
+            velocity: new Vector2({x: 0, y: 0}),
+            color: 'black',
+            controller: this.player
+        }) : new Platform({
+            width: 10, 
+            height: 60,
+            speed: 150,
+            position: new Vector2({x: 0, y: (ctx.canvas.height / 2) - 50}),
+            velocity: new Vector2({x: 0, y: 0}),
+            color: 'black',
+            controller: this.ai
+        })
     }
 }
 
@@ -127,6 +152,7 @@ export class Input {
     }
 
     public isKeyDown(key: string): boolean {
+        console.log(this.pressedKeys)
         return this.pressedKeys.has(key.toLowerCase());
     }
 
@@ -144,13 +170,30 @@ export class Input {
     };
 }
 
+export type Vector2Options = {
+    x: number;
+    y: number;
+}
+
 export class Vector2 {
     public x: number;
     public y: number;
 
-    public constructor({x, y}: Vector2) {
+    public constructor({x, y}: Vector2Options) {
         this.x = x;
         this.y = y;
+    }
+
+    public normalize(): Vector2 {
+        const length = Math.sqrt(this.x * this.x + this.y * this.y);
+
+        if (length === 0) {
+            return new Vector2({ x: 0, y: 0 });
+        }
+        return new Vector2({
+            x: this.x / length,
+            y: this.y / length
+        });
     }
 }
 
@@ -171,7 +214,7 @@ export class Ball implements Object {
     public radius: number;
     public position: Vector2;
     public velocity: Vector2;
-    public color: string; // TODO: Criar type RGB
+    public color: string;
 
     public constructor({width, height, speed, radius, position, velocity, color}: BallOptions) {
         this.width = width;
@@ -197,7 +240,6 @@ export class Ball implements Object {
             this.position.x = this.position.x + this.velocity.x * this.speed * dt;
         }else {
             this.initialInercia(ctx);
-
             this.position.x = this.position.x + this.velocity.x * this.speed * dt;
         }
         if(this.position.y < ctx.canvas.height && this.position.y > 0) {
@@ -206,10 +248,6 @@ export class Ball implements Object {
             this.velocity.y = this.velocity.y * -1
             this.position.y = this.position.y + this.velocity.y * this.speed * dt;
         }
-    }
-
-    public draw() {
-        window.requestAnimationFrame(this.draw);
     }
 
     public render(ctx: CanvasRenderingContext2D) {        
@@ -226,6 +264,15 @@ export class Ball implements Object {
     }
 }
 
+export class Player {
+    public input: Input
+    
+    constructor(){
+        this.input = new Input()
+    }
+};
+export class AI {};
+
 type PlatformOptions = {
   width: number
   height: number
@@ -233,6 +280,7 @@ type PlatformOptions = {
   position: Vector2
   velocity: Vector2
   color: string
+  controller: Player | AI
 }
 
 export class Platform implements Object {
@@ -244,28 +292,53 @@ export class Platform implements Object {
     public position: Vector2;
     public velocity: Vector2;
     public color: string;
+    public controller: Player | AI
 
-    public constructor({width, height, speed, position, velocity, color}: PlatformOptions) {
+    public constructor({width, height, speed, position, velocity, color, controller}: PlatformOptions) {
         this.width = width;
         this.height = height;
         this.speed = speed;
         this.position = position;
         this.velocity = velocity;
         this.color = color;
+        this.controller = controller
 
         this.input = new Input();
     }
 
-    public update(ctx: CanvasRenderingContext2D, dt: number) {
-        if (this.input.isKeyDown('w')) {
-            this.velocity.y = -1;
+    public update(ctx: CanvasRenderingContext2D, dt: number, ball: Ball) {
+
+        if(this.onAreaEntered(ball)){
+            ball.bounce(this)
         }
 
-        if (this.input.isKeyDown('s')) {
-            this.velocity.y = 1;
+        if (this.controller instanceof  Player ) {
+            if (this.input.isKeyDown('w') && this.position.y > 0) {
+                this.velocity.y = -1;
+            } else if (this.input.isKeyDown('s') && this.position.y + this.height < ctx.canvas.height) {
+                    this.velocity.y = 1;
+            } else {
+                this.velocity.y = 0
+            }
+        }  else if (this.controller instanceof AI) {
+            const platformCenterY = this.position.y + this.height / 2
+            const ballCenterY = ball.position.y + ball.radius / 2
+
+            const direction = new Vector2({
+                x: 0,
+                y: ballCenterY - platformCenterY,
+            }).normalize()
+            this.velocity.y = direction.y
         }
 
-        this.position.y = this.position.y + this.velocity.y * this.speed *dt
+        const nextY =
+            this.position.y +
+            this.velocity.y * this.speed * dt
+
+        this.position.y = Math.max(
+            0,
+            Math.min(nextY, ctx.canvas.height - this.height)
+        )
     }
 
     public onAreaEntered(object: Object) {
@@ -275,10 +348,6 @@ export class Platform implements Object {
             (object.position.y) >= this.position.y &&
             (object.position.y) <= this.position.y + this.height
         )
-    }
-
-    public draw() {
-        window.requestAnimationFrame(this.draw);
     }
 
     public render(ctx: CanvasRenderingContext2D) {        

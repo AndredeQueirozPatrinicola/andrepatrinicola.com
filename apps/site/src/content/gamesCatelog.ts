@@ -14,7 +14,7 @@ export const gamesCatalog = [
     {
         slug: 'tennis',
         title: 'Classic Tennis',
-        description: 'Um classico é sempre um clássico.',
+        description: 'Um dos primeiros jogos da historia',
         cover: undefined,
         playUrl: '/play/tennis/index.html',
         status: 'published',
