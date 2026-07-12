@@ -19,7 +19,7 @@ export function HomePage() {
     load(content);
   };
   useEffect(() => {
-    load(null);
+    load(<GamesPage onGameClicked={onClickNavItem}/>);
   }, [load]);
 
 
@@ -34,10 +34,10 @@ export function HomePage() {
         </p>
       </Header>
       <Nav id="nav">
-        <NavItem id="me" label="Sobre mim" content={null} onClick={onClickNavItem}/>
-        <NavItem id="curriculum" label="Curriculo" content={null} onClick={onClickNavItem}/>
         <NavItem id="games" label="Jogos" content={<GamesPage onGameClicked={onClickNavItem}/>} onClick={onClickNavItem}/>
         <NavItem id="labs" label="Labs" content={null} onClick={onClickNavItem}/>
+        <NavItem id="me" label="Sobre mim" content={null} onClick={onClickNavItem}/>
+        <NavItem id="curriculum" label="Curriculo" content={null} onClick={onClickNavItem}/>
       </Nav>
       <ContentContainer id="content-container"> 
           {isLoading ? <Loader id="loader" pixelNumber={4}/> : currentContent}
