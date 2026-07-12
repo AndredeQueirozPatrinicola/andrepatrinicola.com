@@ -27,7 +27,7 @@ export function HomePage() {
     <main className="page-shell">
       <Header id='header'>
         <h1>
-          <TextType id="header-text-type" text={["Ola, seja bem vindo!"]} typingSpeed={150}/>
+          <TextType id="header-text-type" text={["Olá, seja bem-vindo!"]} typingSpeed={150}/>
         </h1>
         <p>
           <TextType id="header-text-type" text={["Escolha uma opção para continuar: "]} typingSpeed={50}/>
