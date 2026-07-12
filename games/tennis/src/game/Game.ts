@@ -200,7 +200,7 @@ export class Ball implements Object {
 
             this.position.x = this.position.x + this.velocity.x * this.speed * dt;
         }
-        if(this.position.y < ctx.canvas.clientHeight && this.position.y > 0) {
+        if(this.position.y < ctx.canvas.height && this.position.y > 0) {
             this.position.y = this.position.y + this.velocity.y * this.speed * dt;
         } else {
             this.velocity.y = this.velocity.y * -1
