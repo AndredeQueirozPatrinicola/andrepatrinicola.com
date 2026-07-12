@@ -9,6 +9,8 @@ import { useLoadContent } from "../hooks/useLoadContent";
 
 import { GamesPage } from "./GamesPage/GamesPage";
 import { MouseEvent, ReactNode, useEffect, useState } from "react";
+import { GameRenderer } from "./GameRenderer/GameRenderer";
+import { gamesCatalog } from "../content/gamesCatelog";
 
 export function HomePage() {
   const [currentContent, setCurrentContent] = useState<ReactNode>(
@@ -19,7 +21,7 @@ export function HomePage() {
     load(content);
   };
   useEffect(() => {
-    load(<GamesPage onGameClicked={onClickNavItem}/>);
+    load(<GameRenderer id="tennis" gameUrl={gamesCatalog[0].playUrl} devUrl={gamesCatalog[0].devUrl} title={gamesCatalog[0].title}/>);
   }, [load]);
 
 

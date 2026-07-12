@@ -7,6 +7,7 @@ export class Game {
 
     private ball: Ball;
     private platform1: Platform;
+    private platform2: Platform;
 
     public constructor(canvas: HTMLCanvasElement) {
         const context = canvas.getContext('2d');
@@ -31,8 +32,17 @@ export class Game {
         this.platform1 = new Platform({
             width: 10, 
             height: 50,
-            speed: 100,
-            position: new Vector2({x: 0, y: canvas.height / 2}),
+            speed: 130,
+            position: new Vector2({x: 0, y: (canvas.height / 2) - 25}),
+            velocity: new Vector2({x: 0, y: 0}),
+            color: 'black'
+        })
+
+        this.platform2 = new Platform({
+            width: 10, 
+            height: 50,
+            speed: 130,
+            position: new Vector2({x: canvas.width -10, y: (canvas.height / 2) - 25}),
             velocity: new Vector2({x: 0, y: 0}),
             color: 'black'
         })
@@ -70,22 +80,69 @@ export class Game {
     private update(dt: number): void {
         void dt;
 
+        this.platform1.update(this.context, dt);
+        this.platform2.update(this.context, dt);
         this.ball.update(this.context, dt);
+
+        if(this.platform1.onAreaEntered(this.ball)){
+            this.ball.bounce(this.platform1)
+        }
+        if(this.platform2.onAreaEntered(this.ball)){
+            this.ball.bounce(this.platform2)
+        }
     }
 
     private render(): void {
         this.context.clearRect(
-        100,
-        100,
-        this.canvas.width,
-        this.canvas.height,
+            0,
+            0,
+            this.canvas.width,
+            this.canvas.height,
         );
 
         this.ball.render(this.context);
         this.platform1.render(this.context);
+        this.platform2.render(this.context);
     }
 }
 
+
+
+export interface Object {
+    width: number;
+    height: number;
+    speed?: number;
+    position: Vector2;
+    velocity: Vector2;
+    color: string;
+    radius?: number
+}
+
+export class Input {
+    private readonly pressedKeys = new Set<string>();
+
+    public constructor() {
+        window.addEventListener('keydown', this.onKeyDown);
+        window.addEventListener('keyup', this.onKeyUp);
+    }
+
+    public isKeyDown(key: string): boolean {
+        return this.pressedKeys.has(key.toLowerCase());
+    }
+
+    public destroy(): void {
+        window.removeEventListener('keydown', this.onKeyDown);
+        window.removeEventListener('keyup', this.onKeyUp);
+    }
+
+    private readonly onKeyDown = (event: KeyboardEvent): void => {
+        this.pressedKeys.add(event.key.toLowerCase());
+    };
+
+    private readonly onKeyUp = (event: KeyboardEvent): void => {
+        this.pressedKeys.delete(event.key.toLowerCase());
+    };
+}
 
 export class Vector2 {
     public x: number;
@@ -107,7 +164,7 @@ type BallOptions = {
   color: string
 }
 
-export class Ball {
+export class Ball implements Object {
     public width: number;
     public height: number;
     public speed: number;
@@ -126,12 +183,27 @@ export class Ball {
         this.radius = radius;
     }
 
+    public initialInercia(ctx: CanvasRenderingContext2D) {
+        this.position.x = ctx.canvas.width / 2 
+        this.position.y = ctx.canvas.height / 2 
+            
+        this.velocity.x = -3
+        this.velocity.y = 0
+    }
+
     public update(ctx: CanvasRenderingContext2D, dt: number) {
 
         if(this.position.x < ctx.canvas.width && this.position.x > 0) {
             this.position.x = this.position.x + this.velocity.x * this.speed * dt;
+        }else {
+            this.initialInercia(ctx);
+
+            this.position.x = this.position.x + this.velocity.x * this.speed * dt;
         }
         if(this.position.y < ctx.canvas.clientHeight && this.position.y > 0) {
+            this.position.y = this.position.y + this.velocity.y * this.speed * dt;
+        } else {
+            this.velocity.y = this.velocity.y * -1
             this.position.y = this.position.y + this.velocity.y * this.speed * dt;
         }
     }
@@ -141,12 +213,16 @@ export class Ball {
     }
 
     public render(ctx: CanvasRenderingContext2D) {        
-        ctx.clearRect(this.position.x, this.position.y, ctx.canvas.width, ctx.canvas.height);
         ctx.beginPath();
         ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, true);
         ctx.closePath();
         ctx.fillStyle = this.color;
         ctx.fill();
+    }
+
+    public bounce(object: Object) {
+        this.velocity.x = this.velocity.x * -1
+        this.velocity.y = this.velocity.y + object.velocity?.y
     }
 }
 
@@ -159,7 +235,8 @@ type PlatformOptions = {
   color: string
 }
 
-export class Platform {
+export class Platform implements Object {
+    private input: Input
 
     public width: number;
     public height: number;
@@ -175,10 +252,29 @@ export class Platform {
         this.position = position;
         this.velocity = velocity;
         this.color = color;
+
+        this.input = new Input();
     }
 
     public update(ctx: CanvasRenderingContext2D, dt: number) {
-        
+        if (this.input.isKeyDown('w')) {
+            this.velocity.y = -1;
+        }
+
+        if (this.input.isKeyDown('s')) {
+            this.velocity.y = 1;
+        }
+
+        this.position.y = this.position.y + this.velocity.y * this.speed *dt
+    }
+
+    public onAreaEntered(object: Object) {
+        return (
+            (object.position.x) >= this.position.x && 
+            (object.position.x) <= this.position.x + this.width &&
+            (object.position.y) >= this.position.y &&
+            (object.position.y) <= this.position.y + this.height
+        )
     }
 
     public draw() {
@@ -186,7 +282,6 @@ export class Platform {
     }
 
     public render(ctx: CanvasRenderingContext2D) {        
-        ctx.clearRect(this.position.x, this.position.y, ctx.canvas.width, ctx.canvas.height);
         ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
         ctx.fillStyle = this.color;
         ctx.fill();
