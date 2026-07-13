@@ -320,15 +320,18 @@ export class Platform implements Object {
             } else {
                 this.velocity.y = 0
             }
-        }  else if (this.controller instanceof AI) {
-            const platformCenterY = this.position.y + this.height / 2
-            const ballCenterY = ball.position.y + ball.radius / 2
+        } else if (this.controller instanceof AI) {
+            const platformCenterY = this.position.y + this.height / 2;
+            const targetY = ball.position.y;
 
-            const direction = new Vector2({
-                x: 0,
-                y: ballCenterY - platformCenterY,
-            }).normalize()
-            this.velocity.y = direction.y
+            const differenceY = targetY - platformCenterY;
+            const tolerance = 3;
+
+            if (Math.abs(differenceY) <= tolerance) {
+                this.velocity.y = 0;
+            } else {
+                this.velocity.y = Math.sign(differenceY);
+            }
         }
 
         const nextY =
