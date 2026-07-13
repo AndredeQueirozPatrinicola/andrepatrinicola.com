@@ -9,7 +9,7 @@ import { useLoadContent } from "../hooks/useLoadContent";
 
 import { GamesPage } from "./GamesPage/GamesPage";
 import { MouseEvent, ReactNode, useEffect, useState } from "react";
-import { GameRenderer } from "./GameRenderer/GameRenderer";
+import { GameRenderer } from "../components/GameRenderer/GameRenderer";
 import { gamesCatalog } from "../content/gamesCatelog";
 
 export function HomePage() {

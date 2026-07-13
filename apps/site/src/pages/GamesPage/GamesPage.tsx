@@ -2,7 +2,7 @@ import { MouseEvent, useState } from "react"
 import { gamesCatalog } from "../../content/gamesCatelog"
 import './games-page.css'
 import { ReactNode } from "react"
-import { GameRenderer } from "../GameRenderer/GameRenderer"
+import { GameRenderer } from "../../components/GameRenderer/GameRenderer"
 
 import defaultImage from '../../assets/images/defaultImage.png'
 
@@ -31,7 +31,7 @@ export function GamesPage({onGameClicked}: GamesPageProps) {
                                     />
                                 )}
                             >
-                            <img  src={game.cover ? `src/assets/images/${game.cover}` : defaultImage}></img>
+                            <img  src={game.cover ? game.cover : defaultImage}></img>
                             <span className="game-card-title">{game.title}</span>
                             <p className="game-card-description">{game.description}</p>
                         </a>

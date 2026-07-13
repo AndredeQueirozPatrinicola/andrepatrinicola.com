@@ -1,3 +1,5 @@
+import tennisCover from '../assets/images/tennis.png';
+
 
 export type GameCatalog = {
     title: string, 
@@ -15,7 +17,7 @@ export const gamesCatalog = [
         slug: 'tennis',
         title: 'Classic Tennis',
         description: 'Um dos primeiros jogos da historia',
-        cover: undefined,
+        cover: tennisCover,
         playUrl: '/play/tennis/index.html',
         status: 'published',
         devUrl: 'http://localhost:5174'
