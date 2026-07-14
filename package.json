@@ -20,8 +20,10 @@
     "build:games": "npm run build --workspace @andrepatrinicola/pong",
 
     "assemble": "node scripts/assemble-deploy.mjs",
-
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test --workspaces --if-present"
+  },
+  "dependencies": {
+    "concurrently": "^10.0.3"
   }
 }
