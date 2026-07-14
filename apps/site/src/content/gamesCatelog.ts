@@ -1,4 +1,4 @@
-import tennisCover from '../assets/images/tennis.png';
+import pongCover from '../assets/images/pong.png';
 
 
 export type GameCatalog = {
@@ -14,11 +14,11 @@ export type GameCatalog = {
 
 export const gamesCatalog = [
     {
-        slug: 'tennis',
-        title: 'Classic Tennis',
+        slug: 'pong',
+        title: 'Classic Pong',
         description: 'Um dos primeiros jogos da historia',
-        cover: tennisCover,
-        playUrl: '/play/tennis/index.html',
+        cover: pongCover,
+        playUrl: '/play/pong/index.html',
         status: 'published',
         devUrl: 'http://localhost:5174'
     },

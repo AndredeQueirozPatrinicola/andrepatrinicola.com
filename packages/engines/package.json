@@ -1,0 +1,8 @@
+{
+  "name": "@andrepatrinicola/engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pacote com o codigo fonte do andevengine.",
+  "main": "src/index.ts",
+  "types": "src/index.ts"
+}

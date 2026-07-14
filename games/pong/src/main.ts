@@ -1,6 +1,6 @@
 import './styles/main.css'
 
-import { Game } from './game/Game';
+import { PongGame } from './game/PongGame';
 
 function getCanvas(): HTMLCanvasElement {
   const canvas = document.querySelector<HTMLCanvasElement>('#game-canvas');
@@ -14,7 +14,7 @@ function getCanvas(): HTMLCanvasElement {
 
 function bootstrap(): void {
   const canvas = getCanvas();
-  const game = new Game(canvas);
+  const game = new PongGame(canvas);
 
   game.start();
 }

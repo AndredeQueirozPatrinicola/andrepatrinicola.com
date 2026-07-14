@@ -1,5 +1,5 @@
 {
-  "name": "@andrepatrinicola/tennis",
+  "name": "@andrepatrinicola/pong",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -15,8 +15,8 @@
   },
   "andre": {
     "type": "game",
-    "slug": "tennis",
-    "title": "Pixel Tennis",
+    "slug": "pong",
+    "title": "Pixel pong",
     "published": true
   }
 }

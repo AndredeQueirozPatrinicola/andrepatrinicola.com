@@ -10,14 +10,14 @@
   "scripts": {
     "dev": "npm run dev:all",
 
-    "dev:all": "concurrently --kill-others-on-fail --names site,tennis \"npm run dev:site\" \"npm run dev:tennis\"",
+    "dev:all": "concurrently --kill-others-on-fail --names site,pong \"npm run dev:site\" \"npm run dev:pong\"",
 
     "dev:site": "npm run dev --workspace @andrepatrinicola/site",
-    "dev:tennis": "npm run dev --workspace @andrepatrinicola/tennis",
+    "dev:pong": "npm run dev --workspace @andrepatrinicola/pong",
 
     "build": "npm run build:site && npm run build:games && npm run assemble",
     "build:site": "npm run build --workspace @andrepatrinicola/site",
-    "build:games": "npm run build --workspace @andrepatrinicola/tennis",
+    "build:games": "npm run build --workspace @andrepatrinicola/pong",
 
     "assemble": "node scripts/assemble-deploy.mjs",
 

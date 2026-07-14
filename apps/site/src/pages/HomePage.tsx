@@ -21,7 +21,7 @@ export function HomePage() {
     load(content);
   };
   useEffect(() => {
-    load(<GameRenderer id="tennis" gameUrl={gamesCatalog[0].playUrl} devUrl={gamesCatalog[0].devUrl} title={gamesCatalog[0].title}/>);
+    load(<GameRenderer id="pong" gameUrl={gamesCatalog[0].playUrl} devUrl={gamesCatalog[0].devUrl} title={gamesCatalog[0].title}/>);
   }, [load]);
 
 
