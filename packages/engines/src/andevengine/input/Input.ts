@@ -7,7 +7,6 @@ export class Input {
     }
 
     public isKeyDown(key: string): boolean {
-        console.log(this.pressedKeys)
         return this.pressedKeys.has(key.toLowerCase());
     }
 

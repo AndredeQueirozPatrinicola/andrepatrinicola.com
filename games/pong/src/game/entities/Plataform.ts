@@ -1,7 +1,7 @@
 import { Vector2 } from "../../../../../packages/engines/src";
 import { Input } from "../../../../../packages/engines/src";
 import { CollisionObject } from "../common/common";
-
+import { PongGame, PongGameState } from "../PongGame";
 
 export class Player {
     public input: Input
@@ -46,32 +46,36 @@ export class Platform implements CollisionObject {
         this.input = new Input();
     }
 
-    public update(ctx: CanvasRenderingContext2D, dt: number, collisionObject: CollisionObject) {
+    public update(ctx: PongGame, dt: number, collisionObject: CollisionObject) {
 
         if(this.onAreaEntered(collisionObject)){
             collisionObject.bounce(this)
         }
 
-        if (this.controller instanceof  Player ) {
-            if (this.input.isKeyDown('w') && this.position.y > 0) {
-                this.velocity.y = -1;
-            } else if (this.input.isKeyDown('s') && this.position.y + this.height < ctx.canvas.height) {
-                    this.velocity.y = 1;
-            } else {
-                this.velocity.y = 0
+        if (ctx.gameState === PongGameState.PLAYING) {
+            if (this.controller instanceof  Player ) {
+                if (this.input.isKeyDown('w') && this.position.y > 0) {
+                    this.velocity.y = -1;
+                } else if (this.input.isKeyDown('s') && this.position.y + this.height < ctx.canvas.height) {
+                        this.velocity.y = 1;
+                } else {
+                    this.velocity.y = 0
+                }
+            }  else if (this.controller instanceof AI) {
+                const platformCenterY = this.position.y + this.height / 2;
+                const targetY = collisionObject.position.y;
+
+                const differenceY = targetY - platformCenterY;
+                const tolerance = 3;
+
+                if (Math.abs(differenceY) <= tolerance) {
+                    this.velocity.y = 0;
+                } else {
+                    this.velocity.y = Math.sign(differenceY);
+                }           
             }
-        }  else if (this.controller instanceof AI) {
-            const platformCenterY = this.position.y + this.height / 2;
-            const targetY = collisionObject.position.y;
-
-            const differenceY = targetY - platformCenterY;
-            const tolerance = 3;
-
-            if (Math.abs(differenceY) <= tolerance) {
-                this.velocity.y = 0;
-            } else {
-                this.velocity.y = Math.sign(differenceY);
-            }           
+        }   else {
+                this.position.y = ctx.canvas.height / 2 - 30
         }
 
         const nextY =
@@ -93,10 +97,10 @@ export class Platform implements CollisionObject {
         )
     }
 
-    public render(ctx: CanvasRenderingContext2D) {        
-        ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
-        ctx.fillStyle = this.color;
-        ctx.fill();
+    public render(ctx: PongGame) {        
+        ctx.context.fillRect(this.position.x, this.position.y, this.width, this.height);
+        ctx.context.fillStyle = this.color;
+        ctx.context.fill();
     }
 
     public bounce(object: CollisionObject) {}

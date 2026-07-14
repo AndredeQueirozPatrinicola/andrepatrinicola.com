@@ -2,6 +2,7 @@ import { Game } from "../../../../packages/engines/src";
 import { Vector2 } from "../../../../packages/engines/src";
 import { Platform, Player, AI } from "./entities/Plataform";
 import { Ball } from "./entities/Ball";
+import { UI } from "./ui/ui";
 
 export class PongGame extends Game {
 
@@ -10,12 +11,21 @@ export class PongGame extends Game {
     private platform2: Platform;
     private player: Player;
     private ai: AI;
+    private ui: UI;
+
+    public score: GameScore
+    
+    public gameState = new PongGameState()
 
     public constructor(canvas: HTMLCanvasElement) {
         super(canvas)
 
         this.player = new Player()
         this.ai = new AI()
+        this.ui = new UI(this, {p1: 0, p2: 0}, '', '')
+        this.score = {p1 : 0, p2 : 0}
+
+        this.gameState = PongGameState.NOT_STARTED
 
         this.ball = new Ball({
             width: 10, 
@@ -31,10 +41,10 @@ export class PongGame extends Game {
             width: 10, 
             height: 60,
             speed: 150,
-            position: new Vector2({x: 0, y: (canvas.height / 2) - 50}),
+            position: new Vector2({x: 0, y: (canvas.height / 2) - 30}),
             velocity: new Vector2({x: 0, y: 0}),
             color: 'black',
-            controller: this.ai
+            controller: this.player
         })
 
         this.platform2 = new Platform({
@@ -52,45 +62,40 @@ export class PongGame extends Game {
         void dt;
 
         if(this.player.input.isKeyDown('enter')){
-            this.switchPlayerMode(this.context)
+            this.gameState = PongGameState.PLAYING
         }
 
-        this.ball.update(this.context, dt);
-        this.platform1.update(this.context, dt, this.ball);
-        this.platform2.update(this.context, dt, this.ball);
+        this.ball.update(this, dt);
+        this.platform1.update(this, dt, this.ball);
+        this.platform2.update(this, dt, this.ball);
+
+        this.ui.update(dt);
     }
 
     public render(): void {
         super.render()
 
-        this.ball.render(this.context);
-        this.platform1.render(this.context);
-        this.platform2.render(this.context);
+        this.ball.render(this);
+        this.platform1.render(this);
+        this.platform2.render(this);
+
+        this.ui.render(this);
     }
 
-    private switchPlayerMode(ctx: CanvasRenderingContext2D) {
-        this.platform1 = this.platform1.controller instanceof AI ? new Platform({
-            width: 10, 
-            height: 60,
-            speed: 150,
-            position: new Vector2({x: 0, y: (ctx.canvas.height / 2) - 50}),
-            velocity: new Vector2({x: 0, y: 0}),
-            color: 'black',
-            controller: this.player
-        }) : new Platform({
-            width: 10, 
-            height: 60,
-            speed: 150,
-            position: new Vector2({x: 0, y: (ctx.canvas.height / 2) - 50}),
-            velocity: new Vector2({x: 0, y: 0}),
-            color: 'black',
-            controller: this.ai
-        })
-    }
 }
 
 
+export type GameScore = {
+    p1: number;
+    p2: number;
+}
 
-
+export class PongGameState {
+    static NOT_STARTED: string = 'NOT_STARTED';
+    static PLAYING: string = 'PLAYING'
+    static PAUSED: string = 'PAUSED'
+    static JUST_SCORED: string = 'JUST_SCORED';
+    static END_GAME: string = 'END_GAME'
+}
 
 

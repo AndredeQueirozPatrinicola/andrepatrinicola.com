@@ -1,5 +1,6 @@
 import { Vector2 } from "../../../../../packages/engines/src";
 import { CollisionObject } from "../common/common";
+import { PongGame, PongGameState } from "../PongGame";
 
 type BallOptions = {
   width: number
@@ -30,36 +31,58 @@ export class Ball implements CollisionObject {
         this.radius = radius;
     }
 
-    public initialInercia(ctx: CanvasRenderingContext2D) {
-        this.position.x = ctx.canvas.width / 2 
-        this.position.y = ctx.canvas.height / 2 
-            
-        this.velocity.x = -3
-        this.velocity.y = 0
-    }
+    public onOffX(ctx: PongGame) {
 
-    public update(ctx: CanvasRenderingContext2D, dt: number) {
-
-        if(this.position.x < ctx.canvas.width && this.position.x > 0) {
-            this.position.x = this.position.x + this.velocity.x * this.speed * dt;
-        }else {
-            this.initialInercia(ctx);
-            this.position.x = this.position.x + this.velocity.x * this.speed * dt;
-        }
-        if(this.position.y < ctx.canvas.height && this.position.y > 0) {
-            this.position.y = this.position.y + this.velocity.y * this.speed * dt;
+        if (this.position.x < 0) {
+            ctx.score.p2 = ctx.score.p2 + 1;
+            this.velocity.x = -3
         } else {
-            this.velocity.y = this.velocity.y * -1
-            this.position.y = this.position.y + this.velocity.y * this.speed * dt;
+            ctx.score.p1 = ctx.score.p1 + 1;
+            this.velocity.x = 3
+        }
+
+        this.velocity.y = 0
+
+        this.position.x = ctx.context.canvas.width / 2 
+        this.position.y = ctx.context.canvas.height / 2 
+
+
+        if (ctx.score.p1 === 5 || ctx.score.p2 === 5) {
+            ctx.gameState = PongGameState.NOT_STARTED
+            ctx.score = {p1: 0, p2: 0}
+        } else {
+            ctx.gameState = PongGameState.PAUSED
         }
     }
 
-    public render(ctx: CanvasRenderingContext2D) {        
-        ctx.beginPath();
-        ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, true);
-        ctx.closePath();
-        ctx.fillStyle = this.color;
-        ctx.fill();
+    public update(ctx: PongGame, dt: number) {
+
+        if (
+            ctx.gameState === PongGameState.PLAYING ||
+            ctx.gameState === PongGameState.NOT_STARTED ||
+            ctx.gameState === PongGameState.END_GAME
+        ){
+            if(this.position.x < ctx.context.canvas.width && this.position.x > 0) {
+                this.position.x = this.position.x + this.velocity.x * this.speed * dt;
+            }else {
+                this.onOffX(ctx);
+                this.position.x = this.position.x + this.velocity.x * this.speed * dt;
+            }
+            if(this.position.y < ctx.context.canvas.height && this.position.y > 0) {
+                this.position.y = this.position.y + this.velocity.y * this.speed * dt;
+            } else {
+                this.velocity.y = this.velocity.y * -1
+                this.position.y = this.position.y + this.velocity.y * this.speed * dt;
+            }
+        }
+    }
+
+    public render(ctx: PongGame) {        
+        ctx.context.beginPath();
+        ctx.context.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, true);
+        ctx.context.closePath();
+        ctx.context.fillStyle = this.color;
+        ctx.context.fill();
     }
 
     public bounce(object: CollisionObject) {
