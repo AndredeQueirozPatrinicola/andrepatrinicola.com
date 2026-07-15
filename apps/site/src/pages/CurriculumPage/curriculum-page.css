@@ -1,0 +1,40 @@
+.curriculum-page{
+    /* border: 1px solid black; */
+    display: flex;
+    flex-direction: column;
+    margin: 2rem 0;
+}
+
+
+
+
+/* 
+    Daqui pra baixo depois passar pro card.css 
+*/
+
+.curriculum-card-title {
+    display: flex;
+    align-items: center;
+}
+
+.curriculum-card-title > img {
+    width: 50px;
+}
+
+.curriculum-card-container{
+    display: flex;
+    padding: 0.5rem 1rem;
+}
+
+.curriculum-card-side-nav {
+
+}
+
+.curriculum-card-content{
+    padding: 0.5rem 1rem;
+}
+
+.curriculum-curriculum{
+    display: flex;
+    flex-direction: column;
+}

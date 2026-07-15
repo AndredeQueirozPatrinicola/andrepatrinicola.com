@@ -8,6 +8,8 @@ import { Loader } from "../components/Loader/Loader";
 import { useLoadContent } from "../hooks/useLoadContent";
 
 import { GamesPage } from "./GamesPage/GamesPage";
+import { CurriculumPage } from "./CurriculumPage/CurriculumPage";
+
 import { MouseEvent, ReactNode, useEffect, useState } from "react";
 import { GameRenderer } from "../components/GameRenderer/GameRenderer";
 import { gamesCatalog } from "../content/gamesCatelog";
@@ -38,8 +40,8 @@ export function HomePage() {
       <Nav id="nav">
         <NavItem id="games" label="Jogos" content={<GamesPage onGameClicked={onClickNavItem}/>} onClick={onClickNavItem}/>
         <NavItem id="labs" label="Labs" content={null} onClick={onClickNavItem}/>
-        <NavItem id="me" label="Sobre mim" content={null} onClick={onClickNavItem}/>
-        <NavItem id="curriculum" label="Curriculo" content={null} onClick={onClickNavItem}/>
+        {/* <NavItem id="me" label="Sobre mim" content={null} onClick={onClickNavItem}/> */}
+        <NavItem id="curriculum" label="Curriculo" content={<CurriculumPage/>} onClick={onClickNavItem}/>
       </Nav>
       <ContentContainer id="content-container"> 
           {isLoading ? <Loader id="loader" pixelNumber={4}/> : currentContent}
