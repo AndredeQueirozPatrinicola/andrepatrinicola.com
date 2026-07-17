@@ -10,14 +10,15 @@
   "scripts": {
     "dev": "npm run dev:all",
 
-    "dev:all": "concurrently --kill-others-on-fail --names site,pong \"npm run dev:site\" \"npm run dev:pong\"",
+    "dev:all": "concurrently --kill-others-on-fail --names site,pong,meteor \"npm run dev:site\" \"npm run dev:pong\" \"npm run dev:meteor\"",
 
     "dev:site": "npm run dev --workspace @andrepatrinicola/site",
     "dev:pong": "npm run dev --workspace @andrepatrinicola/pong",
+    "dev:meteor": "npm run dev --workspace @andrepatrinicola/meteor",
 
     "build": "npm run build:site && npm run build:games && npm run assemble",
     "build:site": "npm run build --workspace @andrepatrinicola/site",
-    "build:games": "npm run build --workspace @andrepatrinicola/pong",
+    "build:games": "npm run build --workspace @andrepatrinicola/pong && npm run build --workspace @andrepatrinicola/meteor",
 
     "assemble": "node scripts/assemble-deploy.mjs",
     "lint": "npm run lint --workspaces --if-present",

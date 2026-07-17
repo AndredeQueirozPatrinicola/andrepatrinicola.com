@@ -1,7 +1,6 @@
 .games-page{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: auto auto auto;
 }
 
 .game-card{
@@ -15,6 +14,11 @@
 
 .game-card > *{
     margin: 5px 0;
+}
+
+.game-card > img {
+    width: 286px;
+    height: 158px;
 }
 
 .game-card-title, .game-card-description {

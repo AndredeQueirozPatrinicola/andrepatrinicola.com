@@ -22,4 +22,13 @@ export const gamesCatalog = [
         status: 'published',
         devUrl: 'http://localhost:5174'
     },
+    {
+        slug: 'meteor',
+        title: 'SpaceShip Meteor',
+        description: 'Navegue uma espaço nave',
+        cover: null,
+        playUrl: '/play/meteor/index.html',
+        status: 'published',
+        devUrl: 'http://localhost:5175'
+    },
 ]
