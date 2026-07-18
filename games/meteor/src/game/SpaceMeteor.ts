@@ -2,6 +2,7 @@ import { Game } from "../../../../packages/engines/src";
 import { Vector2 } from "../../../../packages/engines/src";
 import { Input } from "../../../../packages/engines/src";
 
+import spaceShip from '../images/spaceship.png'
 
 export class SpaceMeteor extends Game {
 
@@ -9,6 +10,8 @@ export class SpaceMeteor extends Game {
 
     public constructor(canvas: HTMLCanvasElement) {
         super(canvas)
+
+        this.context.imageSmoothingEnabled = false;
 
         this.spaceShip = new SpaceShip(
             this,
@@ -27,6 +30,7 @@ export class SpaceMeteor extends Game {
     }
 
     public render(): void {
+        this.context.imageSmoothingEnabled = false;
         super.render()
         this.spaceShip.render();
     }
@@ -50,6 +54,8 @@ export class SpaceShip {
     public input: Input;
     public storage: Missil[];
 
+    public sprite: HTMLImageElement;
+
     public constructor(
         ctx: Game,
         canvas: HTMLCanvasElement, 
@@ -71,6 +77,9 @@ export class SpaceShip {
 
         this.input = new Input();
         this.storage = [];
+
+        this.sprite = new Image();
+        this.sprite.src = spaceShip
     }
 
     public update(dt: number): void {
@@ -93,7 +102,7 @@ export class SpaceShip {
                 this.ctx, this.canvas, 
                 new Vector2({x: this.position.x, y:this.position.y}), 
                 new Vector2({x: 0, y: -1}), 
-                new Vector2({x:5 ,y: 5}), 500)
+                new Vector2({x:3 ,y: 3}), 500)
             this.storage.push(missil);
             this.isLoading = true;
         }
@@ -113,12 +122,20 @@ export class SpaceShip {
     }
 
     public render(): void {
-        this.ctx.context.fillRect(this.position.x, this.position.y, this.dimension.x, this.dimension.y);
-        this.ctx.context.fillStyle = 'black';
-        this.ctx.context.fill();
+        this.ctx.context.imageSmoothingEnabled = false;
+        const x = Math.round(this.position.x);
+        const y = Math.round(this.position.y);
 
-        for(let x = 0; x < this.storage.length; x++){
-            this.storage[x].render();
+        this.ctx.context.drawImage(
+            this.sprite,
+            x,
+            y,
+            this.dimension.x,
+            this.dimension.y
+        );
+
+        for (const missile of this.storage) {
+            missile.render();
         }
     }
 }
@@ -156,6 +173,7 @@ export class Missil {
     }
 
     public render(): void {
+        this.ctx.context.imageSmoothingEnabled = false;
         this.ctx.context.fillRect(this.position.x, this.position.y, this.dimension.x, this.dimension.y);
         this.ctx.context.fillStyle = 'black';
         this.ctx.context.fill();
