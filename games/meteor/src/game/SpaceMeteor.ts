@@ -17,7 +17,7 @@ export class SpaceMeteor extends Game {
 
         this.eventsObserver = new EventObserver()
         this.meteors = []
-        this.meteorsInterval = 80;
+        this.meteorsInterval = 40;
         this.meteorsCounter = 0;
 
         this.spaceShip = new SpaceShip(
@@ -28,6 +28,22 @@ export class SpaceMeteor extends Game {
             new Vector2({ x: 75, y: 61 }),
             200
             );
+
+        this.eventsObserver.subscribe({
+            key: 'destroy_meteor',
+            event: ({ meteor, missile }: any) => {
+                const meteorIndex = this.meteors.indexOf(meteor);
+                const missileIndex = this.spaceShip.storage.indexOf(missile);
+
+                if (meteorIndex !== -1) {
+                    this.meteors.splice(meteorIndex, 1);
+                }
+
+                if (missileIndex !== -1) {
+                    this.spaceShip.storage.splice(missileIndex, 1);
+                }
+            }
+        });
     }
 
     public update(dt: number): void {
@@ -44,9 +60,13 @@ export class SpaceMeteor extends Game {
         } else {
             this.meteorsCounter += 1;
         }
+        
+        for (const meteor of [...this.meteors]) {
+            meteor.update(dt, this.spaceShip.storage);
+        }
 
-        for (const mtr of this.meteors){
-            mtr.update(dt);
+        for (const mssl of [...this.spaceShip.storage]){
+            mssl.update(dt);
         }
     }
 
@@ -57,6 +77,10 @@ export class SpaceMeteor extends Game {
 
         for (const mtr of this.meteors){
             mtr.render();
+        }
+
+        for (const mmsl of this.spaceShip.storage) {
+            mmsl.render();
         }
     }
 
@@ -77,7 +101,7 @@ export class SpaceShip {
     public isLoading: boolean;
 
     public input: Input;
-    public storage: Missil[];
+    public storage: Missile [];
 
     public sprite: HTMLImageElement;
 
@@ -127,12 +151,12 @@ export class SpaceShip {
 
         if(this.input.isKeyDown('enter') && !this.isLoading){
             this.ctx.eventsObserver.notify('shoot')
-            const missil = new Missil(
+            const missile  = new Missile (
                 this.ctx, this.canvas, 
                 new Vector2({x: this.position.x + this.sprite.naturalWidth / 2 , y:this.position.y}), 
                 new Vector2({x: 0, y: -1}), 
                 new Vector2({x:3 ,y: 3}), 500, 5)
-            this.storage.push(missil);
+            this.storage.push(missile);
             this.isLoading = true;
         }
 
@@ -143,10 +167,6 @@ export class SpaceShip {
                 this.currentMisselTimeOut = 0;
                 this.isLoading = false
             }
-        }
-
-        for(let x = 0; x < this.storage.length; x++){
-            this.storage[x].update(dt);
         }
     }
 
@@ -162,10 +182,6 @@ export class SpaceShip {
             this.dimension.x,
             this.dimension.y
         );
-
-        for (const missile of this.storage) {
-            missile.render();
-        }
     }
 
     public shoot(){
@@ -174,7 +190,7 @@ export class SpaceShip {
 }
 
 
-export class Missil {
+export class Missile  {
 
     public ctx: Game;
     public position: Vector2;
@@ -222,7 +238,7 @@ export class Missil {
 
 export class Meteor {
 
-    public ctx: Game;
+    public ctx: SpaceMeteor;
     public position: Vector2;
     public velocity: Vector2;
     public dimension: Vector2;
@@ -233,7 +249,7 @@ export class Meteor {
     public canvas: HTMLCanvasElement;
 
     public constructor(
-        ctx: Game,
+        ctx: SpaceMeteor,
         canvas: HTMLCanvasElement, 
 
     ) {
@@ -243,13 +259,13 @@ export class Meteor {
         const getRandom = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 
         this.position = new Vector2({
-            x: getRandom(0, this.ctx.canvas.width / 2),
-            y: -150
+            x: getRandom(0, this.ctx.canvas.width),
+            y: -40
         });
 
         this.velocity = new Vector2({
-            x: getRandom(-10, 10), 
-            y: getRandom(30, 50)
+            x: getRandom(-30, 30), 
+            y: getRandom(40, 60)
         });
 
         this.dimension = new Vector2({
@@ -261,34 +277,54 @@ export class Meteor {
         this.rotation = 35
     }
 
-    public update(dt: number){
+    public update(dt: number, missiles: Missile[]) {
         this.position.x += this.velocity.x * this.speed * dt;
         this.position.y += this.velocity.y * this.speed * dt;
 
+        for (const missile of missiles) {
+            if (this.onAreaEntered(missile)) {
+                this.ctx.eventsObserver.notify('destroy_meteor', {
+                    meteor: this,
+                    missile
+                });
 
-        // this.rotation += 10 * dt;
+                break;
+            }
+        }
     }
 
     public render(): void {
-        this.ctx.context.save();
-
-        this.ctx.context.translate(
-            this.position.x + this.dimension.x/2,
-            this.position.y + this.dimension.y/2
-        );
-        // this.ctx.context.rotate(this.rotation * Math.PI / 180);
         this.ctx.context.imageSmoothingEnabled = false;
         this.ctx.context.fillRect(this.position.x, this.position.y, this.dimension.x, this.dimension.y);
         this.ctx.context.fillStyle = 'black';
-
-        this.ctx.context.restore();
     }
+
+    private onAreaEntered(missile: Missile): boolean {
+        const closestX = Math.max(
+            this.position.x,
+            Math.min(missile.position.x, this.position.x + this.dimension.x)
+        );
+
+        const closestY = Math.max(
+            this.position.y,
+            Math.min(missile.position.y, this.position.y + this.dimension.y)
+        );
+
+        const distanceX = missile.position.x - closestX;
+        const distanceY = missile.position.y - closestY;
+
+        return (
+            distanceX * distanceX + distanceY * distanceY
+            <= missile.radius * missile.radius
+        );
+}
+
 }
 
 
 type Event = {
     key: string;
-    event: () => void;
+    event: (params?: any) => void;
 }
 
 class EventObserver {
@@ -300,7 +336,6 @@ class EventObserver {
     }
 
     public subscribe(event: Event){
-        console.log(event)
         this.events.push(event);
     }
 
@@ -308,10 +343,10 @@ class EventObserver {
     //     this.events.pop(event)
     // }
 
-    public notify(key: string) {
+    public notify(key: string, params?: any) {
         for (const event of this.events){
             if(event.key == key){
-                event.event();
+                event.event(params);
             }
             // console.log(event)
         }
