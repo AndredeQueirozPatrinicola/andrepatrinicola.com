@@ -3,11 +3,14 @@ import { Vector2 } from "../../../../packages/engines/src";
 import { Input } from "../../../../packages/engines/src";
 
 import spaceShip from '../images/spaceship.png'
+import heart from '../images/heart.png'
 
 export class SpaceMeteor extends Game {
 
     spaceShip: SpaceShip;
     meteors: Meteor[];
+    UI: UI;
+
     meteorsInterval: number;
     meteorsCounter: number;
     eventsObserver: EventObserver;
@@ -26,8 +29,11 @@ export class SpaceMeteor extends Game {
             new Vector2({ x: canvas.width / 2, y: canvas.height / 2 }),
             new Vector2({ x: 0, y: 0 }),
             new Vector2({ x: 75, y: 61 }),
-            200
-            );
+            200,
+            5
+        );
+
+        this.UI = new UI(this, this.spaceShip);
 
         this.eventsObserver.subscribe({
             key: 'destroy_meteor',
@@ -44,6 +50,13 @@ export class SpaceMeteor extends Game {
                 }
             }
         });
+
+        this.eventsObserver.subscribe({
+            key: 'hit_spaceship',
+            event: ({_, spaceShip}: any) => {
+                spaceShip.hit(1);
+            }
+        })
     }
 
     public update(dt: number): void {
@@ -62,12 +75,14 @@ export class SpaceMeteor extends Game {
         }
         
         for (const meteor of [...this.meteors]) {
-            meteor.update(dt, this.spaceShip.storage);
+            meteor.update(dt, this.spaceShip);
         }
 
         for (const mssl of [...this.spaceShip.storage]){
             mssl.update(dt);
         }
+
+        this.UI.update(dt);
     }
 
     public render(): void {
@@ -82,6 +97,8 @@ export class SpaceMeteor extends Game {
         for (const mmsl of this.spaceShip.storage) {
             mmsl.render();
         }
+
+        this.UI.render();
     }
 
 }
@@ -95,6 +112,7 @@ export class SpaceShip {
     public dimension: Vector2;
     public speed: number;
     public canvas: HTMLCanvasElement;
+    public radius: number;
     
     public misselTimeOut: number;
     public currentMisselTimeOut: number;
@@ -105,13 +123,20 @@ export class SpaceShip {
 
     public sprite: HTMLImageElement;
 
+    public life: number;
+
+    public recovering: boolean;
+    public recoveringTimeout: number;
+    public currentRecoveringFrame: number;
+
     public constructor(
         ctx: SpaceMeteor,
         canvas: HTMLCanvasElement, 
         position: Vector2, 
         velocity: Vector2, 
         dimension: Vector2,
-        speed: number
+        speed: number,
+        life: number
     ) {
         this.ctx = ctx;
         this.position = position;
@@ -119,8 +144,9 @@ export class SpaceShip {
         this.dimension = dimension;
         this.canvas = canvas;
         this.speed = speed;
+        this.radius = this.dimension.x / 2;
 
-        this.misselTimeOut = 1
+        this.misselTimeOut = 1.25
         this.currentMisselTimeOut = 0
         this.isLoading = false
 
@@ -130,6 +156,10 @@ export class SpaceShip {
         this.sprite = new Image();
         this.sprite.src = spaceShip
 
+        this.life = life;
+        this.recovering = false;
+        this.recoveringTimeout = 1;
+        this.currentRecoveringFrame = 0;
 
         this.ctx.eventsObserver.subscribe({key: 'shoot', event: this.shoot})
     }
@@ -168,6 +198,15 @@ export class SpaceShip {
                 this.isLoading = false
             }
         }
+
+        if(this.recovering){
+            this.currentRecoveringFrame = this.currentRecoveringFrame + 1 * dt
+
+            if (this.currentRecoveringFrame >= this.recoveringTimeout){
+                this.currentRecoveringFrame = 0;
+                this.recovering = false
+            }
+        }
     }
 
     public render(): void {
@@ -186,6 +225,14 @@ export class SpaceShip {
 
     public shoot(){
         console.log("Atirei")
+    }
+
+    public hit(damage: number){
+        
+        if (this.life > 0 && !this.recovering){
+            this.life = this.life - damage;
+            this.recovering = true;
+        }
     }
 }
 
@@ -277,11 +324,18 @@ export class Meteor {
         this.rotation = 35
     }
 
-    public update(dt: number, missiles: Missile[]) {
+    public update(dt: number, spaceShip: SpaceShip) {
         this.position.x += this.velocity.x * this.speed * dt;
         this.position.y += this.velocity.y * this.speed * dt;
 
-        for (const missile of missiles) {
+        if (this.onAreaEntered(spaceShip)) {
+                this.ctx.eventsObserver.notify('hit_spaceship', {
+                    meteor: this,
+                    spaceShip
+                });
+        }
+
+        for (const missile of spaceShip.storage) {
             if (this.onAreaEntered(missile)) {
                 this.ctx.eventsObserver.notify('destroy_meteor', {
                     meteor: this,
@@ -299,7 +353,7 @@ export class Meteor {
         this.ctx.context.fillStyle = 'black';
     }
 
-    private onAreaEntered(missile: Missile): boolean {
+    private onAreaEntered(missile: Missile | SpaceShip): boolean {
         const closestX = Math.max(
             this.position.x,
             Math.min(missile.position.x, this.position.x + this.dimension.x)
@@ -351,4 +405,68 @@ class EventObserver {
             // console.log(event)
         }
     }
+}
+
+
+class LifeHeart {
+
+    ctx: SpaceMeteor;
+    sprite: HTMLImageElement;
+    position: Vector2;
+
+    constructor(ctx: SpaceMeteor, path: string, position: Vector2){
+        this.ctx = ctx;
+        this.position = position;
+        this.sprite = new Image();
+        this.sprite.src = path;
+    }
+
+    public render(){
+        this.ctx.context.imageSmoothingEnabled = false;
+        const x = Math.round(this.position.x);
+        const y = Math.round(this.position.y);
+
+        this.ctx.context.drawImage(
+            this.sprite,
+            x,
+            y,
+           32,
+           24
+        );
+    }
+}
+
+
+class UI {
+
+    ctx: SpaceMeteor;
+    spaceShip: SpaceShip;
+
+    hearts: LifeHeart[];
+
+    constructor(ctx: SpaceMeteor, spaceShip: SpaceShip) {
+        this.ctx = ctx;
+        this.spaceShip = spaceShip;
+
+        this.hearts = []
+    }
+
+    public update(dt: number){
+        this.hearts = (() => {
+            return Array.from({length: this.spaceShip.life}).map((value, index) => {
+                return new LifeHeart(this.ctx, heart, 
+                    new Vector2({
+                        x: index * 26,
+                        y: this.ctx.canvas.height - 30
+                }))
+            })
+        })()
+    }
+
+    public render() {
+        for(let x = 0; x < this.hearts.length; x++) {
+            this.hearts[x].render();
+        }      
+    }
+
 }
