@@ -43,14 +43,12 @@ body {
 
 #game-canvas {
   display: block;
-
-  width: 940px;
-  height: 540px;
-  max-width: 100%;
-
+  width: min(100vw, 960px);
+  height: auto;
+  max-height: 100vh;
   image-rendering: pixelated;
-
   background: #f7f7f7;
   border: 1px solid #d8d8d8;
   border-radius: 2px;
 }
+
