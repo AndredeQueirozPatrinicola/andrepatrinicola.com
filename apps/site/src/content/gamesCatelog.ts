@@ -1,5 +1,5 @@
 import pongCover from '../assets/images/pong.png';
-
+import meteorsCover from '../assets/images/meteors.png'
 
 export type GameCatalog = {
     title: string, 
@@ -26,7 +26,7 @@ export const gamesCatalog = [
         slug: 'meteor',
         title: 'SpaceShip Meteor',
         description: 'Navegue uma espaço nave',
-        cover: null,
+        cover: meteorsCover,
         playUrl: '/play/meteor/index.html',
         status: 'published',
         devUrl: 'http://localhost:5175'
