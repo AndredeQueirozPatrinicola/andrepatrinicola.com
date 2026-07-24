@@ -5,23 +5,44 @@ import { Input } from "../../../../packages/engines/src";
 import spaceShip from '../images/spaceship.png'
 import heart from '../images/heart.png'
 
+
+export class SpaceMeteorGameState {
+    static NOT_STARTED: string = 'NOT_STARTED';
+    static PLAYING: string = 'PLAYING'
+    static END_GAME: string = 'END_GAME'
+}
+
 export class SpaceMeteor extends Game {
 
     spaceShip: SpaceShip;
     meteors: Meteor[];
     UI: UI;
 
+    globalInput: Input
+
     meteorsInterval: number;
     meteorsCounter: number;
     eventsObserver: EventObserver;
+
+    gameState: SpaceMeteorGameState;
+
+
+    gamePoints: number
+    gamePointInterval: number;
 
     public constructor(canvas: HTMLCanvasElement) {
         super(canvas)
 
         this.eventsObserver = new EventObserver()
         this.meteors = []
-        this.meteorsInterval = 40;
+        this.meteorsInterval = 30;
         this.meteorsCounter = 0;
+
+        this.gameState = SpaceMeteorGameState.NOT_STARTED
+        this.globalInput = new Input()
+
+        this.gamePoints = 0;
+        this.gamePointInterval = 0;
 
         this.spaceShip = new SpaceShip(
             this,
@@ -29,7 +50,7 @@ export class SpaceMeteor extends Game {
             new Vector2({ x: canvas.width / 2, y: canvas.height / 2 }),
             new Vector2({ x: 0, y: 0 }),
             new Vector2({ x: 75, y: 61 }),
-            200,
+            175,
             5
         );
 
@@ -62,24 +83,42 @@ export class SpaceMeteor extends Game {
     public update(dt: number): void {
         void dt;
 
-        this.spaceShip.update(dt);
+
+        if (this.gameState === SpaceMeteorGameState.PLAYING) {
+            this.spaceShip.update(dt);
+
+            if (this.meteorsCounter >= this.meteorsInterval){
+                this.meteors.push(
+                    new Meteor(this, this.canvas)
+                )
+                this.meteorsCounter = 0;
+            } else {
+                this.meteorsCounter += 1;
+            }
+            
+            for (const meteor of [...this.meteors]) {
+                meteor.update(dt, this.spaceShip);
+            }
+
+            for (const mssl of [...this.spaceShip.storage]){
+                mssl.update(dt);
+            }
 
 
-        if (this.meteorsCounter >= this.meteorsInterval){
-            this.meteors.push(
-                new Meteor(this, this.canvas)
-            )
-            this.meteorsCounter = 0;
+            this.gamePointInterval = this.gamePointInterval + 1 * dt
+
+            if (this.gamePointInterval >= 1){
+                this.gamePointInterval = 0;
+                this.gamePoints++;
+            }
+            
         } else {
-            this.meteorsCounter += 1;
-        }
-        
-        for (const meteor of [...this.meteors]) {
-            meteor.update(dt, this.spaceShip);
-        }
-
-        for (const mssl of [...this.spaceShip.storage]){
-            mssl.update(dt);
+            if(this.globalInput.isKeyDown(' ')){
+                this.gamePoints = 0;
+                this.meteors = [];
+                this.spaceShip.life = 5;
+                this.gameState = SpaceMeteorGameState.PLAYING;
+            }
         }
 
         this.UI.update(dt);
@@ -90,12 +129,14 @@ export class SpaceMeteor extends Game {
         super.render()
         this.spaceShip.render();
 
-        for (const mtr of this.meteors){
-            mtr.render();
-        }
+        if (this.gameState === SpaceMeteorGameState.PLAYING) {
+            for (const mtr of this.meteors){
+                mtr.render();
+            }
 
-        for (const mmsl of this.spaceShip.storage) {
-            mmsl.render();
+            for (const mmsl of this.spaceShip.storage) {
+                mmsl.render();
+            }
         }
 
         this.UI.render();
@@ -139,12 +180,12 @@ export class SpaceShip {
         life: number
     ) {
         this.ctx = ctx;
-        this.position = position;
         this.velocity = velocity;
         this.dimension = dimension;
         this.canvas = canvas;
         this.speed = speed;
         this.radius = this.dimension.x / 2;
+        this.position = new Vector2({x: position.x - this.dimension.x/2, y:position.y});
 
         this.misselTimeOut = 1.25
         this.currentMisselTimeOut = 0
@@ -231,8 +272,19 @@ export class SpaceShip {
         
         if (this.life > 0 && !this.recovering){
             this.life = this.life - damage;
+
+            if(this.life <= 0){
+                this.destroy()
+            }
+
             this.recovering = true;
         }
+    }
+
+    public destroy(){
+        this.ctx.gameState = SpaceMeteorGameState.END_GAME
+        this.storage = []
+        this.position = new Vector2({x: this.ctx.canvas.width / 2 - this.dimension.x/2, y:this.canvas.height / 2});
     }
 }
 
@@ -349,6 +401,7 @@ export class Meteor {
 
     public render(): void {
         this.ctx.context.imageSmoothingEnabled = false;
+        this.ctx.context.fillStyle = "#000000";
         this.ctx.context.fillRect(this.position.x, this.position.y, this.dimension.x, this.dimension.y);
         this.ctx.context.fillStyle = 'black';
     }
@@ -452,21 +505,80 @@ class UI {
     }
 
     public update(dt: number){
-        this.hearts = (() => {
-            return Array.from({length: this.spaceShip.life}).map((value, index) => {
-                return new LifeHeart(this.ctx, heart, 
-                    new Vector2({
-                        x: index * 26,
-                        y: this.ctx.canvas.height - 30
-                }))
-            })
-        })()
+
+        if (this.ctx.gameState === SpaceMeteorGameState.PLAYING){
+            this.hearts = (() => {
+                return Array.from({length: this.spaceShip.life}).map((_, index) => {
+                    return new LifeHeart(this.ctx, heart, 
+                        new Vector2({
+                            x: index * 26,
+                            y: this.ctx.canvas.height - 30
+                    }))
+                })
+            })()
+        }
     }
 
     public render() {
-        for(let x = 0; x < this.hearts.length; x++) {
-            this.hearts[x].render();
-        }      
+
+        if(this.ctx.gameState === SpaceMeteorGameState.NOT_STARTED) {
+            this.ctx.context.font = "20px CustomFont";
+            this.ctx.context.fillStyle = "#2f2f2f";
+            this.ctx.context.textBaseline = "middle";
+            
+            this.ctx.context.fillText(
+                "Pressione 'Espaço' para jogar", 
+                this.ctx.canvas.width / 2 - 
+                    this.ctx.context.measureText(
+                        "Pressione 'Espaço' para jogar"
+                    )
+                    .width / 2, 
+                150
+            );
+        } else if (this.ctx.gameState === SpaceMeteorGameState.PLAYING) {
+            this.ctx.context.font = "24px CustomFont";
+            this.ctx.context.fillStyle = "#2f2f2f";
+            this.ctx.context.textBaseline = "middle";
+
+            for(let x = 0; x < this.hearts.length; x++) {
+                this.hearts[x].render();
+            }
+
+            this.ctx.context.fillText(
+                `${this.ctx.gamePoints}`, 
+                this.ctx.canvas.width / 2 - 
+                    this.ctx.context.measureText(
+                        `${this.ctx.gamePoints}!`
+                    )
+                    .width / 2, 
+                50
+            );
+        } else if (this.ctx.gameState === SpaceMeteorGameState.END_GAME) {
+            this.ctx.context.font = "24px CustomFont";
+            this.ctx.context.fillStyle = "#2f2f2f";
+            this.ctx.context.textBaseline = "middle";
+
+            this.ctx.context.fillText(
+                `Voce sobreviveu por ${this.ctx.gamePoints} segundos!`, 
+                this.ctx.canvas.width / 2 - 
+                    this.ctx.context.measureText(
+                        `Voce sobreviveu por ${this.ctx.gamePoints} segundos!`
+                    )
+                    .width / 2, 
+                50
+            );
+
+            this.ctx.context.fillText(
+                "Pressione 'Espaço' para jogar", 
+                this.ctx.canvas.width / 2 - 
+                    this.ctx.context.measureText(
+                        "Pressione 'Espaço' para jogar"
+                    )
+                    .width / 2, 
+                150
+            );
+
+        }
     }
 
 }
