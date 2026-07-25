@@ -35,7 +35,7 @@ export class SpaceMeteor extends Game {
 
         this.eventsObserver = new EventObserver()
         this.meteors = []
-        this.meteorsInterval = 20;
+        this.meteorsInterval = 10;
         this.meteorsCounter = 0;
 
         this.gameState = SpaceMeteorGameState.NOT_STARTED
@@ -392,24 +392,22 @@ export class Meteor {
         this.ctx = ctx;
         this.canvas = canvas;
 
-        const getRandom = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
-
         this.position = new Vector2({
-            x: getRandom(0, this.ctx.canvas.width),
+            x: this.getRandom(0, this.ctx.canvas.width),
             y: -40
         });
 
         this.velocity = new Vector2({
-            x: getRandom(-30, 30), 
-            y: getRandom(40, 60)
+            x: this.getRandom(-10, 10), 
+            y: this.getRandom(40, 60)
         });
 
         this.dimension = new Vector2({
-            x:getRandom(40, 80),
-            y:getRandom(40, 80)
+            x:this.getRandom(40, 80),
+            y:this.getRandom(40, 80)
         });
 
-        this.speed = getRandom(3, 5);
+        this.speed = this.getSpeed();
         this.rotation = 35
     }
 
@@ -461,8 +459,17 @@ export class Meteor {
             distanceX * distanceX + distanceY * distanceY
             <= hitbox.radius * hitbox.radius
         );
-}
+    }
 
+
+    private getSpeed(): number{
+        if (this.ctx.gamePoints === 1) {
+            return this.getRandom(2, 3)
+        }
+        return this.getRandom(20, 30) * (Math.log(this.ctx.gamePoints) * 0.1);
+    }
+
+    private getRandom = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 
