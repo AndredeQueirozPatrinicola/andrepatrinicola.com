@@ -98,6 +98,10 @@ export class SpaceMeteor extends Game {
             
             for (const meteor of [...this.meteors]) {
                 meteor.update(dt, this.spaceShip);
+
+                if(meteor.isOutOfScreenY()){
+                    this.meteors.splice(this.meteors.indexOf(meteor), 1);
+                }
             }
 
             for (const mssl of [...this.spaceShip.storage]){
@@ -470,6 +474,11 @@ export class Meteor {
     }
 
     private getRandom = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+
+    public isOutOfScreenY(){
+        return this.position.y - this.dimension.y > this.ctx.canvas.height;
+    }
 }
 
 
