@@ -35,7 +35,7 @@ export class SpaceMeteor extends Game {
 
         this.eventsObserver = new EventObserver()
         this.meteors = []
-        this.meteorsInterval = 30;
+        this.meteorsInterval = 20;
         this.meteorsCounter = 0;
 
         this.gameState = SpaceMeteorGameState.NOT_STARTED
@@ -170,6 +170,8 @@ export class SpaceShip {
     public recoveringTimeout: number;
     public currentRecoveringFrame: number;
 
+    public hitbox: HitBox;
+
     public constructor(
         ctx: SpaceMeteor,
         canvas: HTMLCanvasElement, 
@@ -184,7 +186,7 @@ export class SpaceShip {
         this.dimension = dimension;
         this.canvas = canvas;
         this.speed = speed;
-        this.radius = this.dimension.x / 2;
+        this.radius = this.dimension.x / 3;
         this.position = new Vector2({x: position.x - this.dimension.x/2, y:position.y});
 
         this.misselTimeOut = 1.25
@@ -201,6 +203,11 @@ export class SpaceShip {
         this.recovering = false;
         this.recoveringTimeout = 1;
         this.currentRecoveringFrame = 0;
+
+        this.hitbox = new HitBox(ctx, new Vector2({
+            x: this.position.x + this.sprite.width / 2,
+            y: this.position.y + this.sprite.height / 2
+        }), this.radius)
 
         this.ctx.eventsObserver.subscribe({key: 'shoot', event: this.shoot})
     }
@@ -248,6 +255,9 @@ export class SpaceShip {
                 this.recovering = false
             }
         }
+
+        this.hitbox.position.x = this.position.x + this.sprite.width / 2;
+        this.hitbox.position.y = this.position.y + this.sprite.height / 2
     }
 
     public render(): void {
@@ -262,6 +272,9 @@ export class SpaceShip {
             this.dimension.x,
             this.dimension.y
         );
+
+
+        // this.hitbox.render();
     }
 
     public shoot(){
@@ -275,7 +288,8 @@ export class SpaceShip {
 
             if(this.life <= 0){
                 this.destroy()
-            }
+                return;
+	    }
 
             this.recovering = true;
         }
@@ -291,7 +305,7 @@ export class SpaceShip {
 
 export class Missile  {
 
-    public ctx: Game;
+    public ctx: SpaceMeteor;
     public position: Vector2;
     public velocity: Vector2;
     public dimension: Vector2;
@@ -300,8 +314,10 @@ export class Missile  {
 
     public canvas: HTMLCanvasElement;
 
+    public hitbox: HitBox;
+
     public constructor(
-        ctx: Game,
+        ctx: SpaceMeteor,
         canvas: HTMLCanvasElement, 
         position: Vector2, 
         velocity: Vector2, 
@@ -316,11 +332,19 @@ export class Missile  {
         this.speed = speed;
         this.canvas = canvas;
         this.radius = radius;
+
+        this.hitbox = new HitBox(ctx, new Vector2({
+            x: this.position.x,
+            y: this.position.y
+        }), this.radius)
     }
 
     public update(dt: number): void {
         this.position.x += this.velocity.x * this.speed * dt;
         this.position.y += this.velocity.y * this.speed * dt;
+
+        this.hitbox.position.x = this.position.x;
+        this.hitbox.position.y = this.position.y;
     }
 
     public render(): void {
@@ -372,7 +396,7 @@ export class Meteor {
             y:getRandom(40, 80)
         });
 
-        this.speed = getRandom(1, 2);
+        this.speed = getRandom(3, 5);
         this.rotation = 35
     }
 
@@ -380,7 +404,7 @@ export class Meteor {
         this.position.x += this.velocity.x * this.speed * dt;
         this.position.y += this.velocity.y * this.speed * dt;
 
-        if (this.onAreaEntered(spaceShip)) {
+        if (this.onAreaEntered(spaceShip.hitbox)) {
                 this.ctx.eventsObserver.notify('hit_spaceship', {
                     meteor: this,
                     spaceShip
@@ -388,7 +412,7 @@ export class Meteor {
         }
 
         for (const missile of spaceShip.storage) {
-            if (this.onAreaEntered(missile)) {
+            if (this.onAreaEntered(missile.hitbox)) {
                 this.ctx.eventsObserver.notify('destroy_meteor', {
                     meteor: this,
                     missile
@@ -406,23 +430,23 @@ export class Meteor {
         this.ctx.context.fillStyle = 'black';
     }
 
-    private onAreaEntered(missile: Missile | SpaceShip): boolean {
+    private onAreaEntered(hitbox: HitBox): boolean {
         const closestX = Math.max(
             this.position.x,
-            Math.min(missile.position.x, this.position.x + this.dimension.x)
+            Math.min(hitbox.position.x, this.position.x + this.dimension.x)
         );
 
         const closestY = Math.max(
             this.position.y,
-            Math.min(missile.position.y, this.position.y + this.dimension.y)
+            Math.min(hitbox.position.y, this.position.y + this.dimension.y)
         );
 
-        const distanceX = missile.position.x - closestX;
-        const distanceY = missile.position.y - closestY;
+        const distanceX = hitbox.position.x - closestX;
+        const distanceY = hitbox.position.y - closestY;
 
         return (
             distanceX * distanceX + distanceY * distanceY
-            <= missile.radius * missile.radius
+            <= hitbox.radius * hitbox.radius
         );
 }
 
@@ -581,4 +605,28 @@ class UI {
         }
     }
 
+}
+
+
+
+class HitBox {
+
+    ctx: SpaceMeteor
+    position: Vector2;
+    radius: number;
+
+    constructor(ctx: SpaceMeteor, position: Vector2, radius: number){
+        this.ctx = ctx;
+        this.position = position;
+        this.radius = radius;
+    }
+
+    public render() {
+        this.ctx.context.imageSmoothingEnabled = false;
+        this.ctx.context.beginPath();
+        this.ctx.context.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, true);
+        this.ctx.context.closePath();
+        this.ctx.context.fillStyle = 'rgba(128, 255, 145, 0.7)';
+        this.ctx.context.fill();
+    }
 }
