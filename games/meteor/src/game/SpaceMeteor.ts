@@ -214,16 +214,29 @@ export class SpaceShip {
 
     public update(dt: number): void {
         
-        if(this.input.isKeyDown('a')){
+        if(
+            this.input.isKeyDown('a') && 
+            this.hitbox.position.x - this.hitbox.radius > 0
+        ){
             this.position.x += -1 * this.speed * dt;
         }
-        if(this.input.isKeyDown('s')){
+        if(
+            this.input.isKeyDown('s') && 
+            this.hitbox.position.y + 
+            this.hitbox.radius < this.canvas.height
+        ){
             this.position.y += 1 * this.speed * dt;
         }
-        if(this.input.isKeyDown('d')){
+        if(this.input.isKeyDown('d') && 
+            this.hitbox.position.x + 
+            this.hitbox.radius < this.canvas.width
+        ){
             this.position.x += 1 * this.speed * dt;
         }
-        if(this.input.isKeyDown('w')){
+        if(
+            this.input.isKeyDown('w') && 
+            this.hitbox.position.y - this.hitbox.radius > 0
+        ){
             this.position.y += -1 * this.speed * dt;
         } 
 
