@@ -4,15 +4,17 @@ import { Input } from  '../../../../packages/engines/src/andevengine/input/Input
 
 
 const GRAVITY_FORCE = 25
+const getRandom = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 export type FlappyThingOptions = {
     canvas: HTMLCanvasElement
 } 
 
-export class FlappyThing extends Game {
+export class FlappyThing extends Game 
+{
 
     private thing: Thing;
-    private pipeBeam: PipeBeam;
+    private pipeBeamManager: PipeBeamManager;
 
     constructor(options: FlappyThingOptions) {
         super(options.canvas);
@@ -33,38 +35,20 @@ export class FlappyThing extends Game {
 
         );
 
-        this.pipeBeam = new PipeBeam(
-            new Pipe(
-                this.context,
-                new Hitbox(10, new Position(new Vector2({x: this.canvas.width, y: 0 }))),
-                new Position(new Vector2({x: this.canvas.width, y: 0 })),
-                new Polygon(30, 100),
-                new Vector2({x: 0, y: 0})
-            ), new Pipe(
-                this.context,
-                new Hitbox(10, new Position(new Vector2({x: this.canvas.width, y: (this.canvas.height / 2) + 100  }))),
-                new Position(new Vector2({x: this.canvas.width, y: (this.canvas.height / 2) + 100  })),
-                new Polygon(30, 200),
-                new Vector2({x: 0, y: 0})
-            )
-        );
-
-
-    }
-
-    public load(): void {
-
+        this.pipeBeamManager = new PipeBeamManager(this.context, this.canvas);
     }
 
     public update(dt:number) {
         this.thing.update(dt);
-        this.pipeBeam.update(dt);
+
+        this.pipeBeamManager.update(dt);
     }
 
     public render(): void {
         super.render();
+
         this.thing.render();
-        this.pipeBeam.render();
+        this.pipeBeamManager.render();
     }
 }
 
@@ -74,10 +58,15 @@ export class Timer
     public isTicking: boolean;
     public counter: number;
     public accumulator: number;
+    public observer?: EventObserver;
+    public timeOutCallback?: Event;
 
-    constructor(timeOut: number, counter: number){
+    constructor(timeOut: number, counter: number, observer?: EventObserver, callback?: Event){
         this.timeOut = timeOut;
         this.counter = counter;
+        this.observer = observer;
+        this.timeOutCallback = callback;
+
         this.isTicking = false;
         this.accumulator = 0;
     }
@@ -97,11 +86,45 @@ export class Timer
             if (this.accumulator >= this.timeOut){
                 this.accumulator = 0;
                 this.counter++;
+
+                if(this.observer && this.timeOutCallback) {
+                    this.observer.notify(this.timeOutCallback.key)
+                }
             }
         }
     }
 }
 
+type Event = {
+    key: string;
+    event: (params?: any) => void;
+}
+
+class EventObserver {
+
+    events: Event[]
+
+    constructor(){
+        this.events = [];
+    }
+
+    public subscribe(event: Event){
+        this.events.push(event);
+    }
+
+    // public unsubscribe(event: Event){
+    //     this.events.pop(event)
+    // }
+
+    public notify(key: string, params?: any) {
+        for (const event of this.events){
+            if(event.key == key){
+                event.event(params);
+            }
+            // console.log(event)
+        }
+    }
+}
 export class Hitbox
 {
     public radius: number;
@@ -188,13 +211,23 @@ export class Pipe extends CollidableObject
     }
 }
 
-export class PipeBeam {
+export class PipeBeam 
+{
+    public renderer: CanvasRenderingContext2D
+    public canvas: HTMLCanvasElement
+
     public upperPipe: Pipe;
     public downPipe: Pipe;
 
-    constructor(upperPipe: Pipe, downPipe: Pipe) {
-        this.upperPipe = upperPipe;
-        this.downPipe = downPipe;        
+    private SPACE: number;
+
+    constructor(renderer: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
+        this.renderer = renderer;
+        this.canvas = canvas;
+
+        this.SPACE = 200;
+
+        [this.upperPipe, this.downPipe] = this.mount()  
     }
 
     public update(dt: number){
@@ -205,6 +238,77 @@ export class PipeBeam {
     public render(){
         this.upperPipe.render();
         this.downPipe.render();
+    }
+
+    private mount() {
+        const upperPipeHeight = getRandom(30, this.canvas.height / 2)
+
+        const upperPipePolygon = new Polygon(30, upperPipeHeight)
+        const upperPosition = new Position(new Vector2({x: this.canvas.width, y: 0 }))
+
+        const downPipePolygon = new Polygon(30, this.canvas.height - upperPipeHeight + this.SPACE)
+        const downPosition = new Position(new Vector2({x: this.canvas.width, y: upperPipeHeight + this.SPACE}))
+
+        const zeroVector2 = new Vector2({x: 0, y: 0})
+
+        const upperPipe = new Pipe(
+            this.renderer,
+            new Hitbox(10, upperPosition),
+            upperPosition,
+            upperPipePolygon,
+            zeroVector2
+        )
+        const downPipe =  new Pipe(
+            this.renderer,
+            new Hitbox(10, downPosition),
+            downPosition,
+            downPipePolygon,
+            zeroVector2
+        )
+
+        return [upperPipe, downPipe]
+    }
+}
+
+export class PipeBeamManager 
+{
+    private renderer: CanvasRenderingContext2D;
+    private canvas: HTMLCanvasElement;
+    public pipeBeams: PipeBeam[];
+    private timer: Timer;
+    private observer: EventObserver;
+
+    constructor(renderer: CanvasRenderingContext2D, canvas: HTMLCanvasElement) { 
+        this.renderer = renderer;
+        this.canvas = canvas;
+        
+        this.pipeBeams = [];
+
+        const timeOutEvent = {key: 'onTimeOut', event: this.onTimeOut};
+        this.observer = new EventObserver();
+        this.observer.subscribe(timeOutEvent)
+
+        this.timer = new Timer(1, 0, this.observer, timeOutEvent);
+        this.timer.start();
+    }
+    
+    public update(dt: number)
+    {
+        this.timer.update(dt);
+
+        for(const pipeBeam of this.pipeBeams){
+            pipeBeam.update(dt);
+        }
+    }
+
+    public render() {
+        for(const pipeBeam of this.pipeBeams){
+            pipeBeam.render();
+        }
+    }
+
+    public onTimeOut = () => {
+        this.pipeBeams.push(new PipeBeam(this.renderer, this.canvas));
     }
 }
 
