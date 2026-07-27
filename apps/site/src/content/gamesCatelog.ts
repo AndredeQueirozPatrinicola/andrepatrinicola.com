@@ -31,4 +31,13 @@ export const gamesCatalog = [
         status: 'published',
         devUrl: 'http://localhost:5175'
     },
+    {
+        slug: 'flappy',
+        title: 'Flappy Thing',
+        description: 'Não é exatamente um passaro...',
+        cover: null,
+        playUrl: '/play/flappy/index.html',
+        status: 'published',
+        devUrl: 'http://localhost:5176'
+    },
 ]
