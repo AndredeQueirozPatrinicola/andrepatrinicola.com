@@ -51,7 +51,7 @@ export class Game {
         this.animationFrameId = requestAnimationFrame(this.loop);
     };
 
-    private load(): void {}
+    public load(): void {}
 
     public update(dt: number): void {
         void dt;

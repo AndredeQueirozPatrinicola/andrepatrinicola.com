@@ -12,16 +12,22 @@ import { MouseEvent, ReactNode, useEffect, useState } from "react";
 import { GameRenderer } from "../components/GameRenderer/GameRenderer";
 import { gamesCatalog } from "../content/gamesCatelog";
 
+import { useParams } from 'react-router'
+
 export function HomePage() {
+  const { slug } = useParams();
   const [currentContent, setCurrentContent] = useState<ReactNode>(
     <NoContentPlaceHolder id="no-content" />
   );
   const { isLoading, load } = useLoadContent(setCurrentContent);
   const onClickNavItem = (_: MouseEvent, content: ReactNode) => {
     load(content);
+    
   };
   useEffect(() => {
-    load(<GameRenderer id="pong" gameUrl={gamesCatalog[0].playUrl} devUrl={gamesCatalog[0].devUrl} title={gamesCatalog[0].title}/>);
+    const currSlug = slug || 'pong'
+    const game = gamesCatalog.find(v => v.slug === currSlug)
+    load(<GameRenderer id={slug} gameUrl={game.playUrl} devUrl={game.devUrl} title={game.title}/>);
   }, [load]);
 
 
