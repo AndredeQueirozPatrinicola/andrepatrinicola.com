@@ -15,6 +15,7 @@ export class FlappyThing extends Game
 
     private thing: Thing;
     private pipeBeamManager: PipeBeamManager;
+    private collisionManager:CollisionManager
 
     constructor(options: FlappyThingOptions) {
         super(options.canvas);
@@ -28,7 +29,7 @@ export class FlappyThing extends Game
 
         this.thing = new Thing(
             this.context,
-            new Hitbox(5, initialPosition),
+            new Hitbox(polygon, initialPosition),
             initialPosition,
             polygon,
             new Vector2({x:0,y:0})
@@ -36,12 +37,14 @@ export class FlappyThing extends Game
         );
 
         this.pipeBeamManager = new PipeBeamManager(this.context, this.canvas);
+        this.collisionManager = new CollisionManager(this.thing, this.pipeBeamManager.pipeBeams)
     }
 
     public update(dt:number) {
         this.thing.update(dt);
 
         this.pipeBeamManager.update(dt);
+        this.collisionManager.update(dt);
     }
 
     public render(): void {
@@ -127,11 +130,11 @@ class EventObserver {
 }
 export class Hitbox
 {
-    public radius: number;
+    public shape: Polygon;
     public position: Position;
 
-    constructor(radius: number, position: Position){
-        this.radius = radius;
+    constructor(shape: Polygon, position: Position){
+        this.shape = shape;
         this.position = position;
     }
 }
@@ -170,24 +173,14 @@ export class CollidableObject
         this.velocity = velocity
     }
 
-    private onAreaEntered(hitbox: Hitbox): boolean {
-        const closestX = Math.max(
-            this.position.pos.x,
-            Math.min(hitbox.position.pos.x, this.position.pos.x + this.shape.width)
-        );
-
-        const closestY = Math.max(
-            this.position.pos.y,
-            Math.min(hitbox.position.pos.y, this.position.pos.y + this.shape.height)
-        );
-
-        const distanceX = hitbox.position.pos.x - closestX;
-        const distanceY = hitbox.position.pos.y - closestY;
-
+    public onAreaEntered(hitbox: Hitbox): boolean {
         return (
-            distanceX * distanceX + distanceY * distanceY
-            <= hitbox.radius * hitbox.radius
-        );
+            this.hitbox.position.pos.x + this.hitbox.shape.width >= hitbox.position.pos.x &&
+            this.hitbox.position.pos.x <= hitbox.position.pos.x + hitbox.shape.width &&
+            this.hitbox.position.pos.y + this.hitbox.shape.height >= hitbox.position.pos.y &&
+            this.hitbox.position.pos.y <= hitbox.position.pos.y + hitbox.shape.height
+        )
+
     }
 
     public render(): void {
@@ -253,14 +246,14 @@ export class PipeBeam
 
         const upperPipe = new Pipe(
             this.renderer,
-            new Hitbox(10, upperPosition),
+            new Hitbox(upperPipePolygon, upperPosition),
             upperPosition,
             upperPipePolygon,
             zeroVector2
         )
         const downPipe =  new Pipe(
             this.renderer,
-            new Hitbox(10, downPosition),
+            new Hitbox(downPipePolygon, downPosition),
             downPosition,
             downPipePolygon,
             zeroVector2
@@ -331,4 +324,27 @@ export class Thing extends CollidableObject
 
         this.position.pos.y = this.position.pos.y + this.velocity.y;
     }
+}
+
+export class CollisionManager
+{
+    private thing: Thing;
+    private beams: PipeBeam[];
+
+    constructor(thing: Thing, beams: PipeBeam[]){
+        this.thing = thing;
+        this.beams = beams;
+    }
+
+    public update(dt: number){
+
+        for (const beam of this.beams) {
+            if(
+                beam.upperPipe.onAreaEntered(this.thing.hitbox) ||
+                beam.downPipe.onAreaEntered(this.thing.hitbox)
+            ) {
+                console.log("Dano")
+            }
+        }
+    };
 }
