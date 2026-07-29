@@ -15,6 +15,7 @@ export class FlappyThing extends Game
 
     private thing: Thing;
     private pipeBeamManager: PipeBeamManager;
+    private collisionManager:CollisionManager
 
     constructor(options: FlappyThingOptions) {
         super(options.canvas);
@@ -23,25 +24,26 @@ export class FlappyThing extends Game
             x: 200,
             y: this.canvas.height / 2
         }))
-
         const polygon = new Polygon(30, 30);
 
         this.thing = new Thing(
             this.context,
-            new Hitbox(5, initialPosition),
+            new Hitbox(polygon, initialPosition),
             initialPosition,
             polygon,
-            new Vector2({x:0,y:0})
-
+            new Vector2({x:0,y:0}),
+            this.canvas
         );
 
         this.pipeBeamManager = new PipeBeamManager(this.context, this.canvas);
+        this.collisionManager = new CollisionManager(this.thing, this.pipeBeamManager.pipeBeams)
     }
 
     public update(dt:number) {
         this.thing.update(dt);
 
         this.pipeBeamManager.update(dt);
+        this.collisionManager.update(this.pipeBeamManager);
     }
 
     public render(): void {
@@ -127,11 +129,11 @@ class EventObserver {
 }
 export class Hitbox
 {
-    public radius: number;
+    public shape: Polygon;
     public position: Position;
 
-    constructor(radius: number, position: Position){
-        this.radius = radius;
+    constructor(shape: Polygon, position: Position){
+        this.shape = shape;
         this.position = position;
     }
 }
@@ -170,24 +172,13 @@ export class CollidableObject
         this.velocity = velocity
     }
 
-    private onAreaEntered(hitbox: Hitbox): boolean {
-        const closestX = Math.max(
-            this.position.pos.x,
-            Math.min(hitbox.position.pos.x, this.position.pos.x + this.shape.width)
-        );
-
-        const closestY = Math.max(
-            this.position.pos.y,
-            Math.min(hitbox.position.pos.y, this.position.pos.y + this.shape.height)
-        );
-
-        const distanceX = hitbox.position.pos.x - closestX;
-        const distanceY = hitbox.position.pos.y - closestY;
-
+    public onAreaEntered(hitbox: Hitbox): boolean {
         return (
-            distanceX * distanceX + distanceY * distanceY
-            <= hitbox.radius * hitbox.radius
-        );
+            this.hitbox.position.pos.x + this.hitbox.shape.width >= hitbox.position.pos.x &&
+            this.hitbox.position.pos.x <= hitbox.position.pos.x + hitbox.shape.width &&
+            this.hitbox.position.pos.y + this.hitbox.shape.height >= hitbox.position.pos.y &&
+            this.hitbox.position.pos.y <= hitbox.position.pos.y + hitbox.shape.height
+        )
     }
 
     public render(): void {
@@ -225,7 +216,7 @@ export class PipeBeam
         this.renderer = renderer;
         this.canvas = canvas;
 
-        this.SPACE = 200;
+        this.SPACE = 125;
 
         [this.upperPipe, this.downPipe] = this.mount()  
     }
@@ -241,7 +232,7 @@ export class PipeBeam
     }
 
     private mount() {
-        const upperPipeHeight = getRandom(30, this.canvas.height / 2)
+        const upperPipeHeight = getRandom(30, this.canvas.height / 2 + 100)
 
         const upperPipePolygon = new Polygon(30, upperPipeHeight)
         const upperPosition = new Position(new Vector2({x: this.canvas.width, y: 0 }))
@@ -253,14 +244,14 @@ export class PipeBeam
 
         const upperPipe = new Pipe(
             this.renderer,
-            new Hitbox(10, upperPosition),
+            new Hitbox(upperPipePolygon, upperPosition),
             upperPosition,
             upperPipePolygon,
             zeroVector2
         )
         const downPipe =  new Pipe(
             this.renderer,
-            new Hitbox(10, downPosition),
+            new Hitbox(downPipePolygon, downPosition),
             downPosition,
             downPipePolygon,
             zeroVector2
@@ -290,6 +281,8 @@ export class PipeBeamManager
 
         this.timer = new Timer(1, 0, this.observer, timeOutEvent);
         this.timer.start();
+
+        this.pipeBeams.push(new PipeBeam(this.renderer, this.canvas));
     }
     
     public update(dt: number)
@@ -310,25 +303,83 @@ export class PipeBeamManager
     public onTimeOut = () => {
         this.pipeBeams.push(new PipeBeam(this.renderer, this.canvas));
     }
+
+    public reset() {
+        this.pipeBeams.splice(0, this.pipeBeams.length);
+    }
 }
 
 export class Thing extends CollidableObject
 {
     private input: Input;
+    private canvas: HTMLCanvasElement
 
-    constructor(renderer: CanvasRenderingContext2D, hitbox: Hitbox, position: Position, shape: Polygon, velocity: Vector2){
+    private JUMP_FORCE = 250;
+
+    constructor(renderer: CanvasRenderingContext2D, hitbox: Hitbox, position: Position, shape: Polygon, velocity: Vector2, canvas: HTMLCanvasElement,){
         super(renderer, hitbox, position, shape, velocity);
 
         this.input = new Input();
+        this.canvas = canvas;
     }
 
     public update(dt: number){
         this.velocity.y = this.velocity.y + GRAVITY_FORCE * dt;
 
         if(this.input.isKeyDown(' ')){
-            this.velocity.y = this.velocity.x - 300 * dt;
+            this.velocity.y = this.velocity.x - this.JUMP_FORCE * dt;
         }
 
         this.position.pos.y = this.position.pos.y + this.velocity.y;
     }
+
+    public isOutOfScreen(){
+        return (
+            this.position.pos.x + this.shape.width >= this.canvas.width || 
+            this.position.pos.x <= 0 || 
+            this.position.pos.y <= 0 || 
+            this.position.pos.y + this.shape.height >= this.canvas.height
+        )
+    }
+
+    public reset(){
+        this.position.pos.x = 200
+        this.position.pos.y = 270
+        this.velocity.x = 0
+        this.velocity.y = 0
+        this.hitbox.position.pos.x = this.position.pos.x
+        this.hitbox.position.pos.y = this.position.pos.y
+    }
 }
+
+export class CollisionManager
+{
+    private thing: Thing;
+    private beams: PipeBeam[];
+
+    constructor(thing: Thing, beams: PipeBeam[]){
+        this.thing = thing;
+        this.beams = beams;
+    }
+
+    public update(beamManager: PipeBeamManager){
+
+        for (const beam of this.beams) {
+            if(
+                beam.upperPipe.onAreaEntered(this.thing.hitbox) ||
+                beam.downPipe.onAreaEntered(this.thing.hitbox) || 
+                this.thing.isOutOfScreen()
+            ) {
+                beamManager.reset();
+                this.thing.reset();
+            }
+        }
+    };
+}
+
+
+export const GameStates = Object.freeze({
+    NOT_STARTED: 1,
+    PLAYING: 2,
+    END_GAME: 3
+})
