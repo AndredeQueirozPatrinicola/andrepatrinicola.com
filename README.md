@@ -1,32 +1,32 @@
 # andrepatrinicola.com
 
-Portfolio e Laboratório para desenvolvimento, estudo e publicação de protótipos de jogos para navegador. Inclui projetos feitos com Canvas nativo e frameworks JavaScript, além de ports de jogos originalmente desenvolvidos em outras engines, linguagens e tecnologias.
+A portfolio and laboratory for developing, exploring, and publishing browser game prototypes. It includes projects built with the native Canvas API and JavaScript frameworks, as well as ports of games originally developed with other engines, languages, and technologies.
 
-## Estrutura
+## Structure
 
 ```text
-apps/site/          Aplicação principal
-games/              Jogos 
-packages/ui/        Componentes compartilhados
-packages/config/    Configurações do monorepo
-.github/workflows/  Automações de CI/CD
+apps/site/          Main application
+games/              Games
+packages/ui/        Shared components
+packages/config/    Monorepo configuration
+.github/workflows/  CI/CD workflows
 ```
 
-## Requisitos
+## Requirements
 
-- Node.js 20 ou superior
+- Node.js 20 or later
 - npm
 
-## Desenvolvimento
+## Development
 
-Instale as dependências e inicie o servidor local:
+Install the dependencies and start the local development server:
 
 ```bash
 npm install
 npm run dev
 ```
 
-O site utiliza o servidor de desenvolvimento do Vite. Não abra `apps/site/index.html` diretamente no navegador.
+The site uses the Vite development server. Do not open `apps/site/index.html` directly in the browser.
 
 ## Build
 
