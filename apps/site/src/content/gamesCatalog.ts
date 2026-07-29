@@ -1,5 +1,6 @@
 import pongCover from '../assets/images/pong.png';
 import meteorsCover from '../assets/images/meteors.png'
+import flappy from '../assets/images/flappy.png'
 
 export type GameCatalog = {
     title: string, 
@@ -35,7 +36,7 @@ export const gamesCatalog = [
         slug: 'flappy',
         title: 'Flappy Thing',
         description: 'Não é exatamente um passaro...',
-        cover: null,
+        cover: flappy,
         playUrl: '/play/flappy/index.html',
         status: 'published',
         devUrl: 'http://localhost:5176'

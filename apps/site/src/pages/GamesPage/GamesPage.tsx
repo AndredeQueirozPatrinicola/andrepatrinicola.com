@@ -1,5 +1,5 @@
 import { MouseEvent, useState } from "react"
-import { gamesCatalog } from "../../content/gamesCatelog"
+import { gamesCatalog } from "../../content/gamesCatalog"
 import './games-page.css'
 import { ReactNode } from "react"
 import { GameRenderer } from "../../components/GameRenderer/GameRenderer"

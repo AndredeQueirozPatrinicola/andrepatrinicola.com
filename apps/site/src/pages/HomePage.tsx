@@ -10,7 +10,7 @@ import { useLoadContent } from "../hooks/useLoadContent";
 import { GamesPage } from "./GamesPage/GamesPage";
 import { MouseEvent, ReactNode, useEffect, useState } from "react";
 import { GameRenderer } from "../components/GameRenderer/GameRenderer";
-import { gamesCatalog } from "../content/gamesCatelog";
+import { gamesCatalog } from "../content/gamesCatalog";
 
 export function HomePage() {
   const [currentContent, setCurrentContent] = useState<ReactNode>(
