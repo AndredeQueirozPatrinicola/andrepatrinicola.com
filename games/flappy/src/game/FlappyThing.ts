@@ -345,7 +345,7 @@ export class Thing extends CollidableObject
     private input: Input;
     private canvas: HTMLCanvasElement
 
-    private JUMP_FORCE = 250;
+    private JUMP_FORCE = 3;
 
     constructor(renderer: CanvasRenderingContext2D, hitbox: Hitbox, position: Position, shape: Polygon, velocity: Vector2, canvas: HTMLCanvasElement,){
         super(renderer, hitbox, position, shape, velocity);
@@ -358,7 +358,7 @@ export class Thing extends CollidableObject
         this.velocity.y = this.velocity.y + GRAVITY_FORCE * dt;
 
         if(this.input.isKeyDown(' ') || this.input.isKeyDown('click')){
-            this.velocity.y = this.velocity.x - this.JUMP_FORCE * dt;
+            this.velocity.y = -this.JUMP_FORCE;
         }
 
         this.position.pos.y = this.position.pos.y + this.velocity.y;
