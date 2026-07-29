@@ -4,6 +4,8 @@ export class Input {
     public constructor() {
         window.addEventListener('keydown', this.onKeyDown);
         window.addEventListener('keyup', this.onKeyUp);
+        window.addEventListener('mousedown', this.onMouseClick)
+        window.addEventListener('mouseup', this.onMouseClickOut)
     }
 
     public isKeyDown(key: string): boolean {
@@ -21,5 +23,13 @@ export class Input {
 
     private readonly onKeyUp = (event: KeyboardEvent): void => {
         this.pressedKeys.delete(event.key.toLowerCase());
+    };
+
+    private readonly onMouseClick = (event: MouseEvent): void => {
+        this.pressedKeys.add('click')
+    };
+
+    private readonly onMouseClickOut = (event: MouseEvent): void => {
+        this.pressedKeys.delete('click')
     };
 }

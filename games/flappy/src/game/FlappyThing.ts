@@ -12,10 +12,8 @@ export type FlappyThingOptions = {
 
 export class FlappyThing extends Game 
 {
-
     private thing: Thing;
     private pipeBeamManager: PipeBeamManager;
-    private collisionManager:CollisionManager
 
     constructor(options: FlappyThingOptions) {
         super(options.canvas);
@@ -35,15 +33,13 @@ export class FlappyThing extends Game
             this.canvas
         );
 
-        this.pipeBeamManager = new PipeBeamManager(this.context, this.canvas);
-        this.collisionManager = new CollisionManager(this.thing, this.pipeBeamManager.pipeBeams)
+        this.pipeBeamManager = new PipeBeamManager(this.context, this.canvas, this.thing);
     }
 
     public update(dt:number) {
         this.thing.update(dt);
 
         this.pipeBeamManager.update(dt);
-        this.collisionManager.update(this.pipeBeamManager);
     }
 
     public render(): void {
@@ -183,7 +179,7 @@ export class CollidableObject
 
     public render(): void {
         this.renderer.imageSmoothingEnabled = false;
-        this.renderer.fillStyle = "#000000";
+        this.renderer.fillStyle = "#2f2f2f";
         this.renderer.fillRect(this.position.pos.x, this.position.pos.y, this.shape.width, this.shape.height);
         this.renderer.fillStyle = 'black';
     }
@@ -210,13 +206,13 @@ export class PipeBeam
     public upperPipe: Pipe;
     public downPipe: Pipe;
 
-    private SPACE: number;
+    private SPACE: number = 125;
+
+    private alreadyPassed: boolean = false;
 
     constructor(renderer: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
         this.renderer = renderer;
         this.canvas = canvas;
-
-        this.SPACE = 125;
 
         [this.upperPipe, this.downPipe] = this.mount()  
     }
@@ -232,7 +228,7 @@ export class PipeBeam
     }
 
     private mount() {
-        const upperPipeHeight = getRandom(30, this.canvas.height / 2 + 100)
+        const upperPipeHeight = getRandom(30, this.canvas.height / 2 + 50)
 
         const upperPipePolygon = new Polygon(30, upperPipeHeight)
         const upperPosition = new Position(new Vector2({x: this.canvas.width, y: 0 }))
@@ -259,17 +255,33 @@ export class PipeBeam
 
         return [upperPipe, downPipe]
     }
+
+    public passedThrough(thing: Thing):boolean{
+        if(
+            thing.position.pos.x > this.upperPipe.position.pos.x &&
+            !this.alreadyPassed
+        ) {
+            this.alreadyPassed = true;
+            return true;
+        }
+        return false
+    }
 }
 
 export class PipeBeamManager 
 {
     private renderer: CanvasRenderingContext2D;
     private canvas: HTMLCanvasElement;
-    public pipeBeams: PipeBeam[];
+
     private timer: Timer;
     private observer: EventObserver;
 
-    constructor(renderer: CanvasRenderingContext2D, canvas: HTMLCanvasElement) { 
+    private thing;
+    private pipeBeams: PipeBeam[];
+    
+    private gamePoints: GamePointsUI;
+
+    constructor(renderer: CanvasRenderingContext2D, canvas: HTMLCanvasElement, thing: Thing) { 
         this.renderer = renderer;
         this.canvas = canvas;
         
@@ -283,6 +295,10 @@ export class PipeBeamManager
         this.timer.start();
 
         this.pipeBeams.push(new PipeBeam(this.renderer, this.canvas));
+
+        this.thing = thing;
+
+        this.gamePoints = new GamePointsUI(renderer, 0);
     }
     
     public update(dt: number)
@@ -291,6 +307,18 @@ export class PipeBeamManager
 
         for(const pipeBeam of this.pipeBeams){
             pipeBeam.update(dt);
+            if(
+                pipeBeam.upperPipe.onAreaEntered(this.thing.hitbox) ||
+                pipeBeam.downPipe.onAreaEntered(this.thing.hitbox) || 
+                this.thing.isOutOfScreen()
+            ) {
+                this.reset();
+                this.thing.reset();
+            }
+
+            if(pipeBeam.passedThrough(this.thing)) {
+                this.gamePoints.gamePoints++;
+            }
         }
     }
 
@@ -298,6 +326,8 @@ export class PipeBeamManager
         for(const pipeBeam of this.pipeBeams){
             pipeBeam.render();
         }
+
+        this.gamePoints.render();
     }
 
     public onTimeOut = () => {
@@ -306,6 +336,7 @@ export class PipeBeamManager
 
     public reset() {
         this.pipeBeams.splice(0, this.pipeBeams.length);
+        this.gamePoints.gamePoints = 0;
     }
 }
 
@@ -326,7 +357,7 @@ export class Thing extends CollidableObject
     public update(dt: number){
         this.velocity.y = this.velocity.y + GRAVITY_FORCE * dt;
 
-        if(this.input.isKeyDown(' ')){
+        if(this.input.isKeyDown(' ') || this.input.isKeyDown('click')){
             this.velocity.y = this.velocity.x - this.JUMP_FORCE * dt;
         }
 
@@ -352,34 +383,39 @@ export class Thing extends CollidableObject
     }
 }
 
-export class CollisionManager
+
+export class GamePointsUI 
 {
-    private thing: Thing;
-    private beams: PipeBeam[];
+    private renderer: CanvasRenderingContext2D;
+    public gamePoints: number;
 
-    constructor(thing: Thing, beams: PipeBeam[]){
-        this.thing = thing;
-        this.beams = beams;
+    constructor(renderer: CanvasRenderingContext2D, gamePoints: number){
+        this.renderer = renderer;
+        this.gamePoints = gamePoints;
     }
-
-    public update(beamManager: PipeBeamManager){
-
-        for (const beam of this.beams) {
-            if(
-                beam.upperPipe.onAreaEntered(this.thing.hitbox) ||
-                beam.downPipe.onAreaEntered(this.thing.hitbox) || 
-                this.thing.isOutOfScreen()
-            ) {
-                beamManager.reset();
-                this.thing.reset();
-            }
-        }
-    };
+    
+    public render()
+    {
+        this.renderer.font = "20px CustomFont";
+        this.renderer.fillStyle = "#2f2f2f";
+        this.renderer.textBaseline = "middle";
+        
+        this.renderer.fillText(
+            `${this.gamePoints}`, 
+            this.renderer.canvas.width / 2 - 
+                this.renderer.measureText(
+                    `${this.gamePoints}`
+                )
+                .width / 2 , 
+            50
+        );
+    }
 }
-
 
 export const GameStates = Object.freeze({
     NOT_STARTED: 1,
     PLAYING: 2,
     END_GAME: 3
 })
+
+
