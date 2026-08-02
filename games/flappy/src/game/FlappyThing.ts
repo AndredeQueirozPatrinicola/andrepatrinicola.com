@@ -14,9 +14,16 @@ export class FlappyThing extends Game
 {
     private thing: Thing;
     private pipeBeamManager: PipeBeamManager;
+    private messagesUi: MessagesUI
+
+    public gameState: number;
+    private input: Input;
 
     constructor(options: FlappyThingOptions) {
         super(options.canvas);
+
+        this.gameState = GameStates.PAUSED
+        this.input = new Input()
 
         const initialPosition = new Position(new Vector2({
             x: 200,
@@ -30,16 +37,24 @@ export class FlappyThing extends Game
             initialPosition,
             polygon,
             new Vector2({x:0,y:0}),
-            this.canvas
+            this.canvas,
+            this
         );
 
-        this.pipeBeamManager = new PipeBeamManager(this.context, this.canvas, this.thing);
+        this.pipeBeamManager = new PipeBeamManager(this.context, this.canvas, this.thing, this);
+
+        this.messagesUi = new MessagesUI(this.context, this)
     }
 
     public update(dt:number) {
         this.thing.update(dt);
+        this.pipeBeamManager.update(dt);        
 
-        this.pipeBeamManager.update(dt);
+        if(this.gameState === GameStates.PAUSED) {
+            if(this.input.isKeyDown(' ') || this.input.isKeyDown('click')){
+                this.gameState = GameStates.PLAYING
+            }
+        }
     }
 
     public render(): void {
@@ -47,6 +62,8 @@ export class FlappyThing extends Game
 
         this.thing.render();
         this.pipeBeamManager.render();
+
+        this.messagesUi.render()
     }
 }
 
@@ -280,10 +297,12 @@ export class PipeBeamManager
     private pipeBeams: PipeBeam[];
     
     private gamePoints: GamePointsUI;
+    private game: FlappyThing;
 
-    constructor(renderer: CanvasRenderingContext2D, canvas: HTMLCanvasElement, thing: Thing) { 
+    constructor(renderer: CanvasRenderingContext2D, canvas: HTMLCanvasElement, thing: Thing, game: FlappyThing) { 
         this.renderer = renderer;
         this.canvas = canvas;
+        this.game = game;
         
         this.pipeBeams = [];
 
@@ -303,21 +322,24 @@ export class PipeBeamManager
     
     public update(dt: number)
     {
-        this.timer.update(dt);
+        if(this.game.gameState === GameStates.PLAYING){
+            this.timer.update(dt);
 
-        for(const pipeBeam of this.pipeBeams){
-            pipeBeam.update(dt);
-            if(
-                pipeBeam.upperPipe.onAreaEntered(this.thing.hitbox) ||
-                pipeBeam.downPipe.onAreaEntered(this.thing.hitbox) || 
-                this.thing.isOutOfScreen()
-            ) {
-                this.reset();
-                this.thing.reset();
-            }
+            for(const pipeBeam of this.pipeBeams){
+                pipeBeam.update(dt);
+                if(
+                    pipeBeam.upperPipe.onAreaEntered(this.thing.hitbox) ||
+                    pipeBeam.downPipe.onAreaEntered(this.thing.hitbox) || 
+                    this.thing.isOutOfScreen()
+                ) {
+                    this.reset();
+                    this.thing.reset();
+                    this.game.gameState = GameStates.PAUSED
+                }
 
-            if(pipeBeam.passedThrough(this.thing)) {
-                this.gamePoints.gamePoints++;
+                if(pipeBeam.passedThrough(this.thing)) {
+                    this.gamePoints.gamePoints++;
+                }
             }
         }
     }
@@ -347,21 +369,30 @@ export class Thing extends CollidableObject
 
     private JUMP_FORCE = 3;
 
-    constructor(renderer: CanvasRenderingContext2D, hitbox: Hitbox, position: Position, shape: Polygon, velocity: Vector2, canvas: HTMLCanvasElement,){
+    private game: FlappyThing;
+
+    constructor(
+        renderer: CanvasRenderingContext2D, 
+        hitbox: Hitbox, position: Position, shape: Polygon, velocity: Vector2, canvas: HTMLCanvasElement,
+        game: FlappyThing
+    ){
         super(renderer, hitbox, position, shape, velocity);
 
         this.input = new Input();
         this.canvas = canvas;
+        this.game = game;
     }
 
     public update(dt: number){
-        this.velocity.y = this.velocity.y + GRAVITY_FORCE * dt;
+        if(this.game.gameState === GameStates.PLAYING){
+            this.velocity.y = this.velocity.y + GRAVITY_FORCE * dt;
 
-        if(this.input.isKeyDown(' ') || this.input.isKeyDown('click')){
-            this.velocity.y = -this.JUMP_FORCE;
+            if(this.input.isKeyDown(' ') || this.input.isKeyDown('click')){
+                this.velocity.y = -this.JUMP_FORCE;
+            }
+
+            this.position.pos.y = this.position.pos.y + this.velocity.y;
         }
-
-        this.position.pos.y = this.position.pos.y + this.velocity.y;
     }
 
     public isOutOfScreen(){
@@ -412,10 +443,41 @@ export class GamePointsUI
     }
 }
 
+export class MessagesUI 
+{
+    private renderer: CanvasRenderingContext2D;
+    private game: FlappyThing;
+
+    constructor(renderer: CanvasRenderingContext2D, game: FlappyThing){
+        this.renderer = renderer;
+        this.game = game;
+    }
+
+    public render(){
+        if(this.game.gameState === GameStates.PAUSED){
+            this.renderer.fillText(
+                `Aperte espaço para começar`, 
+                this.renderer.canvas.width / 2 - 
+                    this.renderer.measureText(
+                        `Aperte espaço para começar`
+                    )
+                    .width / 2 , 
+                200
+            );
+        }
+    }
+
+}
+
+
+export type GameState = {
+    PAUSED: number;
+    PLAYING: number;
+}
+
 export const GameStates = Object.freeze({
-    NOT_STARTED: 1,
+    PAUSED: 1,
     PLAYING: 2,
-    END_GAME: 3
-})
+}) as GameState
 
 
