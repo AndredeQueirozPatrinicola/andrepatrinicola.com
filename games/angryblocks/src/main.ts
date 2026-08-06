@@ -1,7 +1,7 @@
 import './styles/main.css'
 import customFontUrl from './fonts/VCR_OSD_MONO_1.001.ttf';
 
-import { SpaceMeteor } from './game/SpaceMeteor';
+import { AngryBlocks } from './game/AngryBlocks';
 
 export async function loadGameFonts(): Promise<void> {
   const font = new FontFace(
@@ -28,7 +28,7 @@ async function bootstrap(): Promise<void> {
   await loadGameFonts();
 
   const canvas = getCanvas();
-  const game = new SpaceMeteor(canvas);
+  const game = new AngryBlocks(canvas);
 
   game.start();
 }
