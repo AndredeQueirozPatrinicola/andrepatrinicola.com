@@ -1,4 +1,5 @@
 import { Game } from '../../../../packages/engines/src/andevengine/game/Game';
+import { Input } from '../../../../packages/engines/src/andevengine/input/Input'
 import { CollidableObjectType, RenderableObjectType } from '../types/types';
  
 
@@ -7,7 +8,7 @@ export class Shape {
     public height: number;
     public radius?: number;
 
-    constructor(width: number, height: number, radius: number){
+    constructor(width: number, height: number, radius?: number){
         this.width = width;
         this.height = height;
         this.radius = radius;
@@ -15,6 +16,7 @@ export class Shape {
 }
 
 export class AABB {}
+
 export class Vector2 {
     public x: number;
     public y: number;
@@ -66,7 +68,7 @@ export class Ball extends CollidableEntity {
             throw Error("Balls must have a radius")
         }
 
-        
+
     }
 
     public update(dt: number) {
@@ -106,10 +108,48 @@ export class CollisionManager {
 }
 
 
-export class Slingshot {
+export class Slingshot extends RenderableObject {
+    public shape: Shape;
+    public position: Vector2;
+
+    private input: Input = new Input();
+
+    constructor(rendererOpts: RenderableObjectType, shape: Shape, position: Vector2) {
+        super(rendererOpts);
+
+        this.shape = shape;
+        this.position = position;
+    }
+
+    public update(dt: number) {
+        
+        if(this.input.isKeyDown('click')){
+            
+        }
+    }
+    
+    public render(): void {
+        this.canvas.imageSmoothingEnabled = false;
+        this.canvas.fillStyle = "#2f2f2f";
+        this.canvas.fillRect(
+            this.position.x, this.position.y, 
+            this.shape.width, this.shape.height
+        );
+        this.canvas.fillStyle = 'black';
+    }
 
 }
 
+
+// export class SlingShotSling {
+
+
+//     constructor() {
+
+//     }
+
+
+// }
 
 
 
@@ -123,18 +163,17 @@ export class AngryBlocks extends Game {
     }
 
     public load() {
-
-        
+        this.gameContext.Slingshot = new Slingshot({canvas: this.context}, new Shape(10, 175), new Vector2(175, this.canvas.height - 175))
 
     }
 
     public update(dt: number): void {
-        
+        this.gameContext.Slingshot.update(dt);
     }
 
 
     public render(){
-
+        this.gameContext.Slingshot.render();
     }
 
 }
