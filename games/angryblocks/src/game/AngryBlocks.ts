@@ -1,7 +1,7 @@
 import { Game } from '../../../../packages/engines/src/andevengine/game/Game';
 import { Input } from '../../../../packages/engines/src/andevengine/input/Input'
+import { Cursor } from '../../../../packages/engines/src/index'
 import { CollidableObjectType, RenderableObjectType } from '../types/types';
- 
 
 export class Shape {
     public width: number;
@@ -113,18 +113,22 @@ export class Slingshot extends RenderableObject {
     public position: Vector2;
 
     private input: Input = new Input();
+    private cursor: Cursor;
 
-    constructor(rendererOpts: RenderableObjectType, shape: Shape, position: Vector2) {
+    constructor(rendererOpts: RenderableObjectType, shape: Shape, position: Vector2, cursor: Cursor) {
         super(rendererOpts);
 
         this.shape = shape;
         this.position = position;
+        this.cursor = cursor;
     }
 
     public update(dt: number) {
         
         if(this.input.isKeyDown('click')){
-            
+            const {x, y} = this.cursor.getPosition();
+
+            console.log(x, y);
         }
     }
     
@@ -163,7 +167,14 @@ export class AngryBlocks extends Game {
     }
 
     public load() {
-        this.gameContext.Slingshot = new Slingshot({canvas: this.context}, new Shape(10, 175), new Vector2(175, this.canvas.height - 175))
+        this.gameContext.Cursor = new Cursor(this.canvas);
+
+        this.gameContext.Slingshot = new Slingshot(
+            {canvas: this.context}, 
+            new Shape(10, 175), 
+            new Vector2(175, this.canvas.height - 175),
+            this.gameContext.Cursor
+        )
 
     }
 
