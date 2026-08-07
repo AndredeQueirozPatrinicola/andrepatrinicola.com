@@ -114,6 +114,7 @@ export class Slingshot extends RenderableObject {
 
     private input: Input = new Input();
     private cursor: Cursor;
+    private slingShotSling: SlingShotSling;
 
     constructor(rendererOpts: RenderableObjectType, shape: Shape, position: Vector2, cursor: Cursor) {
         super(rendererOpts);
@@ -121,15 +122,12 @@ export class Slingshot extends RenderableObject {
         this.shape = shape;
         this.position = position;
         this.cursor = cursor;
+
+        this.slingShotSling = new SlingShotSling(this, this.cursor, this.input);
     }
 
     public update(dt: number) {
-        
-        if(this.input.isKeyDown('click')){
-            const {x, y} = this.cursor.getPosition();
-
-            console.log(x, y);
-        }
+        this.slingShotSling.update(dt);       
     }
     
     public render(): void {
@@ -139,21 +137,51 @@ export class Slingshot extends RenderableObject {
             this.position.x, this.position.y, 
             this.shape.width, this.shape.height
         );
-        this.canvas.fillStyle = 'black';
+
+
+        this.slingShotSling.render();
     }
 
 }
 
 
-// export class SlingShotSling {
+export class SlingShotSling {
+    public slingShot: Slingshot;
+    public position?: Vector2;
+    public input: Input;
+    public cursor: Cursor;
+ 
 
+    constructor(slingShot: Slingshot, cursor: Cursor, input: Input) {
+        this.slingShot = slingShot;
+        this.cursor = cursor;
+        this.input = input;
+    }
 
-//     constructor() {
+    public update(dt: number){
+        if(this.input.isKeyDown('click')){
+            const {x, y} = this.cursor.getPosition();
 
-//     }
+            if(!this.position){
+                this.position = new Vector2(x, y);
+            }
 
+            this.position.x = x;
+            this.position.y = y;            
+        } else {this.position = undefined}
+    }
+    
+    public render(){
 
-// }
+        if(this.position){
+            this.slingShot.canvas.beginPath();
+            this.slingShot.canvas.moveTo(this.slingShot.position.x, this.slingShot.position.y);
+            this.slingShot.canvas.lineTo(this.position.x, this.position.y);
+            this.slingShot.canvas.stroke();
+            this.slingShot.canvas.closePath();
+        }
+    }
+}
 
 
 
@@ -184,6 +212,8 @@ export class AngryBlocks extends Game {
 
 
     public render(){
+        super.render();
+
         this.gameContext.Slingshot.render();
     }
 
