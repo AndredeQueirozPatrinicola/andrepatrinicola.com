@@ -27,7 +27,7 @@ export class Vector2 {
     }
 
     public normalize(): Vector2 {
-        const length = Math.sqrt(this.x * this.x + this.y * this.y);
+        const length = this.length()
 
         if (length === 0) {
             return new Vector2(0, 0);
@@ -40,6 +40,10 @@ export class Vector2 {
 
     public dot(vector: Vector2) {
         return (this.x * vector.x ) + (this.y * vector.y);
+    }
+
+    public length() {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
     }
 }
 
@@ -163,14 +167,20 @@ export class Slingshot extends RenderableObject {
             this.currBall.collision.position.y = y
         } else {
             if (this.currBall) {
-                const distance = new Vector2(
+                const pull = new Vector2(
                     this.position.x - x,
                     this.position.y - y
                 )
-                const direction = distance.normalize();
 
-                this.currBall.collision.velocity.x = direction.x * (distance.x * 7.5)
-                this.currBall.collision.velocity.y = direction.y * (distance.y * 7.5)
+                if (pull.length() > 1000) {
+                    const direction = pull.normalize()
+
+                    pull.x = direction.x * 1000
+                    pull.y = direction.y * 1000
+                } 
+
+                this.currBall.collision.velocity.x = pull.x * 7.5
+                this.currBall.collision.velocity.y = pull.y * 7.5
 
                 this.currBall.isBeingDragged = false
                 this.ballManager.add(this.currBall);
