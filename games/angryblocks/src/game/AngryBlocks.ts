@@ -25,6 +25,22 @@ export class Vector2 {
         this.x = x;
         this.y = y;
     }
+
+    public normalize(): Vector2 {
+        const length = Math.sqrt(this.x * this.x + this.y * this.y);
+
+        if (length === 0) {
+            return new Vector2(0, 0);
+        }
+        return new Vector2(
+            this.x / length,
+            this.y / length
+        );
+    }
+
+    public dot(vector: Vector2) {
+        return (this.x * vector.x ) + (this.y * vector.y);
+    }
 }
 
 export class CollidableObject {
@@ -60,6 +76,8 @@ export class CollidableEntity {
 }
 
 export class Ball extends CollidableEntity {
+
+    public isBeingDragged: boolean = true;
     
     constructor(rendererOpts: RenderableObjectType, collidableOpts: CollidableObjectType) {
         super(rendererOpts, collidableOpts);
@@ -67,13 +85,16 @@ export class Ball extends CollidableEntity {
         if (!collidableOpts.shape.radius) {
             throw Error("Balls must have a radius")
         }
-
-
     }
 
     public update(dt: number) {
 
-        
+        if(!this.isBeingDragged) {
+            this.collision.velocity.y = this.collision.velocity.y + 9.8; 
+            
+            this.collision.position.y = this.collision.position.y + this.collision.velocity.y * dt;
+            this.collision.position.x = this.collision.position.x + this.collision.velocity.x * dt;
+        }
     }
 
     public render() {
@@ -114,9 +135,12 @@ export class Slingshot extends RenderableObject {
 
     private input: Input = new Input();
     private cursor: Cursor;
-    private slingShotSling: SlingShotSling;
+    private ballManager: BallManager;
 
-    constructor(rendererOpts: RenderableObjectType, shape: Shape, position: Vector2, cursor: Cursor) {
+    private slingShotSling: SlingShotSling;
+    private currBall: Ball | null = null;
+
+    constructor(rendererOpts: RenderableObjectType, shape: Shape, position: Vector2, cursor: Cursor, ballManager: BallManager) {
         super(rendererOpts);
 
         this.shape = shape;
@@ -124,10 +148,37 @@ export class Slingshot extends RenderableObject {
         this.cursor = cursor;
 
         this.slingShotSling = new SlingShotSling(this, this.cursor, this.input);
+        this.ballManager = ballManager;
     }
 
     public update(dt: number) {
-        this.slingShotSling.update(dt);       
+        const {x, y} = this.cursor.getPosition()
+        this.slingShotSling.update(dt);     
+        
+        if (this.slingShotSling.isDragging) {
+
+            this.currBall = this.getBall()
+
+            this.currBall.collision.position.x = x
+            this.currBall.collision.position.y = y
+        } else {
+            if (this.currBall) {
+                const distance = new Vector2(
+                    this.position.x - x,
+                    this.position.y - y
+                )
+                const direction = distance.normalize();
+
+                this.currBall.collision.velocity.x = direction.x * (distance.x * 7.5)
+                this.currBall.collision.velocity.y = direction.y * (distance.y * 7.5)
+
+                this.currBall.isBeingDragged = false
+                this.ballManager.add(this.currBall);
+                this.currBall = null;
+            }
+        }
+
+        this.currBall && this.currBall.update(dt);
     }
     
     public render(): void {
@@ -138,10 +189,28 @@ export class Slingshot extends RenderableObject {
             this.shape.width, this.shape.height
         );
 
-
         this.slingShotSling.render();
+
+        this.currBall && this.currBall.render();
     }
 
+    private getBall(): Ball {
+        if(!this.currBall){
+            const {x, y} = this.cursor.getPosition()
+            return  new Ball(
+                {
+                    canvas:this.canvas
+                }, 
+                {
+                    shape: new Shape(10, 10, 10),
+                    position: new Vector2(x, y),
+                    velocity: new Vector2(0, 0),
+                    mass: 100
+                },
+            )
+        }
+        return this.currBall;
+    }
 }
 
 
@@ -151,11 +220,14 @@ export class SlingShotSling {
     public input: Input;
     public cursor: Cursor;
  
+    public isDragging: boolean;
 
     constructor(slingShot: Slingshot, cursor: Cursor, input: Input) {
         this.slingShot = slingShot;
         this.cursor = cursor;
         this.input = input;
+
+        this.isDragging = false;
     }
 
     public update(dt: number){
@@ -167,8 +239,13 @@ export class SlingShotSling {
             }
 
             this.position.x = x;
-            this.position.y = y;            
-        } else {this.position = undefined}
+            this.position.y = y;
+
+            this.isDragging = true;
+        } else {
+            this.position = undefined;
+            this.isDragging = false;
+        }
     }
     
     public render(){
@@ -184,6 +261,30 @@ export class SlingShotSling {
 }
 
 
+export class BallManager {
+
+    public balls: Ball[] = []
+
+    public update(dt: number) {
+        for(const ball of this.balls) {
+            ball.update(dt);
+        }
+    }
+
+    public render() {
+        for(const ball of this.balls) {
+            ball.render();
+        }
+    }
+
+    public add(ball: Ball) {
+        this.balls.push(ball);
+    }
+
+    public remove(ball: Ball){
+        this.balls.splice(this.balls.indexOf(ball), 1);
+    }
+}
 
 export class AngryBlocks extends Game {
 
@@ -196,17 +297,19 @@ export class AngryBlocks extends Game {
 
     public load() {
         this.gameContext.Cursor = new Cursor(this.canvas);
+        this.gameContext.BallManager = new BallManager();
 
         this.gameContext.Slingshot = new Slingshot(
             {canvas: this.context}, 
             new Shape(10, 175), 
             new Vector2(175, this.canvas.height - 175),
-            this.gameContext.Cursor
+            this.gameContext.Cursor,
+            this.gameContext.BallManager
         )
-
     }
 
     public update(dt: number): void {
+        this.gameContext.BallManager.update(dt);
         this.gameContext.Slingshot.update(dt);
     }
 
@@ -214,6 +317,7 @@ export class AngryBlocks extends Game {
     public render(){
         super.render();
 
+        this.gameContext.BallManager.render();
         this.gameContext.Slingshot.render();
     }
 
