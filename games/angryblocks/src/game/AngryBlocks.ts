@@ -3,6 +3,9 @@ import { Input } from '../../../../packages/engines/src/andevengine/input/Input'
 import { Cursor } from '../../../../packages/engines/src/index'
 import { CollidableObjectType, RenderableObjectType } from '../types/types';
 
+
+const GRAVITY_FORCE = 980
+
 export class Shape {
     public width: number;
     public height: number;
@@ -14,6 +17,8 @@ export class Shape {
         this.radius = radius;
     }
 }
+
+
 
 export class AABB {}
 
@@ -59,6 +64,10 @@ export class CollidableObject {
         this.velocity = opts.velocity;
         this.mass = opts.mass;
     }
+
+    public hasEnteredArea(collidable: CollidableObject): boolean {
+        return false
+    }
 }
 
 export class RenderableObject {
@@ -71,7 +80,7 @@ export class RenderableObject {
 
 export class CollidableEntity {
     public renderer: RenderableObject;
-    public collision: CollidableObjectType;
+    public collision: CollidableObject;
     
     constructor(rendererOpts: RenderableObjectType, collidableOpts: CollidableObjectType) {
         this.renderer = new RenderableObject(rendererOpts);
@@ -94,7 +103,7 @@ export class Ball extends CollidableEntity {
     public update(dt: number) {
 
         if(!this.isBeingDragged) {
-            this.collision.velocity.y = this.collision.velocity.y + 9.8; 
+            this.collision.velocity.y = this.collision.velocity.y + GRAVITY_FORCE * dt; 
             
             this.collision.position.y = this.collision.position.y + this.collision.velocity.y * dt;
             this.collision.position.x = this.collision.position.x + this.collision.velocity.x * dt;
@@ -108,6 +117,37 @@ export class Ball extends CollidableEntity {
         this.renderer.canvas.closePath();
         this.renderer.canvas.fillStyle = 'black';
         this.renderer.canvas.fill();
+    }
+
+    // Retirado de: https://www.jeffreythompson.org/collision-detection/circle-rect.php
+    public hasEnteredArea(rect: CollidableObject) {
+        let testX = this.collision.position.x;
+        let testY = this.collision.position.y;
+
+        // which edge is closest?
+        if (this.collision.position.x < rect.position.x){
+            testX = rect.position.x
+        }      // test left edge
+        else if (this.collision.position.x > rect.position.x+rect.shape.width){
+             testX = rect.position.x+rect.shape.width;   // right edge
+        }
+        if (this.collision.position.y < rect.position.y) {
+             testY = rect.position.y; 
+        }     // top edge
+        else if (this.collision.position.y > rect.position.y+rect.shape.height){
+            testY = rect.position.y+rect.shape.height;   // bottom edge
+        }
+
+        // get distance from closest edges
+        let distX = this.collision.position.x-testX;
+        let distY = this.collision.position.y-testY;
+        let distance = Math.sqrt( (distX*distX) + (distY*distY) );
+
+        // if the distance is less than the radius, collision!
+        if (distance <= ( this.collision.shape.radius || 0)) {
+            return true;
+        }
+        return false;
     }
 }
 
@@ -128,9 +168,28 @@ export class Wall extends CollidableEntity {
     }
 }
 
-export class CollisionManager {
+// export class CollisionManager {
+//     private collidables: CollidableObject[] = [];
 
-}
+//     constructor(collidables: CollidableObject[]){
+//         this.collidables = collidables
+//     }
+
+//     public update(dt: number) {
+        
+//         for(let x = 0; x < this.collidables.length; x++){
+//             for(let y = 0; y < this.collidables.length + 1; y++){
+//                 if(this.collidables[x].hasEnteredArea(this.collidables[y])) {
+//                     console.log("?????")
+//                 }
+//             }
+//         }
+//     }
+
+//     public add(collidable: CollidableObject){
+//         this.collidables.push(collidable)
+//     }    
+// }
 
 
 export class Slingshot extends RenderableObject {
@@ -172,11 +231,11 @@ export class Slingshot extends RenderableObject {
                     this.position.y - y
                 )
 
-                if (pull.length() > 1000) {
+                if (pull.length() > 500) {
                     const direction = pull.normalize()
 
-                    pull.x = direction.x * 1000
-                    pull.y = direction.y * 1000
+                    pull.x = direction.x * 500
+                    pull.y = direction.y * 500
                 } 
 
                 this.currBall.collision.velocity.x = pull.x * 7.5
@@ -270,14 +329,38 @@ export class SlingShotSling {
     }
 }
 
+export class Base extends CollidableEntity {
+
+    constructor(rendererOpts: RenderableObjectType, collidableOpts: CollidableObjectType) {
+        super(rendererOpts, collidableOpts);
+    }
+
+    public render(){
+        this.renderer.canvas.imageSmoothingEnabled = false;
+        this.renderer.canvas.fillStyle = "#2f2f2f";
+        this.renderer.canvas.fillRect(
+            this.collision.position.x, this.collision.position.y, 
+            this.collision.shape.width, this.collision.shape.height
+        );
+    }
+    
+}
+
 
 export class BallManager {
 
     public balls: Ball[] = []
+    public collidables: CollidableObject[] = [];
 
     public update(dt: number) {
         for(const ball of this.balls) {
             ball.update(dt);
+
+            for(const coll of this.collidables) {
+                if(ball.hasEnteredArea(coll)){
+                    console.log("???")
+                }
+            }
         }
     }
 
@@ -296,9 +379,17 @@ export class BallManager {
     }
 }
 
+
+type AngryBlocksContext = {
+    Cursor?: Cursor,
+    BallManager?: BallManager,
+    Slingshot?: Slingshot,
+    Base?: Base
+}
+
 export class AngryBlocks extends Game {
 
-    private gameContext: any;
+    private gameContext: AngryBlocksContext;
 
     public constructor(canvas: HTMLCanvasElement) {
         super(canvas)
@@ -316,19 +407,36 @@ export class AngryBlocks extends Game {
             this.gameContext.Cursor,
             this.gameContext.BallManager
         )
+
+        this.gameContext.Base = new Base(
+                {
+                    canvas: this.context
+                },
+                {
+                    shape: new Shape(300, 150),
+                    position: new Vector2(this.canvas.width - 350, this.canvas.height - 150),
+                    velocity: new Vector2(0,0),
+                    mass: 1e7
+                }
+        )
+
+        this.gameContext.BallManager.collidables.push(this.gameContext.Base.collision)
     }
 
     public update(dt: number): void {
-        this.gameContext.BallManager.update(dt);
-        this.gameContext.Slingshot.update(dt);
-    }
+        this.gameContext.BallManager && this.gameContext.BallManager.update(dt);
+        this.gameContext.Slingshot && this.gameContext.Slingshot.update(dt);
+        // this.gameContext.Base && this.gameContext.Base.update(dt);
 
+        // this.gameContext.CollisionManager?.add([...])
+
+    }
 
     public render(){
         super.render();
 
-        this.gameContext.BallManager.render();
-        this.gameContext.Slingshot.render();
+        this.gameContext.BallManager && this.gameContext.BallManager.render();
+        this.gameContext.Slingshot && this.gameContext.Slingshot.render();
+        this.gameContext.Base && this.gameContext.Base.render();
     }
-
 }
