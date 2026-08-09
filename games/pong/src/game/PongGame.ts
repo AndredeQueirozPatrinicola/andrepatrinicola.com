@@ -7,8 +7,8 @@ import { UI } from "./ui/ui";
 export class PongGame extends Game {
 
     private ball: Ball;
-    private platform1: Platform;
-    private platform2: Platform;
+    public platform1: Platform;
+    public platform2: Platform;
     private player: Player;
     private ai: AI;
     private ui: UI;

@@ -62,6 +62,15 @@ export class Ball implements CollisionObject {
             ctx.gameState === PongGameState.NOT_STARTED ||
             ctx.gameState === PongGameState.END_GAME
         ){
+
+            if(this.onAreaEntered(ctx.platform1)){
+                this.bounce(ctx.platform1)
+            }
+
+            if(this.onAreaEntered(ctx.platform2)){
+                this.bounce(ctx.platform2)
+            }
+
             if(this.position.x < ctx.context.canvas.width && this.position.x > 0) {
                 this.position.x = this.position.x + this.velocity.x * this.speed * dt;
             }else {
@@ -83,6 +92,36 @@ export class Ball implements CollisionObject {
         ctx.context.closePath();
         ctx.context.fillStyle = this.color;
         ctx.context.fill();
+    }
+
+    public onAreaEntered(object: CollisionObject) {
+        let testX = this.position.x;
+        let testY = this.position.y;
+
+        // which edge is closest?
+        if (this.position.x < object.position.x){
+            testX = object.position.x
+        }      // test left edge
+        else if (this.position.x > object.position.x+object.width){
+             testX = object.position.x+object.width;   // right edge
+        }
+        if (this.position.y < object.position.y) {
+             testY = object.position.y; 
+        }     // top edge
+        else if (this.position.y > object.position.y+object.height){
+            testY = object.position.y+ object.height;   // bottom edge
+        }
+
+        // get distance from closest edges
+        let distX = this.position.x-testX;
+        let distY = this.position.y-testY;
+        let distance = Math.sqrt( (distX*distX) + (distY*distY) );
+
+        // if the distance is less than the radius,!
+        if (distance <= ( this.radius || 0)) {
+            return true;
+        }
+        return false;
     }
 
     public bounce(object: CollisionObject) {
