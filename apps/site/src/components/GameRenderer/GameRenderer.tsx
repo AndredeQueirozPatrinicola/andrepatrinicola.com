@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import './game-renderer.css'
 
 export type GameRendererProps = {
@@ -13,13 +14,20 @@ export function GameRenderer({
     devUrl,
     title,    
 }: GameRendererProps) {
-
+    const ref = useRef<HTMLIFrameElement>(null);
     const game = import.meta.env.DEV
         ? devUrl
         : gameUrl;
 
+    useEffect(() =>{
+        if (ref.current) {
+            ref.current.focus();
+        }
+    }, [])    
+
     return (
         <iframe
+            ref={ref}
             id={id}
             src={game}
             title={title}
