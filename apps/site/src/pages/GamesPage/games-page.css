@@ -10,6 +10,7 @@
     max-width: 18rem;
     cursor: pointer;
     margin-bottom: 1rem;
+    text-decoration: none;
 }
 
 .game-card > *{

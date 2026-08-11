@@ -1,6 +1,7 @@
 import pongCover from '../assets/images/pong.png';
 import meteorsCover from '../assets/images/meteors.png'
 import flappy from '../assets/images/flappy.png'
+import letritas from '../assets/images/letreco.png'
 
 export type GameCatalog = {
     title: string, 
@@ -10,7 +11,8 @@ export type GameCatalog = {
     iframe: string,
     status:  'published' | 'unpublished',
     playUrl: string,
-    devUrl: string
+    devUrl: string,
+    target?: string
 }
 
 export const gamesCatalog = [
@@ -41,4 +43,14 @@ export const gamesCatalog = [
         status: 'published',
         devUrl: 'http://localhost:5176'
     },
+    {
+        slug: 'letritas',
+        title: 'Letritas',
+        description: 'Jogo de adivinhação divertido',
+        cover: letritas,
+        playUrl: 'https://andredequeirozpatrinicola.github.io/letreco/',
+        status: 'published',
+        devUrl: 'https://andredequeirozpatrinicola.github.io/letreco/',
+        target: '_blank'
+    }
 ]

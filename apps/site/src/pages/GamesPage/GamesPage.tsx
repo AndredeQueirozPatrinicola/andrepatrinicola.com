@@ -16,21 +16,29 @@ export function GamesPage({onGameClicked}: GamesPageProps) {
         <div className="games-page">
             {games.map((game, index) => {
                 if(game.status === 'published'){
+                    if(!game.target){
+                        return (
+                            <a 
+                                className="game-card"
+                                id={game.slug} 
+                                onClick={(event) => onGameClicked(
+                                        event, 
+                                        <GameRenderer 
+                                            id={game.slug + index} 
+                                            title={game.title} 
+                                            gameUrl={game.playUrl} 
+                                            devUrl={game.devUrl}
+                                        />
+                                    )}
+                                >
+                                <img  src={game.cover ? game.cover : defaultImage}></img>
+                                <span className="game-card-title">{game.title}</span>
+                                <p className="game-card-description">{game.description}</p>
+                            </a>
+                        )
+                    }
                     return (
-                        <a 
-                            className="game-card"
-                            id={game.slug} 
-                            onClick={
-                                (event) => onGameClicked(
-                                    event, 
-                                    <GameRenderer 
-                                        id={game.slug + index} 
-                                        title={game.title} 
-                                        gameUrl={game.playUrl} 
-                                        devUrl={game.devUrl}
-                                    />
-                                )}
-                            >
+                        <a className="game-card" id={game.slug} href={import.meta.env.DEV ? game.devUrl : game.playUrl} target={game.target}>
                             <img  src={game.cover ? game.cover : defaultImage}></img>
                             <span className="game-card-title">{game.title}</span>
                             <p className="game-card-description">{game.description}</p>
