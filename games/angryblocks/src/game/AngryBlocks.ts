@@ -229,12 +229,22 @@ export class Slingshot extends RenderableObject {
 
             this.currBall.collision.position.x = x
             this.currBall.collision.position.y = y
+
+            if (this.slingShotSling?.position && (
+                    this.currBall.collision.position.x > 
+                    this.slingShotSling.position?.x
+                )
+            ) {
+                this.slingShotSling.isDragging = false
+                this.currBall = null
+            }
         } else {
             if (this.currBall) {
                 const pull = new Vector2(
                     this.position.x - x,
                     this.position.y - y
                 )
+                // const angle = 
 
                 if (pull.length() > 500) {
                     const direction = pull.normalize()
@@ -308,14 +318,15 @@ export class SlingShotSling {
         if(this.input.isKeyDown('click')){
             const {x, y} = this.cursor.getPosition();
 
-            if(!this.position){
-                this.position = new Vector2(x, y);
+            if (x < this.slingShot.position.x){
+                if(!this.position){
+                    this.position = new Vector2(x, y);
+                }
+                this.position.x = x;
+                this.position.y = y;
+
+                this.isDragging = true;
             }
-
-            this.position.x = x;
-            this.position.y = y;
-
-            this.isDragging = true;
         } else {
             this.position = undefined;
             this.isDragging = false;
@@ -324,7 +335,7 @@ export class SlingShotSling {
     
     public render(){
 
-        if(this.position){
+        if(this.position && this.isDragging){
             this.slingShot.canvas.beginPath();
             this.slingShot.canvas.moveTo(this.slingShot.position.x, this.slingShot.position.y);
             this.slingShot.canvas.lineTo(this.position.x, this.position.y);
