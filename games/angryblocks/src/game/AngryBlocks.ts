@@ -1,7 +1,7 @@
 import { Game } from '../../../../packages/engines/src/andevengine/game/Game';
 import { Input } from '../../../../packages/engines/src/andevengine/input/Input'
 import { Cursor } from '../../../../packages/engines/src/index'
-import { CollidableObjectType, RenderableObjectType } from '../types/types';
+import { CollidableObjectType, Collision, RenderableObjectType } from '../types/types';
 
 
 const GRAVITY_FORCE = 980
@@ -62,12 +62,14 @@ export class CollidableObject {
     public position: Vector2;
     public velocity: Vector2;
     public mass: number;
+    public restitution: number = 1;
 
     constructor(opts: CollidableObjectType) {
         this.shape = opts.shape;
         this.position = opts.position;
         this.velocity = opts.velocity;
         this.mass = opts.mass;
+        this.restitution = opts.restitution
     }
 
     public hasEnteredArea(collidable: CollidableObject): boolean {
@@ -125,34 +127,69 @@ export class Ball extends CollidableEntity {
     }
 
     // Retirado de: https://www.jeffreythompson.org/collision-detection/circle-rect.php
-    public hasEnteredArea(rect: CollidableObject) {
+    public hasEnteredArea(rect: CollidableObject): Collision {
         let testX = this.collision.position.x;
         let testY = this.collision.position.y;
 
+
+        // Checar primeiros os lados pra saber qual deles é mais próximo da bola.
         // which edge is closest?
         if (this.collision.position.x < rect.position.x){
             testX = rect.position.x
-        }      // test left edge
+        }// test left edge
         else if (this.collision.position.x > rect.position.x+rect.shape.width){
              testX = rect.position.x+rect.shape.width;   // right edge
         }
+
+        // Checar depois as faces y pra saber qual deles é mais próximo da bola.
         if (this.collision.position.y < rect.position.y) {
-             testY = rect.position.y; 
+            testY = rect.position.y;
         }     // top edge
         else if (this.collision.position.y > rect.position.y+rect.shape.height){
             testY = rect.position.y+rect.shape.height;   // bottom edge
         }
 
+        // Após determinar o lado de entrada, pegar a distancia da bola com cada lado.
         // get distance from closest edges
         let distX = this.collision.position.x-testX;
         let distY = this.collision.position.y-testY;
         let distance = Math.sqrt( (distX*distX) + (distY*distY) );
 
+
         // if the distance is less than the radius, collision!
         if (distance <= ( this.collision.shape.radius || 0)) {
-            return true;
+            const normal = new Vector2(
+                distX / distance,
+                distY / distance
+            );
+
+            return {
+                normal,
+                penetration: (this.collision.shape.radius || 0) - distance,
+                contactPoint: new Vector2(distX, distY)
+            };
         }
-        return false;
+        return { normal: new Vector2(0, 0), penetration: 0, contactPoint: new Vector2(0, 0) };
+    }
+
+    public collide(collision: Collision) {
+
+        this.collision.position.x += collision.normal.x * collision.penetration;
+        this.collision.position.y += collision.normal.y * collision.penetration;
+
+        const dot =
+            this.collision.velocity.x * collision.normal.x +
+            this.collision.velocity.y * collision.normal.y;
+
+        if (dot >= 0) {
+            return;
+        }
+
+        this.collision.velocity.x -=
+            (1 + this.collision.restitution) * dot * collision.normal.x;
+
+        this.collision.velocity.y -=
+            (1 + this.collision.restitution) * dot * collision.normal.y;
     }
 }
 
@@ -246,11 +283,11 @@ export class Slingshot extends RenderableObject {
                 )
                 // const angle = 
 
-                if (pull.length() > 500) {
+                if (pull.length() > 300) {
                     const direction = pull.normalize()
 
-                    pull.x = direction.x * 500
-                    pull.y = direction.y * 500
+                    pull.x = direction.x * 300
+                    pull.y = direction.y * 300
                 } 
 
                 this.currBall.collision.velocity.x = pull.x * 7.5
@@ -289,7 +326,8 @@ export class Slingshot extends RenderableObject {
                     shape: new Shape(10, 10, 10),
                     position: new Vector2(x, y),
                     velocity: new Vector2(0, 0),
-                    mass: 100
+                    mass: 100,
+                    restitution: 0.7
                 },
             )
         }
@@ -378,8 +416,11 @@ export class BallManager {
 
             this.ball && this.ball.update(dt);
             for(const coll of this.collidables) {
-                if(this.ball && this.ball.hasEnteredArea(coll)){
-                    console.log("???")
+                if(this.ball){
+                    const collision = this.ball.hasEnteredArea(coll)
+                    if(collision.penetration > 0){
+                        this.ball.collide(collision)
+                    }
                 }
             }
 
@@ -448,7 +489,7 @@ export class AngryBlocks extends Game {
         this.gameContext.Slingshot = new Slingshot(
             {canvas: this.context}, 
             new Shape(10, 175), 
-            new Vector2((this.canvas.width / 2) - 50, this.canvas.height - 175),
+            new Vector2((this.canvas.width / 2) - 250, this.canvas.height - 175),
             this.gameContext.Cursor,
             this.gameContext.BallManager
         )
@@ -459,9 +500,10 @@ export class AngryBlocks extends Game {
                 },
                 {
                     shape: new Shape(300, 150),
-                    position: new Vector2(this.canvas.width * 2, this.canvas.height - 150),
+                    position: new Vector2(this.canvas.width - 300, this.canvas.height - 150),
                     velocity: new Vector2(0,0),
-                    mass: 1e7
+                    mass: 1e7,
+                    restitution: 0
                 }
         )
 

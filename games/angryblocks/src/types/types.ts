@@ -5,9 +5,16 @@ export type CollidableObjectType = {
     shape: Shape
     position: Vector2
     velocity: Vector2
-    mass: number
+    mass: number,
+    restitution: number
 }
 
 export type RenderableObjectType = {
     canvas: CanvasRenderingContext2D
+}
+
+export type Collision = {
+    normal: Vector2
+    penetration: number,
+    contactPoint: Vector2
 }
