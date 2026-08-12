@@ -464,14 +464,12 @@ export class AngryBlocks extends Game {
 
         
         if(this.gameContext.Camera && this.gameContext.BallManager?.ball) {
-            console.log(new Vector2(
-                this.gameContext.BallManager?.ball.collision.position.x, 
-                this.gameContext.BallManager?.ball.collision.position.y
-            ))
-            this.gameContext.Camera.target =  new Vector2(
-                this.gameContext.BallManager?.ball.collision.position.x - this.canvas.width / 2, 
-                0
-            )
+            if(this.gameContext.BallManager.ball.collision.position.x > this.canvas.width / 2) {
+                this.gameContext.Camera.target =  new Vector2(
+                    this.gameContext.BallManager?.ball.collision.position.x - this.canvas.width / 2, 
+                    0
+                )
+            }
         }
     }
 
