@@ -6,6 +6,11 @@ import { CollidableObjectType, RenderableObjectType } from '../types/types';
 
 const GRAVITY_FORCE = 980
 
+
+const lerp = (A: number, B: number, T: number) => {
+    return A + (B - A) * T
+}
+
 export class Shape {
     public width: number;
     public height: number;
@@ -242,7 +247,7 @@ export class Slingshot extends RenderableObject {
                 this.currBall.collision.velocity.y = pull.y * 7.5
 
                 this.currBall.isBeingDragged = false
-                this.ballManager.add(this.currBall);
+                this.ballManager.setBall(this.currBall);
                 this.currBall = null;
             }
         }
@@ -346,45 +351,73 @@ export class Base extends CollidableEntity {
     
 }
 
-
 export class BallManager {
 
-    public balls: Ball[] = []
+    public ball?: Ball;
     public collidables: CollidableObject[] = [];
+    public camera: Camera;
+    public canvas: HTMLCanvasElement
+
+    constructor(canvas: HTMLCanvasElement, camera: Camera) {
+        this.camera = camera
+        this.canvas = canvas
+    }
 
     public update(dt: number) {
-        for(const ball of this.balls) {
-            ball.update(dt);
 
+            this.ball && this.ball.update(dt);
             for(const coll of this.collidables) {
-                if(ball.hasEnteredArea(coll)){
+                if(this.ball && this.ball.hasEnteredArea(coll)){
                     console.log("???")
                 }
             }
-        }
+
+            if(this.ball && this.ball?.collision.position.y > this.canvas.height) {
+                this.ball = undefined
+                this.camera.position = new Vector2(0,0)
+                this.camera.target = new Vector2(0,0)
+            }
+        
     }
 
     public render() {
-        for(const ball of this.balls) {
-            ball.render();
-        }
+        this.ball && this.ball.render();
     }
 
-    public add(ball: Ball) {
-        this.balls.push(ball);
-    }
-
-    public remove(ball: Ball){
-        this.balls.splice(this.balls.indexOf(ball), 1);
+    public setBall(ball: Ball) {
+        this.ball = ball
     }
 }
+export class Camera {
+    
+    public position: Vector2;
+    public target: Vector2;
+    public canvas: CanvasRenderingContext2D
 
+    constructor(canvas: CanvasRenderingContext2D, target: Vector2) {
+        this.target = target
+        this.position = this.target
+        this.canvas = canvas
+    }
+
+    public update(dt: number) {
+        // this.target.x = this.target.x - 10 * dt
+        this.target.x = lerp(this.position.x, this.target.x, 0.5)
+        this.position = this.target
+    }
+
+    public render(){
+        this.canvas.translate(-this.target.x, -this.target.y)
+    }
+
+}
 
 type AngryBlocksContext = {
     Cursor?: Cursor,
     BallManager?: BallManager,
     Slingshot?: Slingshot,
-    Base?: Base
+    Base?: Base,
+    Camera?: Camera
 }
 
 export class AngryBlocks extends Game {
@@ -398,12 +431,13 @@ export class AngryBlocks extends Game {
 
     public load() {
         this.gameContext.Cursor = new Cursor(this.canvas);
-        this.gameContext.BallManager = new BallManager();
+        this.gameContext.Camera = new Camera(this.context, new Vector2(0, 0))
+        this.gameContext.BallManager = new BallManager(this.canvas, this.gameContext.Camera);
 
         this.gameContext.Slingshot = new Slingshot(
             {canvas: this.context}, 
             new Shape(10, 175), 
-            new Vector2(175, this.canvas.height - 175),
+            new Vector2((this.canvas.width / 2) - 50, this.canvas.height - 175),
             this.gameContext.Cursor,
             this.gameContext.BallManager
         )
@@ -414,7 +448,7 @@ export class AngryBlocks extends Game {
                 },
                 {
                     shape: new Shape(300, 150),
-                    position: new Vector2(this.canvas.width - 350, this.canvas.height - 150),
+                    position: new Vector2(this.canvas.width * 2, this.canvas.height - 150),
                     velocity: new Vector2(0,0),
                     mass: 1e7
                 }
@@ -426,17 +460,33 @@ export class AngryBlocks extends Game {
     public update(dt: number): void {
         this.gameContext.BallManager && this.gameContext.BallManager.update(dt);
         this.gameContext.Slingshot && this.gameContext.Slingshot.update(dt);
-        // this.gameContext.Base && this.gameContext.Base.update(dt);
+        this.gameContext.Camera && this.gameContext.Camera.update(dt);
 
-        // this.gameContext.CollisionManager?.add([...])
-
+        
+        if(this.gameContext.Camera && this.gameContext.BallManager?.ball) {
+            console.log(new Vector2(
+                this.gameContext.BallManager?.ball.collision.position.x, 
+                this.gameContext.BallManager?.ball.collision.position.y
+            ))
+            this.gameContext.Camera.target =  new Vector2(
+                this.gameContext.BallManager?.ball.collision.position.x - this.canvas.width / 2, 
+                0
+            )
+        }
     }
 
     public render(){
         super.render();
 
+        this.context.save();
+
+        this.gameContext.Camera && this.gameContext.Camera.render();
+
         this.gameContext.BallManager && this.gameContext.BallManager.render();
         this.gameContext.Slingshot && this.gameContext.Slingshot.render();
         this.gameContext.Base && this.gameContext.Base.render();
+
+        this.context.restore();
+        
     }
 }
