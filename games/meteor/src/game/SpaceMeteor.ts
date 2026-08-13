@@ -440,7 +440,6 @@ export class Meteor {
 
     public render(): void {
         this.ctx.context.imageSmoothingEnabled = false;
-        this.ctx.context.fillStyle = "#000000";
         this.ctx.context.fillRect(this.position.x, this.position.y, this.dimension.x, this.dimension.y);
         this.ctx.context.fillStyle = 'black';
     }
@@ -576,7 +575,7 @@ class UI {
 
         if(this.ctx.gameState === SpaceMeteorGameState.NOT_STARTED) {
             this.ctx.context.font = "20px CustomFont";
-            this.ctx.context.fillStyle = "#2f2f2f";
+            this.ctx.context.fillStyle = "black";
             this.ctx.context.textBaseline = "middle";
             
             this.ctx.context.fillText(
@@ -590,7 +589,7 @@ class UI {
             );
         } else if (this.ctx.gameState === SpaceMeteorGameState.PLAYING) {
             this.ctx.context.font = "24px CustomFont";
-            this.ctx.context.fillStyle = "#2f2f2f";
+            this.ctx.context.fillStyle = "black";
             this.ctx.context.textBaseline = "middle";
 
             for(let x = 0; x < this.hearts.length; x++) {
@@ -608,7 +607,7 @@ class UI {
             );
         } else if (this.ctx.gameState === SpaceMeteorGameState.END_GAME) {
             this.ctx.context.font = "24px CustomFont";
-            this.ctx.context.fillStyle = "#2f2f2f";
+            this.ctx.context.fillStyle = "black";
             this.ctx.context.textBaseline = "middle";
 
             this.ctx.context.fillText(

@@ -34,7 +34,7 @@ export class PongGame extends Game {
             radius: 5,
             position: new Vector2({x: canvas.width / 2, y: canvas.height / 2}),
             velocity: new Vector2({x: -3, y: 0}),
-            color: 'black'
+            color: '#2f2f2f'
         })
 
         this.platform1 = new Platform({
@@ -43,7 +43,7 @@ export class PongGame extends Game {
             speed: 150,
             position: new Vector2({x: 0, y: (canvas.height / 2) - 30}),
             velocity: new Vector2({x: 0, y: 0}),
-            color: 'black',
+            color: '#2f2f2f',
             controller: this.player
         })
 
@@ -53,7 +53,7 @@ export class PongGame extends Game {
             speed: 150,
             position: new Vector2({x: canvas.width -10, y: (canvas.height / 2) - 30}),
             velocity: new Vector2({x: 0, y: 0}),
-            color: 'black',
+            color: '#2f2f2f',
             controller: this.ai
         })
     }

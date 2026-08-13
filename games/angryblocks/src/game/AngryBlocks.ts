@@ -122,7 +122,7 @@ export class Ball extends CollidableEntity {
         this.renderer.canvas.beginPath();
         this.renderer.canvas.arc(this.collision.position.x, this.collision.position.y, this.collision.shape?.radius || 0, 0, Math.PI * 2, true);
         this.renderer.canvas.closePath();
-        this.renderer.canvas.fillStyle = 'black';
+        this.renderer.canvas.fillStyle = '#2f2f2f';
         this.renderer.canvas.fill();
     }
 
@@ -206,7 +206,6 @@ export class Wall extends CollidableEntity {
             this.collision.position.x, this.collision.position.y, 
             this.collision.shape.width, this.collision.shape.height
         );
-        this.renderer.canvas.fillStyle = 'black';
     }
 }
 
