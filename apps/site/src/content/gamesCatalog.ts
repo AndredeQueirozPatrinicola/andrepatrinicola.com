@@ -52,5 +52,14 @@ export const gamesCatalog = [
         status: 'published',
         devUrl: 'https://andredequeirozpatrinicola.github.io/letreco/',
         target: '_blank'
-    }
+    },
+    {
+        slug: 'angryblocks',
+        title: 'Angry Blocks',
+        description: 'Arremesse uma bola para derrubar os cubos',
+        cover: null,
+        playUrl: '/play/angryblocks/index.html',
+        status: 'published',
+        devUrl: 'http://localhost:5177'
+    },
 ]
