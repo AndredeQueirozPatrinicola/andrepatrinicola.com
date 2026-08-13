@@ -1,5 +1,5 @@
-import { Game } from "../../../../packages/engines/src";
-import { Vector2 } from "../../../../packages/engines/src";
+import { Game } from '../andevengine/game/Game'
+import { Vector2 } from '../andevengine/math/Vector2'
 import { Platform, Player, AI } from "./entities/Plataform";
 import { Ball } from "./entities/Ball";
 import { UI } from "./ui/ui";

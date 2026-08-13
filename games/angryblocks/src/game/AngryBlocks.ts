@@ -1,6 +1,7 @@
-import { Game } from '../../../../packages/engines/src/andevengine/game/Game';
-import { Input } from '../../../../packages/engines/src/andevengine/input/Input'
-import { Cursor } from '../../../../packages/engines/src/index'
+import { Game } from '../andevengine/game/Game'
+import { Input } from "../andevengine/input/Input";
+import { Cursor } from '../andevengine/cursor/cursor';
+
 import { CollidableObjectType, Collision, RenderableObjectType } from '../types/types';
 
 

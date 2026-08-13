@@ -1,6 +1,6 @@
-import { Game } from "../../../../packages/engines/src";
-import { Vector2 } from "../../../../packages/engines/src";
-import { Input } from "../../../../packages/engines/src";
+import { Game } from '../andevengine/game/Game'
+import { Vector2 } from '../andevengine/math/Vector2'
+import { Input } from "../andevengine/input/Input";
 
 import spaceShip from '../images/spaceship.png'
 import heart from '../images/heart.png'
