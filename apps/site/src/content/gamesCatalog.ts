@@ -7,15 +7,14 @@ export type GameCatalog = {
     title: string, 
     slug: string,
     description: string,
-    cover?: string | undefined,
-    iframe: string,
+    cover?: string | null,
     status:  'published' | 'unpublished',
     playUrl: string,
-    devUrl: string,
+    devUrl?: string,
     target?: string
 }
 
-export const gamesCatalog = [
+export const gamesCatalog: GameCatalog[] = [
     {
         slug: 'pong',
         title: 'Classic Pong',

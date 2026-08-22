@@ -6,7 +6,6 @@ A portfolio and laboratory for developing, exploring, and publishing browser gam
 
 ```text
 apps/site/          Main application
-games/              Games
 packages/ui/        Shared components
 packages/config/    Monorepo configuration
 .github/workflows/  CI/CD workflows
@@ -27,6 +26,10 @@ npm run dev
 ```
 
 The site uses the Vite development server. Do not open `apps/site/index.html` directly in the browser.
+
+Games are deployed from their own repositories into `/play/<slug>/` on the
+same bucket. The React site keeps the catalog entries that point to those
+published game URLs.
 
 ## Build
 

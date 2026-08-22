@@ -4,7 +4,7 @@ import './game-renderer.css'
 export type GameRendererProps = {
     id: string,
     gameUrl: string,
-    devUrl: string,
+    devUrl?: string,
     title: string,
 }
 
@@ -15,7 +15,7 @@ export function GameRenderer({
     title,    
 }: GameRendererProps) {
     const ref = useRef<HTMLIFrameElement>(null);
-    const game = import.meta.env.DEV
+    const game = import.meta.env.DEV && devUrl
         ? devUrl
         : gameUrl;
 

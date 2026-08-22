@@ -15,10 +15,15 @@ export function GamesPage({onGameClicked}: GamesPageProps) {
     return (
         <div className="games-page">
             {games.map((game, index) => {
+                const href = import.meta.env.DEV && game.devUrl
+                    ? game.devUrl
+                    : game.playUrl;
+
                 if(game.status === 'published'){
                     if(!game.target){
                         return (
                             <a 
+                                key={game.slug}
                                 className="game-card"
                                 id={game.slug} 
                                 onClick={(event) => onGameClicked(
@@ -38,13 +43,14 @@ export function GamesPage({onGameClicked}: GamesPageProps) {
                         )
                     }
                     return (
-                        <a className="game-card" id={game.slug} href={import.meta.env.DEV ? game.devUrl : game.playUrl} target={game.target}>
+                        <a key={game.slug} className="game-card" id={game.slug} href={href} target={game.target}>
                             <img  src={game.cover ? game.cover : defaultImage}></img>
                             <span className="game-card-title">{game.title}</span>
                             <p className="game-card-description">{game.description}</p>
                         </a>
                     )
                 }
+                return null;
             })}
         </div>
     )

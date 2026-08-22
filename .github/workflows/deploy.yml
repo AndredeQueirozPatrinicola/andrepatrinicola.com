@@ -40,13 +40,13 @@ jobs:
       - name: Run lint
         run: npm run lint
 
-      - name: Build all applications
+      - name: Build website
         run: npm run build
 
-      - name: Verify deployment package
+      - name: Verify website build
         run: |
-          test -f .deploy/index.html || {
-            echo "Erro: .deploy/index.html não foi encontrado."
+          test -f apps/site/dist/index.html || {
+            echo "Erro: apps/site/dist/index.html não foi encontrado."
             exit 1
           }
 
@@ -59,8 +59,9 @@ jobs:
 
       - name: Deploy to S3
         run: |
-          aws s3 sync ./.deploy "s3://${{ vars.AWS_S3_BUCKET }}" \
+          aws s3 sync ./apps/site/dist "s3://${{ vars.AWS_S3_BUCKET }}" \
             --delete \
+            --exclude "play/*" \
             --only-show-errors
 
       - name: Invalidate CloudFront cache
