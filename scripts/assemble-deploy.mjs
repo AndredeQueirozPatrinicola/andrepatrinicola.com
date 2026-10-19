@@ -62,7 +62,7 @@
     });
 
     await copyDirectory(
-      resolve(root, 'apps/site/dist'),
+      resolve(root, 'apps/site/build/client'),
       outputDirectory,
     );
 
