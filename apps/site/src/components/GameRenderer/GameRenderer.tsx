@@ -3,21 +3,16 @@ import './game-renderer.css'
 
 export type GameRendererProps = {
     id: string,
-    gameUrl: string,
-    devUrl: string,
+    src: string,
     title: string,
 }
 
 export function GameRenderer({
     id, 
-    gameUrl,
-    devUrl,
+    src,
     title,    
 }: GameRendererProps) {
     const ref = useRef<HTMLIFrameElement>(null);
-    const game = import.meta.env.DEV
-        ? devUrl
-        : gameUrl;
 
     useEffect(() =>{
         if (ref.current) {
@@ -29,7 +24,7 @@ export function GameRenderer({
         <iframe
             ref={ref}
             id={id}
-            src={game}
+            src={src}
             title={title}
             allow={'fullscreen'}
             sandbox={'allow-scripts allow-same-origin allow-pointer-lock'}

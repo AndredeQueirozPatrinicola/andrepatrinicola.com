@@ -11,9 +11,9 @@ import { GamesPage } from "./GamesPage/GamesPage";
 import type { MouseEvent, ReactNode} from "react";
 import { useEffect, useState } from "react";
 import { GameRenderer } from "../components/GameRenderer/GameRenderer";
-import { gamesCatalog } from "../content/gamesCatalog";
+import type { Game } from "../domain/game";
 
-export function HomePage() {
+export function HomePage({ games }: { games: Game[] }) {
   const [currentContent, setCurrentContent] = useState<ReactNode>(
     <NoContentPlaceHolder id="no-content" />
   );
@@ -22,8 +22,11 @@ export function HomePage() {
     load(content);
   };
   useEffect(() => {
-    load(<GameRenderer id="pong" gameUrl={gamesCatalog[0].playUrl} devUrl={gamesCatalog[0].devUrl} title={gamesCatalog[0].title}/>);
-  }, [load]);
+    const [firstGame] = games;
+    if (firstGame?.hosting.kind === "embedded") {
+      load(<GameRenderer id={firstGame.slug} src={firstGame.hosting.path} title={firstGame.title}/>);
+    }
+  }, [load, games]);
 
 
   return (
@@ -37,7 +40,7 @@ export function HomePage() {
         </p>
       </Header>
       <Nav id="nav">
-        <NavItem id="games" label="Jogos" content={<GamesPage onGameClicked={onClickNavItem}/>} onClick={onClickNavItem}/>
+        <NavItem id="games" label="Jogos" content={<GamesPage games={games} onGameClicked={onClickNavItem}/>} onClick={onClickNavItem}/>
         <NavItem id="labs" label="Labs" content={null} onClick={onClickNavItem}/>
         <NavItem id="me" label="Sobre mim" content={null} onClick={onClickNavItem}/>
         <NavItem id="curriculum" label="Curriculo" content={null} onClick={onClickNavItem}/>
