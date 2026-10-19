@@ -6,7 +6,7 @@ type HeaderProps = {
   children?: ReactNode;
 };
 
-export function Header({ id, title, children }: HeaderProps) {
+export function Header({ id, children }: HeaderProps) {
   return (
     <header>
         <section className="header" id={id}>

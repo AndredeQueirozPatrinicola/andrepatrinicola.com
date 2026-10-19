@@ -8,7 +8,8 @@ import { Loader } from "../components/Loader/Loader";
 import { useLoadContent } from "../hooks/useLoadContent";
 
 import { GamesPage } from "./GamesPage/GamesPage";
-import { MouseEvent, ReactNode, useEffect, useState } from "react";
+import type { MouseEvent, ReactNode} from "react";
+import { useEffect, useState } from "react";
 import { GameRenderer } from "../components/GameRenderer/GameRenderer";
 import { gamesCatalog } from "../content/gamesCatalog";
 

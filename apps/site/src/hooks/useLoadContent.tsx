@@ -1,4 +1,5 @@
-import { ReactNode, useState, useCallback } from "react";
+import type { ReactNode} from "react";
+import { useState, useCallback } from "react";
 import { NoContentPlaceHolder } from "../components/NoContentPlaceHolder/NoContentPlaceHolder";
 
 type UseLoadContentReturn = {

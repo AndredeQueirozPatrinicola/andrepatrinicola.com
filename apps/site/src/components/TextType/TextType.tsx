@@ -7,7 +7,6 @@ type TextTypeProps = {
 };
 
 export function TextType({
-  id,
   text = [],
   typingSpeed = 100,
 }: TextTypeProps) {

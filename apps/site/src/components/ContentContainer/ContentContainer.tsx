@@ -7,7 +7,7 @@ type ContentContainerProps = {
 };
 
 
-export function ContentContainer ({id, children}: ContentContainerProps) {
+export function ContentContainer ({ children }: ContentContainerProps) {
     return (
         <section className="content-container">
             {children}

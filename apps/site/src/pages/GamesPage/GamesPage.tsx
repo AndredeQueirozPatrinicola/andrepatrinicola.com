@@ -1,7 +1,8 @@
-import { MouseEvent, useState } from "react"
+import type { MouseEvent} from "react";
+import { useState } from "react"
 import { gamesCatalog } from "../../content/gamesCatalog"
 import './games-page.css'
-import { ReactNode } from "react"
+import type { ReactNode } from "react"
 import { GameRenderer } from "../../components/GameRenderer/GameRenderer"
 
 import defaultImage from '../../assets/images/defaultImage.png'
