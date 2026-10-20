@@ -5,7 +5,7 @@ export const es: Messages = {
     name: "André Patrinicola",
     role: "Ingeniero de software",
     description:
-      "Portafolio de André de Queiroz Patrinicola, ingeniero de software enfocado en backend que crea juegos para el navegador para entender cómo funcionan las cosas.",
+      "Portafolio de André de Queiroz Patrinicola, ingeniero de software enfocado en backend: currículum, proyectos personales y juegos para el navegador.",
   },
   a11y: {
     skipToContent: "Saltar al contenido",
@@ -41,7 +41,7 @@ export const es: Messages = {
   },
   home: {
     intro:
-      "Ingeniero de software enfocado en backend: Node.js, TypeScript y Python en plataformas SaaS, integraciones y sistemas en producción. Fuera del trabajo escribo juegos para el navegador desde cero, porque me gusta entender cómo funcionan las cosas por dentro.",
+      "Ingeniero de software enfocado en backend: Node.js, TypeScript y Python en plataformas SaaS, integraciones y sistemas en producción. En mi tiempo libre escribo juegos para el navegador.",
     playfield: {
       play: "Jugar",
       stop: "Parar",
@@ -63,7 +63,7 @@ export const es: Messages = {
   games: {
     title: "Juegos",
     intro:
-      "Juegos que escribí para entender cómo funcionan las cosas por dentro: bucle de juego, colisiones, cámara y física, casi siempre desde cero.",
+      "Juegos que hice para el navegador. La mayoría corre en Canvas sobre andevengine, un motor 2D propio, con colisiones, física y cámara escritas a mano.",
     stats: { total: "Juegos", inBrowser: "En el navegador", prototypes: "Prototipos" },
     status: { playable: "Jugable", prototype: "Prototipo" },
     external: "Externo",
@@ -96,13 +96,13 @@ export const es: Messages = {
     intro:
       "Proyectos personales y experimentos que no son solo juegos: un motor, física, un juego de cartas y este mismo sitio.",
     status: { active: "Activo", "in-progress": "En desarrollo", experiment: "Experimento" },
-    explored: "Qué exploré",
+    explored: "Detalles técnicos",
     source: "Código fuente",
     page: "Ver los juegos",
   },
   about: {
     title: "Sobre mí",
-    lead: "Ingeniero de software en São Paulo, enfocado en backend y con un viejo gusto por entender cómo funcionan las cosas por dentro.",
+    lead: "Ingeniero de software en São Paulo, enfocado en backend.",
     whoTitle: "Quién soy",
     who: [
       "Trabajo principalmente en backend: Node.js, TypeScript y Python, en plataformas SaaS, integraciones y sistemas en producción. Hoy estoy en Pixit, donde fui responsable técnico de gran parte de Lumoos, un SaaS multi-tenant.",
@@ -116,8 +116,8 @@ export const es: Messages = {
     },
     whyTitle: "Por qué juegos",
     why: [
-      "Me gusta el desarrollo de software, los juegos y la tecnología, y sobre todo entender cómo funcionan las cosas.",
-      "Escribir un juego desde cero obliga a enfrentar el bucle, la entrada, las colisiones y la cámara sin un motor que esconda los detalles. Por eso los juegos de este sitio corren sobre un motor propio, y por eso la página de inicio también es un juego.",
+      "Me gusta el desarrollo de software, los juegos y la tecnología en general.",
+      "Hacer un juego desde cero implica escribir el bucle, la entrada, las colisiones y la cámara sin un motor listo por debajo. Los juegos de este sitio corren sobre un motor propio, y la página de inicio también es un juego.",
     ],
     contactTitle: "Hablemos",
     contact: "La forma más rápida de contactarme es por correo o por LinkedIn.",
@@ -135,7 +135,7 @@ export const es: Messages = {
     },
     present: "actualidad",
     downloads: "Versión en PDF",
-    skillsHint: "Agrupadas por área, sin niveles inventados. Elige una tecnología para destacar dónde aparece.",
+    skillsHint: "Agrupadas por área. Elige una tecnología para destacar dónde aparece.",
     highlighting: "Destacando: {skill}",
     clear: "Quitar destaque",
     noMatches: "Ninguna experiencia o proyecto listado usa esta tecnología.",

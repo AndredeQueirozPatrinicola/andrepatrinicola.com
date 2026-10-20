@@ -5,7 +5,7 @@ export const en: Messages = {
     name: "André Patrinicola",
     role: "Software engineer",
     description:
-      "Portfolio of André de Queiroz Patrinicola, a backend-focused software engineer who builds browser games to understand how things work.",
+      "Portfolio of André de Queiroz Patrinicola, a backend-focused software engineer: résumé, personal projects and browser games.",
   },
   a11y: {
     skipToContent: "Skip to content",
@@ -41,7 +41,7 @@ export const en: Messages = {
   },
   home: {
     intro:
-      "Backend-focused software engineer: Node.js, TypeScript and Python across SaaS platforms, integrations and production systems. Outside work I write browser games from scratch, because I like understanding how things work under the hood.",
+      "Backend-focused software engineer: Node.js, TypeScript and Python across SaaS platforms, integrations and production systems. In my spare time I write browser games.",
     playfield: {
       play: "Play",
       stop: "Stop",
@@ -63,7 +63,7 @@ export const en: Messages = {
   games: {
     title: "Games",
     intro:
-      "Games I wrote to understand how things work under the hood: game loops, collision, cameras and physics, almost always from scratch.",
+      "Games I made for the browser. Most run on Canvas on top of andevengine, a 2D engine of my own, with collision, physics and cameras written by hand.",
     stats: { total: "Games", inBrowser: "In the browser", prototypes: "Prototypes" },
     status: { playable: "Playable", prototype: "Prototype" },
     external: "External",
@@ -96,13 +96,13 @@ export const en: Messages = {
     intro:
       "Personal projects and experiments that are not only games: an engine, physics, a card game and this very site.",
     status: { active: "Active", "in-progress": "In progress", experiment: "Experiment" },
-    explored: "What I explored",
+    explored: "Technical details",
     source: "Source code",
     page: "See the games",
   },
   about: {
     title: "About",
-    lead: "Software engineer in São Paulo, backend-focused, with a long-standing taste for understanding how things work under the hood.",
+    lead: "Software engineer in São Paulo, backend-focused.",
     whoTitle: "Who I am",
     who: [
       "I work mostly on the backend: Node.js, TypeScript and Python, across SaaS platforms, integrations and production systems. I'm currently at Pixit, where I took technical ownership of much of Lumoos, a multi-tenant SaaS platform.",
@@ -116,8 +116,8 @@ export const en: Messages = {
     },
     whyTitle: "Why games",
     why: [
-      "I like software development, games and technology, and above all understanding how things work.",
-      "Writing a game from scratch means facing the loop, input, collision and camera without an engine hiding the details. That is why the games on this site run on an engine of my own, and why the home page is a game too.",
+      "I like software development, games and technology in general.",
+      "Making a game from scratch means writing the loop, input, collision and camera without a ready-made engine underneath. The games on this site run on an engine of my own, and the home page is a game too.",
     ],
     contactTitle: "Let's talk",
     contact: "The quickest way to reach me is by email or on LinkedIn.",
@@ -135,7 +135,7 @@ export const en: Messages = {
     },
     present: "present",
     downloads: "PDF version",
-    skillsHint: "Grouped by area, with no made-up levels. Pick a technology to highlight where it shows up.",
+    skillsHint: "Grouped by area. Pick a technology to highlight where it shows up.",
     highlighting: "Highlighting: {skill}",
     clear: "Clear highlight",
     noMatches: "No listed experience or project uses this technology.",

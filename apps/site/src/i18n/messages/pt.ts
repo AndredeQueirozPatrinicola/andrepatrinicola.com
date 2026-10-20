@@ -7,7 +7,7 @@ export const pt = {
     name: "André Patrinicola",
     role: "Engenheiro de software",
     description:
-      "Portfólio de André de Queiroz Patrinicola, engenheiro de software com foco em backend que cria jogos no navegador para entender como as coisas funcionam.",
+      "Portfólio de André de Queiroz Patrinicola, engenheiro de software com foco em backend: currículo, projetos pessoais e jogos para o navegador.",
   },
   a11y: {
     skipToContent: "Pular para o conteúdo",
@@ -43,7 +43,7 @@ export const pt = {
   },
   home: {
     intro:
-      "Engenheiro de software com foco em backend: Node.js, TypeScript e Python em plataformas SaaS, integrações e sistemas em produção. Fora do trabalho, escrevo jogos para o navegador a partir do zero, porque gosto de entender como as coisas funcionam por dentro.",
+      "Engenheiro de software com foco em backend: Node.js, TypeScript e Python em plataformas SaaS, integrações e sistemas em produção. Nas horas vagas, escrevo jogos para o navegador.",
     playfield: {
       play: "Jogar",
       stop: "Parar",
@@ -65,7 +65,7 @@ export const pt = {
   games: {
     title: "Jogos",
     intro:
-      "Jogos que escrevi para entender como as coisas funcionam por dentro: loop de jogo, colisão, câmera e física, quase sempre a partir do zero.",
+      "Jogos que fiz para o navegador. A maioria roda em Canvas sobre o andevengine, um motor 2D próprio, com colisão, física e câmera escritas à mão.",
     stats: { total: "Jogos", inBrowser: "No navegador", prototypes: "Protótipos" },
     status: { playable: "Jogável", prototype: "Protótipo" },
     external: "Externo",
@@ -98,13 +98,13 @@ export const pt = {
     intro:
       "Projetos pessoais e experimentos que não são só jogos: um motor, física, um jogo de cartas e este próprio site.",
     status: { active: "Ativo", "in-progress": "Em andamento", experiment: "Experimento" },
-    explored: "O que explorei",
+    explored: "Detalhes técnicos",
     source: "Código-fonte",
     page: "Ver os jogos",
   },
   about: {
     title: "Sobre",
-    lead: "Engenheiro de software em São Paulo, com foco em backend e um gosto antigo por entender como as coisas funcionam por dentro.",
+    lead: "Engenheiro de software em São Paulo, com foco em backend.",
     whoTitle: "Quem sou",
     who: [
       "Trabalho principalmente com backend: Node.js, TypeScript e Python, em plataformas SaaS, integrações e sistemas em produção. Hoje estou na Pixit, onde fui responsável técnico por grande parte do Lumoos, um SaaS multi-tenant.",
@@ -118,8 +118,8 @@ export const pt = {
     },
     whyTitle: "Por que jogos",
     why: [
-      "Gosto de desenvolvimento de software, de jogos e de tecnologia, e principalmente de entender como as coisas funcionam.",
-      "Escrever um jogo do zero obriga a encarar o loop, a entrada, a colisão e a câmera sem uma engine escondendo os detalhes. Foi por isso que os jogos deste site rodam num motor próprio, e por isso a página inicial também é um jogo.",
+      "Gosto de desenvolvimento de software, de jogos e de tecnologia em geral.",
+      "Fazer um jogo do zero significa escrever o loop, a entrada, a colisão e a câmera sem uma engine pronta por baixo. Os jogos deste site rodam num motor próprio, e a página inicial também é um jogo.",
     ],
     contactTitle: "Vamos conversar",
     contact: "O jeito mais rápido de falar comigo é por e-mail ou pelo LinkedIn.",
@@ -137,7 +137,7 @@ export const pt = {
     },
     present: "atual",
     downloads: "Versão em PDF",
-    skillsHint: "Agrupadas por área, sem níveis inventados. Escolha uma tecnologia para destacar onde ela aparece.",
+    skillsHint: "Agrupadas por área. Escolha uma tecnologia para destacar onde ela aparece.",
     highlighting: "Destacando: {skill}",
     clear: "Limpar destaque",
     noMatches: "Nenhuma experiência ou projeto listado usa esta tecnologia.",
