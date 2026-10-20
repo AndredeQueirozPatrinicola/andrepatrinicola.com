@@ -1,4 +1,5 @@
 import { createReadStream } from 'node:fs';
+import { createGzip } from 'node:zlib';
 import { stat } from 'node:fs/promises';
 import { extname } from 'node:path';
 
@@ -29,10 +30,24 @@ export async function isFile(path) {
   }
 }
 
-export function sendFile(res, path, status = 200) {
-  res.writeHead(status, {
-    'Content-Type': contentTypes[extname(path)] ?? 'application/octet-stream',
-  });
+const compressible = new Set(['.html', '.js', '.css', '.json', '.data', '.xml', '.txt', '.svg', '.webmanifest']);
+
+/**
+ * Sends a file, gzipped when the client accepts it and the type benefits,
+ * like CloudFront's automatic compression.
+ */
+export function sendFile(res, path, status = 200, acceptEncoding = '') {
+  const extension = extname(path);
+  const headers = { 'Content-Type': contentTypes[extension] ?? 'application/octet-stream' };
+  const gzip = compressible.has(extension) && /\bgzip\b/.test(acceptEncoding);
+
+  if (gzip) {
+    res.writeHead(status, { ...headers, 'Content-Encoding': 'gzip', Vary: 'Accept-Encoding' });
+    createReadStream(path).pipe(createGzip()).pipe(res);
+    return;
+  }
+
+  res.writeHead(status, headers);
   createReadStream(path).pipe(res);
 }
 

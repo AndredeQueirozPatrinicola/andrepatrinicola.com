@@ -36,13 +36,13 @@ const server = createServer(async (req, res) => {
   const uri = result.uri === '/' ? '/index.html' : result.uri;
   const filePath = normalize(join(root, decodeURIComponent(uri)));
   if (filePath.startsWith(root) && (await isFile(filePath))) {
-    sendFile(res, filePath);
+    sendFile(res, filePath, 200, req.headers['accept-encoding']);
     return;
   }
 
   const notFound = join(root, '404.html');
   if (await isFile(notFound)) {
-    sendFile(res, notFound, 404);
+    sendFile(res, notFound, 404, req.headers['accept-encoding']);
   } else {
     res.writeHead(404, { 'Content-Type': 'text/plain' }).end('Not found');
   }

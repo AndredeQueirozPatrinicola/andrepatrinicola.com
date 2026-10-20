@@ -95,6 +95,12 @@ invalidates `/*`. If the distribution uses a cache policy that ignores origin
 headers, switch the default behavior to **CachingOptimized** or a policy that
 honors `Cache-Control`.
 
+Keep **Compress objects automatically** on in the default behavior: the site
+ships about 100 KB of JavaScript compressed versus roughly 300 KB raw. The
+local preview server gzips the same file types so Lighthouse numbers measured
+locally are comparable (mobile, simulated throttling, 2026-10-20: performance
+95, accessibility 100, best practices 100, SEO 100; LCP ≈ 2.4 s, CLS 0).
+
 ## A custom domain later
 
 1. Request a certificate in **ACM, region us-east-1**, for the domain.
