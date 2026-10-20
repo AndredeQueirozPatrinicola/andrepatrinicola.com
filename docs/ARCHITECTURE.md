@@ -85,8 +85,8 @@ prerendering and from the sitemap. Nothing of it exists yet by design.
   `[data-theme]` block overriding the semantic tokens.
 - CSS lives next to the component that uses it; React Router loads it per
   route. No CSS framework.
-- Fonts: VCR OSD Mono (display only, WOFF2, preloaded) and IBM Plex Sans for
-  reading text.
+- Fonts: VCR OSD Mono (display only, WOFF2, preloaded) and Atkinson Hyperlegible
+  Next for reading text.
 
 ## The home playfield
 

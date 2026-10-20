@@ -11,7 +11,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
-import plexFont from "./assets/fonts/ibm-plex-sans-400.woff2?url";
+import bodyFont from "./assets/fonts/atkinson-hyperlegible-next-400.woff2?url";
 import displayFont from "./assets/fonts/vcr-osd-mono.woff2?url";
 import { NotFoundView } from "./features/errors/NotFoundView";
 import { defaultLocale, localeInfo } from "./i18n/config";
@@ -25,7 +25,7 @@ import "./styles/base.css";
 import "./styles/layout.css";
 
 export const links: Route.LinksFunction = () => [
-  ...[displayFont, plexFont].map((href) => ({
+  ...[displayFont, bodyFont].map((href) => ({
     rel: "preload",
     href,
     as: "font",
