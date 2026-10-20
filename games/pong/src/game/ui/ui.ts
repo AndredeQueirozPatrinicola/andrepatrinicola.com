@@ -1,13 +1,5 @@
 import { GameScore, PongGame, PongGameState } from "../PongGame";
 
-const myFont = new FontFace('CustomFont', 'url(../../fonts/VCR_OSD_MONO_1.001.ttf)');
-
-myFont.load().then((font) => {
-    document.fonts.add(font);
-}).catch(err => {
-    console.error("Font failed to load:", err);
-});
-
 export class UI {
 
     public score: GameScore;
