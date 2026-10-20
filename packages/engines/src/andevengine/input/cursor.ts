@@ -15,9 +15,11 @@ export class Cursor {
 
     private onMouseMove(e: MouseEvent): void {
         const rect = this.canvas.getBoundingClientRect();
+        const left = rect.left + this.canvas.clientLeft;
+        const top = rect.top + this.canvas.clientTop;
 
-        this.x = e.clientX - rect.left;
-        this.y = e.clientY - rect.top;
+        this.x = (e.clientX - left) * (this.canvas.width / this.canvas.clientWidth);
+        this.y = (e.clientY - top) * (this.canvas.height / this.canvas.clientHeight);
     }
 
     public getPosition() {
