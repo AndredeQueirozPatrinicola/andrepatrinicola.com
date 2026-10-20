@@ -1,5 +1,6 @@
 import type { Game } from "../domain/game";
 import type { Profile } from "../domain/profile";
+import type { Resume } from "../domain/resume";
 import type { Locale } from "../i18n/config";
 
 /**
@@ -16,7 +17,12 @@ export interface ProfileRepository {
   get(locale: Locale): Promise<Profile>;
 }
 
+export interface ResumeRepository {
+  get(locale: Locale): Promise<Resume>;
+}
+
 export type Repositories = {
   games: GamesRepository;
   profile: ProfileRepository;
+  resume: ResumeRepository;
 };

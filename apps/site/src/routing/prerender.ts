@@ -4,7 +4,7 @@ import { localePath } from "../i18n/paths";
 
 /** Paths below the locale prefix that exist in every language. */
 function localizedPaths(): string[] {
-  return ["", "/games", ...games.map((game) => `/games/${game.slug}`)];
+  return ["", "/games", ...games.map((game) => `/games/${game.slug}`), "/resume"];
 }
 
 /** Every URL rendered to static HTML at build time. */
