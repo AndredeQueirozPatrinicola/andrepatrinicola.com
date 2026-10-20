@@ -3,7 +3,13 @@ import { Vector2 } from '../andevengine/math/Vector2'
 import { Input } from "../andevengine/input/Input";
 
 
-const GRAVITY_FORCE = 25
+const GRAVITY_FORCE = 1500
+const PIPE_SPEED = 240
+const PIPE_INTERVAL = 1.25
+const PIPE_GAP = 140
+const GAP_MARGIN = 40
+const MAX_GAP_RISE = 100
+const MAX_GAP_DROP = 140
 const getRandom = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 export type FlappyThingOptions = {
@@ -209,9 +215,9 @@ export class Pipe extends CollidableObject
     }
 
     public update(dt: number){
-        this.velocity.x = 1;
+        this.velocity.x = -PIPE_SPEED;
 
-        this.position.pos.x = this.position.pos.x + this.velocity.x - 300 * dt;
+        this.position.pos.x = this.position.pos.x + this.velocity.x * dt;
     }
 }
 
@@ -223,15 +229,15 @@ export class PipeBeam
     public upperPipe: Pipe;
     public downPipe: Pipe;
 
-    private SPACE: number = 125;
+    private SPACE: number = PIPE_GAP;
 
     private alreadyPassed: boolean = false;
 
-    constructor(renderer: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
+    constructor(renderer: CanvasRenderingContext2D, canvas: HTMLCanvasElement, upperPipeHeight: number) {
         this.renderer = renderer;
         this.canvas = canvas;
 
-        [this.upperPipe, this.downPipe] = this.mount()  
+        [this.upperPipe, this.downPipe] = this.mount(upperPipeHeight)  
     }
 
     public update(dt: number){
@@ -244,8 +250,7 @@ export class PipeBeam
         this.downPipe.render();
     }
 
-    private mount() {
-        const upperPipeHeight = getRandom(30, this.canvas.height / 2 + 50)
+    private mount(upperPipeHeight: number) {
 
         const upperPipePolygon = new Polygon(30, upperPipeHeight)
         const upperPosition = new Position(new Vector2({x: this.canvas.width, y: 0 }))
@@ -299,6 +304,8 @@ export class PipeBeamManager
     private gamePoints: GamePointsUI;
     private game: FlappyThing;
 
+    private lastGapTop: number;
+
     constructor(renderer: CanvasRenderingContext2D, canvas: HTMLCanvasElement, thing: Thing, game: FlappyThing) { 
         this.renderer = renderer;
         this.canvas = canvas;
@@ -310,10 +317,11 @@ export class PipeBeamManager
         this.observer = new EventObserver();
         this.observer.subscribe(timeOutEvent)
 
-        this.timer = new Timer(1, 0, this.observer, timeOutEvent);
+        this.timer = new Timer(PIPE_INTERVAL, 0, this.observer, timeOutEvent);
         this.timer.start();
 
-        this.pipeBeams.push(new PipeBeam(this.renderer, this.canvas));
+        this.lastGapTop = this.getCenterGapTop();
+        this.pipeBeams.push(new PipeBeam(this.renderer, this.canvas, this.getNextGapTop()));
 
         this.thing = thing;
 
@@ -353,12 +361,27 @@ export class PipeBeamManager
     }
 
     public onTimeOut = () => {
-        this.pipeBeams.push(new PipeBeam(this.renderer, this.canvas));
+        this.pipeBeams.push(new PipeBeam(this.renderer, this.canvas, this.getNextGapTop()));
     }
 
     public reset() {
         this.pipeBeams.splice(0, this.pipeBeams.length);
         this.gamePoints.gamePoints = 0;
+        this.lastGapTop = this.getCenterGapTop();
+    }
+
+    private getCenterGapTop(): number {
+        return (this.canvas.height - PIPE_GAP) / 2;
+    }
+
+    private getNextGapTop(): number {
+        const minGapTop = GAP_MARGIN;
+        const maxGapTop = this.canvas.height - PIPE_GAP - GAP_MARGIN;
+        const gapTop = this.lastGapTop + getRandom(-MAX_GAP_RISE, MAX_GAP_DROP);
+
+        this.lastGapTop = Math.min(Math.max(gapTop, minGapTop), maxGapTop);
+
+        return this.lastGapTop;
     }
 }
 
@@ -367,7 +390,7 @@ export class Thing extends CollidableObject
     private input: Input;
     private canvas: HTMLCanvasElement
 
-    private JUMP_FORCE = 3;
+    private JUMP_FORCE = 180;
 
     private game: FlappyThing;
 
@@ -391,7 +414,7 @@ export class Thing extends CollidableObject
                 this.velocity.y = -this.JUMP_FORCE;
             }
 
-            this.position.pos.y = this.position.pos.y + this.velocity.y;
+            this.position.pos.y = this.position.pos.y + this.velocity.y * dt;
         }
     }
 

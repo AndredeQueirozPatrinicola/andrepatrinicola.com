@@ -194,17 +194,17 @@ export const games: GameEntry[] = [
       pt: [
         "Cada par de canos ultrapassado vale 1 ponto.",
         "Encostar num cano ou sair da tela reinicia a partida.",
-        "Um novo par de canos aparece a cada segundo.",
+        "Um novo par de canos aparece a cada 1,25 s, com a abertura perto da anterior.",
       ],
       en: [
         "Each pair of pipes you pass is worth 1 point.",
         "Touching a pipe or leaving the screen restarts the run.",
-        "A new pair of pipes appears every second.",
+        "A new pair of pipes appears every 1.25 s, with its gap close to the previous one.",
       ],
       es: [
         "Cada par de tuberías superado vale 1 punto.",
         "Tocar una tubería o salir de la pantalla reinicia la partida.",
-        "Aparece un nuevo par de tuberías cada segundo.",
+        "Aparece un nuevo par de tuberías cada 1,25 s, con la abertura cerca de la anterior.",
       ],
     },
     controls: [
@@ -230,11 +230,7 @@ export const games: GameEntry[] = [
         "Un temporizador con observer genera los obstáculos",
       ],
     },
-    notes: {
-      pt: ["A física acompanha a taxa de quadros: em telas de 120 Hz ou mais o jogo fica mais rápido."],
-      en: ["Physics follows the frame rate: on 120 Hz screens and above the game runs faster."],
-      es: ["La física sigue la tasa de cuadros: en pantallas de 120 Hz o más el juego va más rápido."],
-    },
+    notes: { pt: [], en: [], es: [] },
   },
   {
     slug: "letritas",
