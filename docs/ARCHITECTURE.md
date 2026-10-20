@@ -77,7 +77,7 @@ prerendering and from the sitemap. Nothing of it exists yet by design.
 ## Styling and themes
 
 - `styles/tokens.css`: semantic colors written with `light-dark()`, type
-  scale, an 8 px spacing grid (also drawn in the background), motion tokens.
+  scale, an 8 px spacing grid, motion tokens.
   All text color pairs meet WCAG AA in both themes.
 - The theme follows the OS (`color-scheme: light dark`). A manual choice sets
   `data-theme` on `<html>` through an inline script in `<head>`, before the

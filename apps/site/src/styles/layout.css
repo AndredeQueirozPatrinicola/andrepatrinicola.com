@@ -1,13 +1,4 @@
-/* Page frame: background grid, content width, shared labels. */
-
-body {
-  /* The grid is the identity of the site: 4 × 8 px cells, barely there. */
-  background-image:
-    linear-gradient(var(--color-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
-  background-size: calc(var(--grid-cell) * 4) calc(var(--grid-cell) * 4);
-  background-position: -1px -1px;
-}
+/* Page frame: content width, shared labels. */
 
 .app {
   display: flex;
