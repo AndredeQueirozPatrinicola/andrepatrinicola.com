@@ -118,3 +118,8 @@ body {
   padding: 0;
   list-style: none;
 }
+
+/* Receives focus programmatically after navigation; it is not a control. */
+.app-main:focus {
+  outline: none;
+}

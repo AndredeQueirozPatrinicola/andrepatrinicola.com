@@ -41,3 +41,23 @@ test("the résumé highlights where a skill is used", async ({ page }) => {
   await expect(page.locator('.timeline-item[data-match="true"]')).toHaveCount(1);
   await expect(page.locator('.timeline-item[data-match="true"] h3')).toContainText("STI");
 });
+
+test("the home animation can be paused", async ({ page }) => {
+  await page.goto("/en");
+  // Compares the canvas pixels only (the HUD around it may still blink).
+  const frame = () => page.locator(".playfield-canvas").evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL());
+  await page.waitForTimeout(800);
+
+  await page.getByRole("button", { name: "Pause animation" }).click();
+  await expect(page.getByRole("button", { name: "Resume animation" })).toHaveAttribute("aria-pressed", "true");
+  const before = await frame();
+  await page.waitForTimeout(400);
+  expect(await frame()).toBe(before);
+});
+
+test("clearing the résumé highlight returns focus to the chosen skill", async ({ page }) => {
+  await page.goto("/en/resume");
+  await page.getByRole("button", { name: "Django" }).click();
+  await page.getByRole("button", { name: "Clear highlight" }).click();
+  await expect(page.getByRole("button", { name: "Django" })).toBeFocused();
+});

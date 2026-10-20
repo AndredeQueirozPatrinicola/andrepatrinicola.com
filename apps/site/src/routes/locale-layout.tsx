@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { isRouteErrorResponse, Outlet, useRouteLoaderData } from "react-router";
+import { useEffect, useRef, type ReactNode } from "react";
+import { isRouteErrorResponse, Outlet, useLocation, useRouteLoaderData } from "react-router";
 
 import { SiteFooter } from "../components/layout/SiteFooter";
 import { SiteHeader } from "../components/layout/SiteHeader";
@@ -30,7 +30,24 @@ type ShellProps = {
   children: ReactNode;
 };
 
+/**
+ * After a client-side navigation, moves focus to the new page's content so
+ * screen readers start there instead of staying on the clicked link.
+ */
+function useFocusOnNavigation() {
+  const { pathname } = useLocation();
+  const previous = useRef(pathname);
+
+  useEffect(() => {
+    if (previous.current === pathname) return;
+    previous.current = pathname;
+    document.getElementById("content")?.focus({ preventScroll: true });
+  }, [pathname]);
+}
+
 function Shell({ locale, messages, profile, children }: ShellProps) {
+  useFocusOnNavigation();
+
   return (
     <I18nProvider value={{ locale, messages }}>
       <div className="app">

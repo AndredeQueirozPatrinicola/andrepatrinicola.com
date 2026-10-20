@@ -175,7 +175,7 @@
 
 /* Highlight mode: what doesn't use the chosen skill steps back. */
 .resume[data-filtering] [data-match="false"] {
-  opacity: 0.35;
+  opacity: 0.6;
 }
 
 .skill-map {

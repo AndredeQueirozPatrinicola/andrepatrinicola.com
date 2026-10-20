@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
 
 import { PixelIcon } from "../../components/ui/PixelIcon";
@@ -46,6 +46,14 @@ export function ResumeView({ resume, periods }: ResumeViewProps) {
   const { messages } = useI18n();
   const text = messages.resume;
   const [activeSkill, setActiveSkill] = useState<string | null>(null);
+  const skillMapRef = useRef<HTMLDivElement>(null);
+
+  function clearHighlight() {
+    const chip = skillMapRef.current?.querySelector<HTMLButtonElement>(`[data-skill="${activeSkill}"]`);
+    setActiveSkill(null);
+    // The Clear button disappears; keep keyboard focus on the chip that was chosen.
+    chip?.focus();
+  }
 
   const skillNames = useMemo(
     () => new Map(resume.skillAreas.flatMap((area) => area.skills.map((skill) => [skill.id, skill.name]))),
@@ -124,7 +132,7 @@ export function ResumeView({ resume, periods }: ResumeViewProps) {
             {text.sections.skills}
           </h2>
           <p className="resume-hint">{text.skillsHint}</p>
-          <div className="skill-map">
+          <div className="skill-map" ref={skillMapRef}>
             {resume.skillAreas.map((area) => (
               <div key={area.id} className="skill-area">
                 <h3 className="label">
@@ -137,6 +145,7 @@ export function ResumeView({ resume, periods }: ResumeViewProps) {
                       <button
                         type="button"
                         className="skill-chip"
+                        data-skill={skill.id}
                         aria-pressed={activeSkill === skill.id}
                         onClick={() => setActiveSkill((current) => (current === skill.id ? null : skill.id))}
                       >
@@ -148,15 +157,15 @@ export function ResumeView({ resume, periods }: ResumeViewProps) {
               </div>
             ))}
           </div>
-          <div className="skill-status" role="status">
+          <div className="skill-status">
+            <p role="status">
+              {activeSkill && format(text.highlighting, { skill: skillNames.get(activeSkill) ?? activeSkill })}
+              {activeSkill && matchCount === 0 && ` ${text.noMatches}`}
+            </p>
             {activeSkill && (
-              <>
-                <span>{format(text.highlighting, { skill: skillNames.get(activeSkill) ?? activeSkill })}</span>
-                {matchCount === 0 && <span> {text.noMatches}</span>}
-                <button type="button" className="skill-clear" onClick={() => setActiveSkill(null)}>
-                  {text.clear}
-                </button>
-              </>
+              <button type="button" className="skill-clear" onClick={clearHighlight}>
+                {text.clear}
+              </button>
             )}
           </div>
         </section>
