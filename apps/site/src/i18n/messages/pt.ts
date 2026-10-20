@@ -43,6 +43,19 @@ export const pt = {
   home: {
     intro:
       "Engenheiro de software com foco em backend: Node.js, TypeScript e Python em plataformas SaaS, integrações e sistemas em produção. Fora do trabalho, escrevo jogos para o navegador a partir do zero, porque gosto de entender como as coisas funcionam por dentro.",
+    playfield: {
+      play: "Jogar",
+      stop: "Parar",
+      demo: "Demo",
+      rally: "Rally",
+      best: "Recorde",
+      cleared: "Tudo acertado!",
+      hintPointer: "Passe o mouse por aqui para assumir a raquete.",
+      hintTouch: "Arraste o dedo na área para mover a raquete.",
+      hintKeys: "Use ← → ou A e D. Esc para sair.",
+      playing: "Modo de jogo ativo. Use as setas para mover a raquete; Esc para sair.",
+      shortcuts: "Atalhos",
+    },
     gamesTitle: "Jogos recentes",
     allGames: "Ver todos os jogos",
   },

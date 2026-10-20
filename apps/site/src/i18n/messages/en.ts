@@ -41,6 +41,19 @@ export const en: Messages = {
   home: {
     intro:
       "Backend-focused software engineer: Node.js, TypeScript and Python across SaaS platforms, integrations and production systems. Outside work I write browser games from scratch, because I like understanding how things work under the hood.",
+    playfield: {
+      play: "Play",
+      stop: "Stop",
+      demo: "Demo",
+      rally: "Rally",
+      best: "Best",
+      cleared: "All clear!",
+      hintPointer: "Move the mouse over here to take the paddle.",
+      hintTouch: "Drag a finger across the area to move the paddle.",
+      hintKeys: "Use ← → or A and D. Esc to leave.",
+      playing: "Game mode on. Use the arrow keys to move the paddle; Esc to leave.",
+      shortcuts: "Shortcuts",
+    },
     gamesTitle: "Recent games",
     allGames: "See all games",
   },

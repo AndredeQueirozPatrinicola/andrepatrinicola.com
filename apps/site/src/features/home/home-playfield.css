@@ -1,0 +1,179 @@
+.playfield {
+  position: relative;
+  display: flex;
+  min-height: clamp(36rem, 82vh, 54rem);
+  border-bottom: var(--border);
+  overflow: hidden;
+  /* Horizontal drags move the paddle; vertical drags still scroll. */
+  touch-action: pan-y;
+  /* Read by the canvas: these properties resolve the theme tokens to colors. */
+  color: var(--color-ink);
+  caret-color: var(--color-accent);
+  border-top-color: var(--color-line-strong);
+}
+
+.playfield-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.playfield-content {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: var(--space-6);
+  /* Leave the bottom band free for the paddle. */
+  padding-block: var(--space-16) var(--space-24);
+}
+
+.playfield-hud {
+  position: absolute;
+  top: var(--space-6);
+  right: var(--page-gutter);
+  display: grid;
+  justify-items: end;
+  gap: var(--space-2);
+  max-width: 18rem;
+  text-align: right;
+}
+
+.playfield-score {
+  display: flex;
+  gap: var(--space-4);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.playfield-demo {
+  color: var(--color-accent-ink);
+  animation: playfield-blink 1.2s steps(1, end) infinite;
+}
+
+.playfield-cleared {
+  color: var(--color-accent-ink);
+}
+
+.playfield-play {
+  min-height: calc(var(--grid-cell) * 4);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius);
+  background: var(--color-ink);
+  color: var(--color-bg);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.playfield-play[aria-pressed="true"] {
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+.playfield-hint {
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+}
+
+.playfield-role {
+  margin-top: var(--space-8);
+}
+
+.playfield-title {
+  max-width: 12ch;
+  font-size: clamp(2.75rem, 1.5rem + 5.6vw, 6.5rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.playfield-intro {
+  max-width: 56ch;
+  font-size: var(--text-lg);
+  color: var(--color-ink-muted);
+}
+
+.playfield-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Shortcut tiles double as blocks the ball breaks against. */
+.playfield-tile {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: calc(var(--grid-cell) * 6);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-ink);
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background-color var(--duration-fast) var(--ease-pixel);
+}
+
+.playfield-tile:hover {
+  background: var(--color-ink);
+  color: var(--color-bg);
+}
+
+.playfield-tile-detail {
+  color: var(--color-accent-ink);
+}
+
+.playfield-tile:hover .playfield-tile-detail {
+  color: inherit;
+}
+
+.playfield-tile[data-hit] {
+  animation: playfield-hit 0.3s steps(3, end);
+}
+
+@keyframes playfield-hit {
+  0%,
+  66% {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+}
+
+@keyframes playfield-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .playfield-content {
+    padding-block: var(--space-6) var(--space-24);
+  }
+
+  .playfield-hud {
+    position: static;
+    justify-items: start;
+    text-align: left;
+    max-width: none;
+  }
+
+  .playfield-role {
+    margin-top: var(--space-2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .playfield-demo,
+  .playfield-tile[data-hit] {
+    animation: none;
+  }
+}

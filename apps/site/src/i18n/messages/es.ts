@@ -41,6 +41,19 @@ export const es: Messages = {
   home: {
     intro:
       "Ingeniero de software enfocado en backend: Node.js, TypeScript y Python en plataformas SaaS, integraciones y sistemas en producción. Fuera del trabajo escribo juegos para el navegador desde cero, porque me gusta entender cómo funcionan las cosas por dentro.",
+    playfield: {
+      play: "Jugar",
+      stop: "Parar",
+      demo: "Demo",
+      rally: "Rally",
+      best: "Récord",
+      cleared: "¡Todo acertado!",
+      hintPointer: "Pasa el mouse por aquí para tomar la paleta.",
+      hintTouch: "Arrastra el dedo por el área para mover la paleta.",
+      hintKeys: "Usa ← → o A y D. Esc para salir.",
+      playing: "Modo de juego activo. Usa las flechas para mover la paleta; Esc para salir.",
+      shortcuts: "Atajos",
+    },
     gamesTitle: "Juegos recientes",
     allGames: "Ver todos los juegos",
   },

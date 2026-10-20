@@ -2,14 +2,15 @@ import { Link } from "react-router";
 
 import { repositories } from "../data";
 import { GameCatalog } from "../features/games/GameCatalog";
+import { HomePlayfield, type Shortcut } from "../features/home/HomePlayfield";
 import { useI18n } from "../i18n/context";
+import { hudNumber } from "../i18n/format";
 import { getMessages } from "../i18n/messages";
 import { localePath } from "../i18n/paths";
 import { requireLocale } from "../i18n/route";
+import { primaryNavigation } from "../routing/navigation";
 import { buildMeta } from "../seo/meta";
 import type { Route } from "./+types/home";
-
-import "../features/home/home.css";
 
 export { shouldRevalidate } from "../i18n/route";
 
@@ -22,7 +23,8 @@ export async function loader({ params }: Route.LoaderArgs) {
   ]);
 
   return {
-    games: games.slice(0, 3),
+    recentGames: games.slice(0, 3),
+    gameCount: games.length,
     profile,
     meta: buildMeta({ siteName: messages.site.name, description: messages.site.description }),
   };
@@ -34,25 +36,35 @@ export function meta({ loaderData }: Route.MetaArgs) {
 
 export default function Home({ loaderData }: Route.ComponentProps) {
   const { locale, messages } = useI18n();
-  const { games, profile } = loaderData;
+  const { recentGames, gameCount, profile } = loaderData;
+
+  const shortcuts: Shortcut[] = [
+    ...primaryNavigation.map((item) => ({
+      id: item.key,
+      label: messages.nav[item.key],
+      href: localePath(locale, item.path),
+      detail: item.key === "games" ? hudNumber(gameCount) : undefined,
+    })),
+    ...profile.links
+      .filter((link) => link.kind !== "email")
+      .map((link) => ({ id: link.kind, label: link.label, href: link.href, external: true })),
+  ];
 
   return (
-    <div className="page">
-      <section className="home-hero" aria-labelledby="home-title">
-        <p className="label">{profile.role}</p>
-        <h1 id="home-title">{profile.name}</h1>
-        <p className="home-hero-intro">{messages.home.intro}</p>
-      </section>
+    <>
+      <HomePlayfield profile={profile} intro={messages.home.intro} shortcuts={shortcuts} />
 
-      <section className="section-block" aria-labelledby="home-games">
-        <div className="section-head">
-          <h2 id="home-games" className="label">
-            {messages.home.gamesTitle}
-          </h2>
-          <Link to={localePath(locale, "/games")}>{messages.home.allGames}</Link>
-        </div>
-        <GameCatalog games={games} />
-      </section>
-    </div>
+      <div className="page">
+        <section className="section-block" aria-labelledby="home-games">
+          <div className="section-head">
+            <h2 id="home-games" className="label">
+              {messages.home.gamesTitle}
+            </h2>
+            <Link to={localePath(locale, "/games")}>{messages.home.allGames}</Link>
+          </div>
+          <GameCatalog games={recentGames} />
+        </section>
+      </div>
+    </>
   );
 }
