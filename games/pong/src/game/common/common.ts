@@ -1,4 +1,4 @@
-import { Vector2 } from "../../../../../packages/engines/src";
+import { Vector2 } from "../../andevengine/math/Vector2";
 
 
 export interface CollisionObject {

@@ -1,5 +1,5 @@
-import { Vector2 } from "../../../../../packages/engines/src";
-import { Input } from "../../../../../packages/engines/src";
+import { Vector2 } from "../../andevengine/math/Vector2";
+import { Input } from "../../andevengine/input/Input";
 import { CollisionObject } from "../common/common";
 import { PongGame, PongGameState } from "../PongGame";
 
