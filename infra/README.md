@@ -57,6 +57,9 @@ then publish again.
 
 ### 2. Associate it with the distribution
 
+The function leaves `/` to the distribution's **Default root object**, which
+must stay `index.html` (it already is: `/` answers 200 today).
+
 **Distribution → Behaviors → Default (\*) → Edit → Function associations →
 Viewer request**: *CloudFront Functions*, `portfolio-url-rewrite`. Save.
 

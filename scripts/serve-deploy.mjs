@@ -1,7 +1,7 @@
 // Serves the assembled `.deploy/` folder with the same rules as production:
 // URLs go through the CloudFront Function in infra/cloudfront/url-rewrite.js,
-// and missing files answer /404.html with status 404 (the distribution's
-// custom error response).
+// "/" maps to the default root object (index.html) and missing files answer
+// /404.html with status 404 (the distribution's custom error response).
 // Usage: node scripts/serve-deploy.mjs [port]
 import { createServer } from 'node:http';
 import { join, normalize, resolve } from 'node:path';
@@ -32,7 +32,9 @@ const server = createServer(async (req, res) => {
     return;
   }
 
-  const filePath = normalize(join(root, decodeURIComponent(result.uri)));
+  // The distribution's default root object answers "/".
+  const uri = result.uri === '/' ? '/index.html' : result.uri;
+  const filePath = normalize(join(root, decodeURIComponent(uri)));
   if (filePath.startsWith(root) && (await isFile(filePath))) {
     sendFile(res, filePath);
     return;
