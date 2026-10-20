@@ -24,15 +24,15 @@ describe("LocaleSwitcher", () => {
   it("links to the same page in every language", () => {
     renderAt("/pt/games/pong");
 
-    expect(screen.getByRole("link", { name: "English" })).toHaveAttribute("href", "/en/games/pong");
-    expect(screen.getByRole("link", { name: "Español" })).toHaveAttribute("href", "/es/games/pong");
-    expect(screen.getByRole("link", { name: "Português" })).toHaveAttribute("aria-current", "true");
+    expect(screen.getByRole("link", { name: /English/ })).toHaveAttribute("href", "/en/games/pong");
+    expect(screen.getByRole("link", { name: /Español/ })).toHaveAttribute("href", "/es/games/pong");
+    expect(screen.getByRole("link", { name: /Português/ })).toHaveAttribute("aria-current", "true");
   });
 
   it("remembers an explicit choice", async () => {
     renderAt("/pt");
 
-    await userEvent.click(screen.getByRole("link", { name: "English" }));
+    await userEvent.click(screen.getByRole("link", { name: /English/ }));
 
     expect(localStorage.getItem(LOCALE_STORAGE_KEY)).toBe("en");
   });

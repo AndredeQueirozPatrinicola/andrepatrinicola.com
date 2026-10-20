@@ -20,11 +20,12 @@ export function LocaleSwitcher() {
                 to={switchLocalePath(pathname, option)}
                 hrefLang={info.tag}
                 lang={info.tag}
-                aria-label={info.nativeName}
                 aria-current={option === locale ? "true" : undefined}
                 onClick={() => rememberLocale(option)}
               >
                 {option.toUpperCase()}
+                {/* The accessible name keeps the visible code and adds the full name. */}
+                <span className="visually-hidden"> · {info.nativeName}</span>
               </Link>
             </li>
           );
