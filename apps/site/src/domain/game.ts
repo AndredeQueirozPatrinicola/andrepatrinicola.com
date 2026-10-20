@@ -35,8 +35,8 @@ export type Game = {
   inputs: InputMethod[];
   status: GameStatus;
   hosting: GameHosting;
-  /** Absolute URL path or full URL of the cover image. */
-  cover?: string;
+  /** Absolute URL path or full URL of a 16:9 cover image (960 × 540). */
+  cover: string;
   year: number;
   tech: string[];
   /** Engineering details worth reading, taken from the source code. */
