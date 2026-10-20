@@ -74,6 +74,7 @@ export const pt = {
     goal: "Objetivo",
     controls: "Controles",
     rules: "Regras",
+    inGameLanguage: "O texto dentro do jogo está em português.",
     beforePlaying: "Antes de jogar",
     internals: "Por dentro",
     tech: "Tecnologias",

@@ -1,6 +1,7 @@
 import { localeInfo, locales } from "../i18n/config";
 import { getMessages } from "../i18n/messages";
 import { LOCALE_STORAGE_KEY, localePath } from "../i18n/paths";
+import { absoluteUrl } from "../seo/site";
 import type { Route } from "./+types/language-select";
 
 /**
@@ -35,6 +36,14 @@ export function meta({ loaderData }: Route.MetaArgs) {
   return [
     { title: loaderData.title },
     { name: "description", content: loaderData.description },
+    { tagName: "link", rel: "canonical", href: absoluteUrl("/") },
+    ...loaderData.options.map((option) => ({
+      tagName: "link",
+      rel: "alternate",
+      hrefLang: option.tag,
+      href: absoluteUrl(localePath(option.locale)),
+    })),
+    { tagName: "link", rel: "alternate", hrefLang: "x-default", href: absoluteUrl("/") },
   ];
 }
 

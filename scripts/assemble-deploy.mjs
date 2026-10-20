@@ -15,7 +15,10 @@ async function assemble() {
   // CloudFront serves /404.html for missing paths (see infra/cloudfront/).
   await rename(resolve(outputDirectory, '404/index.html'), resolve(outputDirectory, '404.html'));
   await rm(resolve(outputDirectory, '404'), { recursive: true, force: true });
-  await rm(resolve(outputDirectory, '__spa-fallback.html'), { force: true });
+  // Not used: there is no SPA fallback, and resource routes need no client data.
+  for (const unused of ['__spa-fallback.html', '404.data', 'sitemap.xml.data', 'robots.txt.data']) {
+    await rm(resolve(outputDirectory, unused), { force: true });
+  }
 
   const games = await findPublishedGames(root);
 

@@ -7,6 +7,7 @@ import { formatYearMonth } from "../i18n/format";
 import { getMessages } from "../i18n/messages";
 import { requireLocale } from "../i18n/route";
 import { buildMeta } from "../seo/meta";
+import { personSchema } from "../seo/structured-data";
 import type { Route } from "./+types/resume";
 
 export { shouldRevalidate } from "../i18n/route";
@@ -37,9 +38,13 @@ export async function loader({ params }: Route.LoaderArgs) {
     periods,
     profile,
     meta: buildMeta({
+      locale,
+      path: "/resume",
+      type: "profile",
       title: messages.resume.title,
       siteName: messages.site.name,
       description: `${profile.name} · ${profile.role}. ${resume.summary}`,
+      jsonLd: [personSchema(profile, locale)],
     }),
   };
 }

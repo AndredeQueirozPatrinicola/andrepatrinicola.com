@@ -10,6 +10,7 @@ import { localePath } from "../i18n/paths";
 import { requireLocale } from "../i18n/route";
 import { primaryNavigation } from "../routing/navigation";
 import { buildMeta } from "../seo/meta";
+import { personSchema } from "../seo/structured-data";
 import type { Route } from "./+types/home";
 
 export { shouldRevalidate } from "../i18n/route";
@@ -26,7 +27,13 @@ export async function loader({ params }: Route.LoaderArgs) {
     recentGames: games.slice(0, 3),
     gameCount: games.length,
     profile,
-    meta: buildMeta({ siteName: messages.site.name, description: messages.site.description }),
+    meta: buildMeta({
+      locale,
+      path: "",
+      siteName: messages.site.name,
+      description: messages.site.description,
+      jsonLd: [personSchema(profile, locale)],
+    }),
   };
 }
 

@@ -17,6 +17,8 @@ export async function loader({ params }: Route.LoaderArgs) {
   return {
     projects: await repositories.projects.list(locale),
     meta: buildMeta({
+      locale,
+      path: "/labs",
       title: messages.labs.title,
       siteName: messages.site.name,
       description: messages.labs.intro,

@@ -3,7 +3,7 @@ import { locales } from "../i18n/config";
 import { localePath } from "../i18n/paths";
 
 /** Paths below the locale prefix that exist in every language. */
-function localizedPaths(): string[] {
+export function localizedPaths(): string[] {
   return ["", "/games", ...games.map((game) => `/games/${game.slug}`), "/labs", "/about", "/resume"];
 }
 
@@ -13,5 +13,5 @@ export function getPrerenderPaths(): string[] {
     localizedPaths().map((path) => localePath(locale, path)),
   );
 
-  return ["/", "/404", ...localized];
+  return ["/", "/404", "/sitemap.xml", "/robots.txt", ...localized];
 }

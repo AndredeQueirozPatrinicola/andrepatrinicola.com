@@ -24,14 +24,18 @@ import "./styles/fonts.css";
 import "./styles/base.css";
 import "./styles/layout.css";
 
-export const links: Route.LinksFunction = () =>
-  [displayFont, plexFont].map((href) => ({
+export const links: Route.LinksFunction = () => [
+  ...[displayFont, plexFont].map((href) => ({
     rel: "preload",
     href,
     as: "font",
     type: "font/woff2",
     crossOrigin: "anonymous" as const,
-  }));
+  })),
+  { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+  { rel: "icon", href: "/favicon.ico", sizes: "32x32" },
+  { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+];
 
 export function Layout({ children }: { children: ReactNode }) {
   const localeData = useRouteLoaderData<typeof localeLoader>("routes/locale-layout");
@@ -45,6 +49,8 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="color-scheme" content="light dark" />
+        <meta name="theme-color" content="#f7f7f7" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <Meta />
         <Links />

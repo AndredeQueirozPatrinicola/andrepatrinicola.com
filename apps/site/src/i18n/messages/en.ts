@@ -72,6 +72,7 @@ export const en: Messages = {
     goal: "Goal",
     controls: "Controls",
     rules: "Rules",
+    inGameLanguage: "The text inside the game is in Portuguese.",
     beforePlaying: "Before you play",
     internals: "Under the hood",
     tech: "Technologies",

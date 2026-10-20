@@ -9,6 +9,7 @@ import { getMessages } from "../i18n/messages";
 import { localePath } from "../i18n/paths";
 import { requireLocale } from "../i18n/route";
 import { buildMeta } from "../seo/meta";
+import { personSchema } from "../seo/structured-data";
 import type { Route } from "./+types/about";
 
 import "../features/about/about.css";
@@ -37,9 +38,13 @@ export async function loader({ params }: Route.LoaderArgs) {
     profile,
     path,
     meta: buildMeta({
+      locale,
+      path: "/about",
+      type: "profile",
       title: messages.about.title,
       siteName: messages.site.name,
       description: messages.about.lead,
+      jsonLd: [personSchema(profile, locale)],
     }),
   };
 }

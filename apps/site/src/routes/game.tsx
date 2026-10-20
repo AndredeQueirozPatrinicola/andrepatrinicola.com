@@ -9,6 +9,7 @@ import { getMessages } from "../i18n/messages";
 import { localePath } from "../i18n/paths";
 import { requireLocale } from "../i18n/route";
 import { buildMeta } from "../seo/meta";
+import { breadcrumbSchema, videoGameSchema } from "../seo/structured-data";
 import type { Route } from "./+types/game";
 
 import "../features/games/game-page.css";
@@ -23,17 +24,32 @@ export async function loader({ params }: Route.LoaderArgs) {
   }
 
   const messages = getMessages(locale);
-  const others = (await repositories.games.list(locale)).filter(
-    (candidate) => candidate.slug !== game.slug,
-  );
+  const [all, profile] = await Promise.all([
+    repositories.games.list(locale),
+    repositories.profile.get(locale),
+  ]);
+  const others = all.filter((candidate) => candidate.slug !== game.slug);
+  const path = `/games/${game.slug}`;
 
   return {
     game,
     others,
     meta: buildMeta({
+      locale,
+      path,
       title: game.title,
       siteName: messages.site.name,
       description: `${game.tagline} ${game.goal}`,
+      image: game.ogImage
+        ? { url: game.ogImage, alt: game.title, width: 1200, height: 630 }
+        : { url: game.cover, alt: game.title, width: 960, height: 540 },
+      jsonLd: [
+        videoGameSchema(game, profile, locale),
+        breadcrumbSchema([
+          { name: messages.games.title, path: localePath(locale, "/games") },
+          { name: game.title, path: localePath(locale, path) },
+        ]),
+      ],
     }),
   };
 }
@@ -46,6 +62,7 @@ export default function GameRoute({ loaderData }: Route.ComponentProps) {
   const { locale, messages } = useI18n();
   const { game, others } = loaderData;
   const text = messages.games;
+  const notes = game.language.startsWith(locale) ? game.notes : [...game.notes, text.inGameLanguage];
 
   return (
     <div className="page game-page">
@@ -98,11 +115,11 @@ export default function GameRoute({ loaderData }: Route.ComponentProps) {
             </ul>
           </section>
 
-          {game.notes.length > 0 && (
+          {notes.length > 0 && (
             <section className="game-notes">
               <h3 className="label">{text.beforePlaying}</h3>
               <ul className="game-list">
-                {game.notes.map((note) => (
+                {notes.map((note) => (
                   <li key={note}>{note}</li>
                 ))}
               </ul>

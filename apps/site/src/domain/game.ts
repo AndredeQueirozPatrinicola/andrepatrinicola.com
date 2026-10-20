@@ -37,7 +37,11 @@ export type Game = {
   hosting: GameHosting;
   /** Absolute URL path or full URL of a 16:9 cover image (960 × 540). */
   cover: string;
+  /** 1200 × 630 image for link previews; the cover is used when absent. */
+  ogImage?: string;
   year: number;
+  /** Language of the text inside the game itself (BCP 47). */
+  language: string;
   tech: string[];
   /** Engineering details worth reading, taken from the source code. */
   internals: string[];
