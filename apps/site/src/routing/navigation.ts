@@ -8,4 +8,4 @@ export type NavItem = {
 };
 
 /** Primary navigation, in display order. Each page adds itself here. */
-export const primaryNavigation: NavItem[] = [];
+export const primaryNavigation: NavItem[] = [{ key: "games", path: "/games" }];

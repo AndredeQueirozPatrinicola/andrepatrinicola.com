@@ -55,3 +55,9 @@
     justify-self: start;
   }
 }
+
+@media (max-width: 47.99rem) {
+  .site-footer-inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

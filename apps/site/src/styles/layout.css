@@ -36,6 +36,18 @@ body {
   color: var(--color-ink-muted);
 }
 
+.section-block {
+  padding-block: var(--space-12);
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
 .skip-link {
   position: absolute;
   top: var(--space-2);

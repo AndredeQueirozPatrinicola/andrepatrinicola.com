@@ -1,0 +1,132 @@
+.game-card {
+  height: 100%;
+}
+
+.game-card-link {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  text-decoration: none;
+  border: var(--border);
+  background: var(--color-bg);
+  transition: border-color var(--duration-fast) var(--ease-pixel);
+}
+
+.game-card-link:hover {
+  color: inherit;
+  border-color: var(--color-ink);
+}
+
+.game-card-screen {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--color-screen);
+  border-bottom: var(--border);
+}
+
+.game-card-screen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+/* "PLAY" tag that slides in by whole steps, like a menu blink. */
+.game-card-play {
+  position: absolute;
+  left: var(--space-3);
+  bottom: var(--space-3);
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-6);
+  background: var(--color-screen-ink);
+  color: var(--color-screen);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(var(--grid-cell));
+  transition:
+    opacity var(--duration-fast) var(--ease-pixel),
+    transform var(--duration-fast) var(--ease-pixel);
+}
+
+.game-card-play::before {
+  content: "";
+  position: absolute;
+  left: var(--space-2);
+  top: 50%;
+  width: 6px;
+  height: 10px;
+  background: var(--color-accent);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  transform: translateY(-50%);
+}
+
+.game-card-link:hover .game-card-play,
+.game-card-link:focus-visible .game-card-play {
+  opacity: 1;
+  transform: none;
+}
+
+.game-card-body {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-4) var(--space-6);
+}
+
+.game-card-title {
+  font-size: var(--text-xl);
+}
+
+.game-card-tagline {
+  color: var(--color-ink-muted);
+}
+
+.game-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  margin-top: var(--space-2);
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.game-card-meta [data-status="playable"] {
+  color: var(--color-ink);
+}
+
+.game-card-meta [data-status="prototype"] {
+  color: var(--color-accent-ink);
+}
+
+.game-card-featured .game-card-title {
+  font-size: var(--text-2xl);
+}
+
+.game-card-featured .game-card-body {
+  padding: var(--space-6);
+}
+
+/* Compact: screen and text side by side. */
+@media (min-width: 48rem) {
+  .game-card-compact .game-card-link {
+    grid-template-columns: 2fr 3fr;
+    grid-template-rows: 1fr;
+  }
+
+  .game-card-compact .game-card-screen {
+    border-bottom: 0;
+    border-right: var(--border);
+    aspect-ratio: auto;
+  }
+
+  /* Letterboxed rather than cropped: the screen column can be tall. */
+  .game-card-compact .game-card-screen img {
+    object-fit: contain;
+  }
+}

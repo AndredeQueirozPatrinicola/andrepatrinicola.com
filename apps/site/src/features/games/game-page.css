@@ -1,0 +1,191 @@
+.breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-6) 0 0;
+  list-style: none;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.breadcrumb li + li::before {
+  content: "/";
+  margin-right: var(--space-2);
+}
+
+.game-header {
+  display: grid;
+  gap: var(--space-3);
+  padding-block: var(--space-8) var(--space-8);
+}
+
+.game-header h1 {
+  font-size: var(--text-display);
+}
+
+.game-header-tagline {
+  max-width: 60ch;
+  font-size: var(--text-lg);
+  color: var(--color-ink-muted);
+}
+
+.game-header-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: 0;
+  list-style: none;
+}
+
+.game-header-meta li,
+.tag-list li {
+  padding: var(--space-1) var(--space-2);
+  border: var(--border);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  background: var(--color-bg);
+}
+
+.game-header-meta [data-status="prototype"] {
+  border-color: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.game-layout {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-8) var(--space-6);
+  align-items: start;
+}
+
+.game-layout-player {
+  grid-column: span 8;
+}
+
+.game-guide {
+  grid-column: span 4;
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  border: var(--border);
+  background: var(--color-bg);
+}
+
+.game-guide section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.game-guide-title {
+  font-size: var(--text-xl);
+}
+
+.game-goal {
+  font-size: var(--text-lg);
+}
+
+.game-list {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  list-style: none;
+}
+
+.game-list li {
+  position: relative;
+  padding-left: var(--space-6);
+}
+
+.game-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: var(--grid-cell);
+  height: var(--grid-cell);
+  background: var(--color-line-strong);
+}
+
+.game-notes .game-list li::before {
+  background: var(--color-accent);
+}
+
+.game-details {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-8) var(--space-6);
+  margin-top: var(--space-16);
+  padding-top: var(--space-8);
+  border-top: var(--border);
+}
+
+.game-details-internals {
+  grid-column: span 8;
+  display: grid;
+  gap: var(--space-4);
+  max-width: var(--measure);
+}
+
+.game-details-facts {
+  grid-column: span 4;
+  display: grid;
+  gap: var(--space-6);
+  margin: 0;
+}
+
+.game-details-facts dd {
+  margin: var(--space-2) 0 0;
+  overflow-wrap: anywhere;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: 0;
+  list-style: none;
+}
+
+.game-others {
+  margin-top: var(--space-16);
+  padding-top: var(--space-8);
+  border-top: var(--border);
+}
+
+.game-others-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--space-6);
+}
+
+.game-others-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: var(--space-6);
+  padding: 0;
+  list-style: none;
+}
+
+.game-others-list .game-card-tagline,
+.game-others-list .game-card-meta {
+  display: none;
+}
+
+@media (max-width: 63.99rem) {
+  .game-layout,
+  .game-details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .game-layout-player,
+  .game-guide,
+  .game-details-internals,
+  .game-details-facts {
+    grid-column: 1 / -1;
+  }
+}
