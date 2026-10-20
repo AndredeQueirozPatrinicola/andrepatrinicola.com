@@ -116,5 +116,5 @@ the same URLs, so the site needs no per-game ports.
 - End-to-end tests (Playwright) against the production build served with the
   CloudFront rules: routing, direct access, 404s, languages, theme, games,
   home, résumé, mobile overflow, and axe accessibility checks in both themes.
-- Lighthouse (mobile, simulated throttling, 2026-10-20): performance 95,
+- Lighthouse (mobile, simulated throttling, 2026-10-19): performance 95,
   accessibility 100, best practices 100, SEO 100.

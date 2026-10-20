@@ -13,7 +13,8 @@ permissions:
 
 concurrency:
   group: production-deployment
-  cancel-in-progress: true
+  # Never stop a deploy halfway through the upload.
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -66,10 +67,11 @@ jobs:
 
       # Hashed assets first (cached for a year), then HTML and everything else
       # (always revalidated), so a new page never references a missing file.
+      # Old hashed assets are kept (no --delete) so pages and tabs opened
+      # before this deploy can still load their files; they are tiny.
       - name: Deploy hashed assets to S3
         run: |
           aws s3 sync ./.deploy "s3://${{ vars.AWS_S3_BUCKET }}" \
-            --delete \
             --exclude "*" \
             --include "assets/*" \
             --include "play/*/assets/*" \

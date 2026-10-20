@@ -89,7 +89,9 @@ curl -s  $SITE/robots.txt                # robots with the sitemap URL
 ## Caching
 
 The workflow uploads hashed files (`assets/`, `play/*/assets/`) with
-`Cache-Control: public, max-age=31536000, immutable` and everything else
+`Cache-Control: public, max-age=31536000, immutable` (old ones are kept, so
+pages opened before a deploy keep working; prune them occasionally with an S3
+lifecycle rule if they ever matter) and everything else
 (HTML, `.data`, images, PDFs) with `max-age=0, must-revalidate`, then
 invalidates `/*`. If the distribution uses a cache policy that ignores origin
 headers, switch the default behavior to **CachingOptimized** or a policy that
@@ -98,7 +100,7 @@ honors `Cache-Control`.
 Keep **Compress objects automatically** on in the default behavior: the site
 ships about 100 KB of JavaScript compressed versus roughly 300 KB raw. The
 local preview server gzips the same file types so Lighthouse numbers measured
-locally are comparable (mobile, simulated throttling, 2026-10-20: performance
+locally are comparable (mobile, simulated throttling, 2026-10-19: performance
 95, accessibility 100, best practices 100, SEO 100; LCP ≈ 2.4 s, CLS 0).
 
 ## A custom domain later
