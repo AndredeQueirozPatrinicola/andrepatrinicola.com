@@ -72,6 +72,8 @@ export function HomePlayfield({ profile, intro, shortcuts }: HomePlayfieldProps)
   const rootRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const controllerRef = useRef<PlayfieldController | null>(null);
+  /** "Play" pressed before the game code finished loading. */
+  const playRequested = useRef(false);
   const hitTiles = useRef(new Set<string>());
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const coarsePointer = useMediaQuery("(pointer: coarse)");
@@ -100,6 +102,7 @@ export function HomePlayfield({ profile, intro, shortcuts }: HomePlayfieldProps)
       case "mode":
         setMode(event.mode);
         if (event.mode === "demo") {
+          playRequested.current = false;
           setRally(0);
           setUsingKeys(false);
           hitTiles.current.clear();
@@ -134,6 +137,7 @@ export function HomePlayfield({ profile, intro, shortcuts }: HomePlayfieldProps)
           autoplay: !reducedMotion,
           onEvent: (event) => onPlayfieldEvent(event),
         });
+        if (playRequested.current) controllerRef.current.play();
       });
 
     const idle = window.requestIdleCallback ?? ((callback: () => void) => window.setTimeout(callback, 200));
@@ -148,9 +152,11 @@ export function HomePlayfield({ profile, intro, shortcuts }: HomePlayfieldProps)
 
   function togglePlay() {
     if (mode === "player") {
+      playRequested.current = false;
       controllerRef.current?.stopPlaying();
     } else {
       setUsingKeys(true);
+      playRequested.current = true;
       controllerRef.current?.play();
     }
   }
