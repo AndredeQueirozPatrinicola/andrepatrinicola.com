@@ -75,6 +75,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   return (
     <main id="content" className="app-main">
       <NotFoundView
+        code={notFound ? "404" : ""}
         title={notFound ? "Página não encontrada" : "Algo deu errado"}
         body={
           notFound

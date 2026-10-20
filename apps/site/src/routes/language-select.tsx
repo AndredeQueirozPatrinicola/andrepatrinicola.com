@@ -1,4 +1,5 @@
-import { localeInfo, locales } from "../i18n/config";
+import { defaultLocale, localeInfo, locales } from "../i18n/config";
+import { pickLocale } from "../i18n/detect";
 import { getMessages } from "../i18n/messages";
 import { LOCALE_STORAGE_KEY, localePath } from "../i18n/paths";
 import { absoluteUrl } from "../seo/site";
@@ -10,16 +11,12 @@ import type { Route } from "./+types/language-select";
  * below serve crawlers and visitors without JavaScript.
  */
 const redirectScript = `(function () {
-  var supported = ${JSON.stringify(locales)};
+  var pickLocale = ${pickLocale.toString()};
   var stored = null;
   try { stored = localStorage.getItem(${JSON.stringify(LOCALE_STORAGE_KEY)}); } catch (e) {}
-  var target = supported.indexOf(stored) >= 0 ? stored : null;
   var preferred = navigator.languages || [navigator.language || ""];
-  for (var i = 0; !target && i < preferred.length; i++) {
-    var language = String(preferred[i]).toLowerCase().split("-")[0];
-    if (supported.indexOf(language) >= 0) target = language;
-  }
-  location.replace("/" + (target || ${JSON.stringify(locales[0])}) + location.search + location.hash);
+  var locale = pickLocale(${JSON.stringify(locales)}, ${JSON.stringify(defaultLocale)}, preferred, stored);
+  location.replace("/" + locale + location.search + location.hash);
 })();`;
 
 export function loader() {

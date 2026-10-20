@@ -1,4 +1,5 @@
 import { defaultLocale, isLocale, locales, type Locale } from "./config";
+import { pickLocale } from "./detect";
 
 /** localStorage key for an explicit language choice made in the switcher. */
 export const LOCALE_STORAGE_KEY = "locale";
@@ -16,22 +17,8 @@ export function switchLocalePath(pathname: string, target: Locale): string {
   return localePath(target, tail.length ? `/${tail.join("/")}` : "");
 }
 
-/**
- * Picks the visitor's language: an explicit stored choice wins, then the
- * browser's preferred languages, then the default.
- */
-export function detectLocale(
-  preferred: readonly string[],
-  stored?: string | null,
-): Locale {
-  if (isLocale(stored)) return stored;
-
-  for (const tag of preferred) {
-    const language = tag.toLowerCase().split("-")[0];
-    if (isLocale(language)) return language;
-  }
-
-  return defaultLocale;
+/** The visitor's language: stored choice, then browser languages, then the default. */
+export function detectLocale(preferred: readonly string[], stored?: string | null): Locale {
+  const locale = pickLocale(locales, defaultLocale, preferred, stored);
+  return isLocale(locale) ? locale : defaultLocale;
 }
-
-export { locales };

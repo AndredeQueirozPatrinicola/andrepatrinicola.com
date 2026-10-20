@@ -4,7 +4,6 @@ import type { ProfileLink } from "../domain/profile";
 /** Source: résumé v4 (pt/en). The phone number is intentionally left out. */
 export const profile = {
   name: "André de Queiroz Patrinicola",
-  shortName: "André Patrinicola",
   email: "andrepatrinicola@gmail.com",
   role: {
     pt: "Engenheiro de software · Backend",

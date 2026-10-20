@@ -8,7 +8,6 @@ export type ProfileLink = {
 
 export type Profile = {
   name: string;
-  shortName: string;
   role: string;
   location: string;
   summary: string;

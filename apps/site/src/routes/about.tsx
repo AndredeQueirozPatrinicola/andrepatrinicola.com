@@ -16,8 +16,6 @@ import "../features/about/about.css";
 
 export { shouldRevalidate } from "../i18n/route";
 
-type PathKey = "fflch" | "technext" | "pixit";
-
 export async function loader({ params }: Route.LoaderArgs) {
   const locale = requireLocale(params);
   const messages = getMessages(locale);
@@ -28,7 +26,7 @@ export async function loader({ params }: Route.LoaderArgs) {
 
   // Oldest first: the path reads as a progression.
   const path = [...resume.experiences].reverse().map((experience) => ({
-    id: experience.id as PathKey,
+    id: experience.id,
     company: experience.company,
     role: experience.role,
     start: formatYearMonth(experience.start, localeInfo[locale].tag),
@@ -79,14 +77,18 @@ export default function AboutRoute({ loaderData }: Route.ComponentProps) {
             {text.pathTitle}
           </h2>
           <ol className="about-path">
-            {path.map((step) => (
-              <li key={step.id}>
-                <p className="about-path-date">{step.start}</p>
-                <h3>{step.company}</h3>
-                <p className="about-path-role">{step.role}</p>
-                <p>{text.path[step.id]}</p>
-              </li>
-            ))}
+            {path.map((step) => {
+              // A one-line story per position; new positions show without one until written.
+              const story = (text.path as Record<string, string | undefined>)[step.id];
+              return (
+                <li key={step.id}>
+                  <p className="about-path-date">{step.start}</p>
+                  <h3>{step.company}</h3>
+                  <p className="about-path-role">{step.role}</p>
+                  {story && <p>{story}</p>}
+                </li>
+              );
+            })}
           </ol>
         </section>
 
