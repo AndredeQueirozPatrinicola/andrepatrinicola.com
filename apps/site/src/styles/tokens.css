@@ -17,8 +17,8 @@
   --color-ink-muted: light-dark(#5c5c5c, #a3a3a3);
   --color-line: light-dark(#d8d8d8, #2e2e2e);
   --color-line-strong: light-dark(#8a8a8a, #6b6b6b);
-  --color-accent: light-dark(#e8590c, #ff7a33);
-  --color-accent-ink: light-dark(#b3440a, #ff8a4c);
+  --color-accent: light-dark(#5084d0, #6f9be0);
+  --color-accent-ink: light-dark(#2f5c9e, #8aaeea);
   --color-on-accent: light-dark(#151515, #121212);
   --color-focus: var(--color-accent-ink);
 

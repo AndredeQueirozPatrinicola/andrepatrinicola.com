@@ -19,8 +19,7 @@ FONT = ROOT.parent.parent / "games" / "pong" / "src" / "fonts" / "VCR_OSD_MONO_1
 PAPER = (247, 247, 247)
 INK = (21, 21, 21)
 MUTED = (92, 92, 92)
-GRID = (233, 233, 233)
-ACCENT = (232, 89, 12)
+ACCENT = (80, 132, 208)
 
 NAME = "André de Queiroz Patrinicola"
 ROLE = "Software engineer / Backend / Games"
@@ -35,12 +34,7 @@ GAMES = {
 
 def canvas(width: int, height: int) -> tuple[Image.Image, ImageDraw.ImageDraw]:
     image = Image.new("RGB", (width, height), PAPER)
-    draw = ImageDraw.Draw(image)
-    for x in range(0, width, 32):
-        draw.line([(x, 0), (x, height)], fill=GRID)
-    for y in range(0, height, 32):
-        draw.line([(0, y), (width, y)], fill=GRID)
-    return image, draw
+    return image, ImageDraw.Draw(image)
 
 
 def font(size: int) -> ImageFont.FreeTypeFont:
