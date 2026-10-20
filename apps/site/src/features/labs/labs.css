@@ -68,23 +68,6 @@
   color: var(--color-line-strong);
 }
 
-.lab-snippet {
-  display: grid;
-  gap: var(--space-2);
-  margin-top: var(--space-2);
-}
-
-.lab-snippet pre {
-  margin: 0;
-  padding: var(--space-4);
-  overflow-x: auto;
-  border: 1px solid var(--color-ink);
-  background: var(--color-surface);
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  line-height: 1.5;
-}
-
 .lab-footer {
   grid-column: 5 / -1;
   display: flex;

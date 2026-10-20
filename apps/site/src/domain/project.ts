@@ -10,10 +10,8 @@ export type Project = {
   status: ProjectStatus;
   year?: number;
   summary: string;
-  /** What the project was a way to learn or try, taken from its code. */
+  /** Technical details, taken from the project's code. */
   explored: string[];
   tech: string[];
   links: ProjectLink[];
-  /** Optional short excerpt of the project's own source. */
-  snippet?: { language: string; caption: string; code: string };
 };

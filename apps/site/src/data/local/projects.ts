@@ -13,7 +13,6 @@ function toProject(entry: ProjectEntry, locale: Locale): Project {
     links: entry.links.map((link) =>
       link.kind === "page" ? { ...link, href: localePath(locale, link.href) } : link,
     ),
-    snippet: entry.snippet && { ...entry.snippet, caption: localize(entry.snippet.caption, locale) },
   };
 }
 

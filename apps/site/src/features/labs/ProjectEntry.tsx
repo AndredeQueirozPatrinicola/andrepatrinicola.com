@@ -32,15 +32,6 @@ export function ProjectEntry({ project, index }: { project: Project; index: numb
             <li key={item}>{item}</li>
           ))}
         </ul>
-
-        {project.snippet && (
-          <figure className="lab-snippet">
-            <pre>
-              <code>{project.snippet.code}</code>
-            </pre>
-            <figcaption className="label">{project.snippet.caption}</figcaption>
-          </figure>
-        )}
       </div>
 
       <footer className="lab-footer">

@@ -1,26 +1,14 @@
 import type { Localized } from "../domain/localized";
 import type { Project } from "../domain/project";
 
-export type ProjectEntry = Omit<Project, "summary" | "explored" | "links" | "snippet"> & {
+export type ProjectEntry = Omit<Project, "summary" | "explored" | "links"> & {
   summary: Localized;
   explored: Localized<string[]>;
   /** `page` links are paths below the locale prefix. */
   links: Project["links"];
-  snippet?: { language: string; caption: Localized; code: string };
 };
 
 const GITHUB = "https://github.com/AndredeQueirozPatrinicola";
-
-/** Excerpt of packages/engines/src/andevengine/game/Game.ts. */
-const gameLoop = `private readonly loop = (currentTime: number): void => {
-  const deltaTime = (currentTime - this.previousTime) / 1000;
-  this.previousTime = currentTime;
-
-  this.update(deltaTime);
-  this.render();
-
-  this.animationFrameId = requestAnimationFrame(this.loop);
-};`;
 
 /** Labs: personal projects and experiments that are not (only) games. */
 export const projects: ProjectEntry[] = [
@@ -35,34 +23,32 @@ export const projects: ProjectEntry[] = [
       { kind: "page", href: "/games" },
     ],
     summary: {
-      pt: "O mini motor 2D em TypeScript que roda os jogos deste site. É pequeno de propósito: o suficiente para entender cada peça.",
-      en: "The small 2D TypeScript engine behind the games on this site. It is small on purpose: just enough to understand every piece.",
-      es: "El pequeño motor 2D en TypeScript detrás de los juegos de este sitio. Es pequeño a propósito: lo justo para entender cada pieza.",
+      pt: "Motor 2D em TypeScript sobre o qual rodam os quatro jogos em Canvas deste site. Ele cuida do loop, da entrada e do canvas; colisão, física e câmera ficam no código de cada jogo.",
+      en: "A 2D TypeScript engine that runs the four Canvas games on this site. It takes care of the loop, input and the canvas; collision, physics and cameras live in each game's own code.",
+      es: "Motor 2D en TypeScript sobre el que corren los cuatro juegos en Canvas de este sitio. Se encarga del bucle, la entrada y el canvas; colisiones, física y cámara quedan en el código de cada juego.",
     },
     explored: {
       pt: [
-        "Loop com requestAnimationFrame e delta time em segundos",
-        "Entrada de teclado e mouse como um conjunto de teclas pressionadas",
-        "Vetores 2D e, em cada jogo, colisões AABB, círculo–retângulo e resposta com restituição",
-        "Câmera com interpolação linear no Angry Blocks",
+        "Classe Game: contexto 2D, loop com requestAnimationFrame, delta time em segundos e os ganchos load, update e render",
+        "Input: guarda as teclas pressionadas e trata o botão do mouse como mais uma tecla",
+        "Cursor: posição do mouse convertida para as coordenadas do canvas",
+        "Vector2 para posições, velocidades e direções",
+        "Usado no Classic Pong, Spaceship Meteor, Flappy Thing e Angry Blocks; cada jogo leva uma cópia do motor no próprio repositório",
       ],
       en: [
-        "A requestAnimationFrame loop with delta time in seconds",
-        "Keyboard and mouse input as a set of pressed keys",
-        "2D vectors and, in each game, AABB, circle–rectangle and restitution-based collisions",
-        "A linearly interpolated camera in Angry Blocks",
+        "Game class: 2D context, a requestAnimationFrame loop, delta time in seconds and load, update and render hooks",
+        "Input: keeps the set of pressed keys and treats the mouse button as one more key",
+        "Cursor: mouse position converted to canvas coordinates",
+        "Vector2 for positions, velocities and directions",
+        "Used by Classic Pong, Spaceship Meteor, Flappy Thing and Angry Blocks; each game ships its own copy of the engine in its repository",
       ],
       es: [
-        "Bucle con requestAnimationFrame y delta time en segundos",
-        "Entrada de teclado y mouse como un conjunto de teclas presionadas",
-        "Vectores 2D y, en cada juego, colisiones AABB, círculo–rectángulo y respuesta con restitución",
-        "Cámara con interpolación lineal en Angry Blocks",
+        "Clase Game: contexto 2D, bucle con requestAnimationFrame, delta time en segundos y los hooks load, update y render",
+        "Input: guarda las teclas presionadas y trata el botón del mouse como una tecla más",
+        "Cursor: posición del mouse convertida a las coordenadas del canvas",
+        "Vector2 para posiciones, velocidades y direcciones",
+        "Lo usan Classic Pong, Spaceship Meteor, Flappy Thing y Angry Blocks; cada juego lleva una copia del motor en su propio repositorio",
       ],
-    },
-    snippet: {
-      language: "ts",
-      caption: { pt: "O loop do motor", en: "The engine loop", es: "El bucle del motor" },
-      code: gameLoop,
     },
   },
   {

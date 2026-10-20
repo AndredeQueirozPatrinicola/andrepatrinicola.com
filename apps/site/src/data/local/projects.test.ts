@@ -8,9 +8,8 @@ describe("local projects repository", () => {
   it("localizes text and internal links", async () => {
     const [engine] = await createLocalProjectsRepository().list("es");
 
-    expect(engine.summary).toMatch(/^El pequeño motor/);
+    expect(engine.summary).toMatch(/^Motor 2D en TypeScript/);
     expect(engine.links).toContainEqual({ kind: "page", href: "/es/games" });
-    expect(engine.snippet?.caption).toBe("El bucle del motor");
   });
 
   it("has unique slugs and the same number of items in every language", () => {
