@@ -314,9 +314,9 @@ export const games: GameEntry[] = [
       es: "Prototipo de resortera con gravedad, rebote y una cámara que sigue la pelota.",
     },
     goal: {
-      pt: "Puxe, solte e veja a bola quicar. Os blocos ainda estão por vir.",
-      en: "Pull, release and watch the ball bounce. The blocks are still to come.",
-      es: "Tira, suelta y mira cómo rebota la pelota. Los bloques todavía están por llegar.",
+      pt: "Puxe, solte e tente acertar o bloco.",
+      en: "Pull, release and try to hit the block.",
+      es: "Tira, suelta e intenta golpear el bloque.",
     },
     rules: {
       pt: [
@@ -347,22 +347,25 @@ export const games: GameEntry[] = [
         "Resposta de colisão com normal, penetração e coeficiente de restituição",
         "Câmera com interpolação linear (lerp) seguindo a bola",
         "Força do lançamento limitada pelo comprimento do puxão",
+        "Um bloco recebe parte do impulso da bola e desliza até parar por atrito",
       ],
       en: [
         "Collision response with normal, penetration and a restitution coefficient",
         "Camera following the ball with linear interpolation (lerp)",
         "Launch force capped by the length of the pull",
+        "A block takes part of the ball's impulse and slides to a stop with friction",
       ],
       es: [
         "Respuesta de colisión con normal, penetración y coeficiente de restitución",
         "Cámara que sigue la pelota con interpolación lineal (lerp)",
         "Fuerza del lanzamiento limitada por la longitud del tirón",
+        "Un bloque recibe parte del impulso de la pelota y se desliza hasta detenerse por fricción",
       ],
     },
     notes: {
-      pt: ["Em desenvolvimento: ainda não há blocos, alvos nem pontuação.", "Precisa de mouse."],
-      en: ["Work in progress: there are no blocks, targets or score yet.", "Requires a mouse."],
-      es: ["En desarrollo: todavía no hay bloques, objetivos ni puntaje.", "Requiere un mouse."],
+      pt: ["Em desenvolvimento: ainda não há alvos nem pontuação.", "Precisa de mouse."],
+      en: ["Work in progress: there are no targets or score yet.", "Requires a mouse."],
+      es: ["En desarrollo: todavía no hay objetivos ni puntaje.", "Requiere un mouse."],
     },
   },
 ];

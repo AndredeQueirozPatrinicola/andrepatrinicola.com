@@ -6,6 +6,7 @@ import { CollidableObjectType, Collision, RenderableObjectType } from '../types/
 
 
 const GRAVITY_FORCE = 980
+const BLOCK_FRICTION = 6
 
 
 const lerp = (A: number, B: number, T: number) => {
@@ -157,6 +158,26 @@ export class Ball extends CollidableEntity {
         let distance = Math.sqrt( (distX*distX) + (distY*distY) );
 
 
+        if (distance === 0) {
+            const left = this.collision.position.x - rect.position.x;
+            const right = rect.position.x + rect.shape.width - this.collision.position.x;
+            const top = this.collision.position.y - rect.position.y;
+            const bottom = rect.position.y + rect.shape.height - this.collision.position.y;
+            const closest = Math.min(left, right, top, bottom);
+
+            const normal =
+                closest === left ? new Vector2(-1, 0) :
+                closest === right ? new Vector2(1, 0) :
+                closest === top ? new Vector2(0, -1) :
+                new Vector2(0, 1);
+
+            return {
+                normal,
+                penetration: closest + (this.collision.shape.radius || 0),
+                contactPoint: new Vector2(0, 0)
+            };
+        }
+
         // if the distance is less than the radius, collision!
         if (distance <= ( this.collision.shape.radius || 0)) {
             const normal = new Vector2(
@@ -207,6 +228,56 @@ export class Wall extends CollidableEntity {
             this.collision.position.x, this.collision.position.y, 
             this.collision.shape.width, this.collision.shape.height
         );
+    }
+}
+
+export class Block extends Wall {
+    public ground: CollidableObject;
+
+    constructor(rendererOpts: RenderableObjectType, collidableOpts: CollidableObjectType, ground: CollidableObject) {
+        super(rendererOpts, collidableOpts);
+        this.ground = ground;
+    }
+
+    public update(dt: number) {
+        this.collision.position.x += this.collision.velocity.x * dt;
+        this.collision.velocity.x *= Math.max(0, 1 - BLOCK_FRICTION * dt);
+
+        const minX = this.ground.position.x;
+        const maxX = this.ground.position.x + this.ground.shape.width - this.collision.shape.width;
+
+        if (this.collision.position.x < minX || this.collision.position.x > maxX) {
+            this.collision.position.x = Math.min(Math.max(this.collision.position.x, minX), maxX);
+            this.collision.velocity.x = 0;
+        }
+    }
+
+    public push(ball: Ball, collision: Collision) {
+        const dot =
+            ball.collision.velocity.x * collision.normal.x +
+            ball.collision.velocity.y * collision.normal.y;
+
+        if (dot >= 0) {
+            return;
+        }
+
+        const impulse =
+            -(1 + ball.collision.restitution) * dot /
+            (1 / ball.collision.mass + 1 / this.collision.mass);
+
+        this.collision.velocity.x -= impulse * collision.normal.x / this.collision.mass;
+    }
+
+    public render(): void {
+        const x = Math.round(this.collision.position.x);
+        const y = Math.round(this.collision.position.y);
+        const { width, height } = this.collision.shape;
+
+        this.renderer.canvas.imageSmoothingEnabled = false;
+        this.renderer.canvas.fillStyle = "#2f2f2f";
+        this.renderer.canvas.fillRect(x, y, width, height);
+        this.renderer.canvas.fillStyle = "#f7f7f7";
+        this.renderer.canvas.fillRect(x + 4, y + 4, width - 8, height - 8);
     }
 }
 
@@ -404,6 +475,7 @@ export class BallManager {
 
     public ball?: Ball;
     public collidables: CollidableObject[] = [];
+    public blocks: Block[] = [];
     public camera: Camera;
     public canvas: HTMLCanvasElement
 
@@ -419,6 +491,18 @@ export class BallManager {
                 if(this.ball){
                     const collision = this.ball.hasEnteredArea(coll)
                     if(collision.penetration > 0){
+                        this.ball.collide(collision)
+                    }
+                }
+            }
+
+            for(const block of this.blocks) {
+                block.update(dt);
+
+                if(this.ball){
+                    const collision = this.ball.hasEnteredArea(block.collision)
+                    if(collision.penetration > 0){
+                        block.push(this.ball, collision)
                         this.ball.collide(collision)
                     }
                 }
@@ -469,6 +553,7 @@ type AngryBlocksContext = {
     BallManager?: BallManager,
     Slingshot?: Slingshot,
     Base?: Base,
+    Block?: Block,
     Camera?: Camera
 }
 
@@ -508,6 +593,22 @@ export class AngryBlocks extends Game {
         )
 
         this.gameContext.BallManager.collidables.push(this.gameContext.Base.collision)
+
+        this.gameContext.Block = new Block(
+                {
+                    canvas: this.context
+                },
+                {
+                    shape: new Shape(40, 80),
+                    position: new Vector2(this.canvas.width - 180, this.canvas.height - 230),
+                    velocity: new Vector2(0, 0),
+                    mass: 1000,
+                    restitution: 0
+                },
+                this.gameContext.Base.collision
+        )
+
+        this.gameContext.BallManager.blocks.push(this.gameContext.Block)
     }
 
     public update(dt: number): void {
@@ -536,6 +637,7 @@ export class AngryBlocks extends Game {
         this.gameContext.BallManager && this.gameContext.BallManager.render();
         this.gameContext.Slingshot && this.gameContext.Slingshot.render();
         this.gameContext.Base && this.gameContext.Base.render();
+        this.gameContext.Block && this.gameContext.Block.render();
 
         this.context.restore();
         
