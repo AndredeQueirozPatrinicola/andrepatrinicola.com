@@ -1,4 +1,4 @@
-import { cp, mkdir, rm } from 'node:fs/promises';
+import { cp, mkdir, rename, rm } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 import { findPublishedGames } from './games.mjs';
@@ -11,6 +11,11 @@ async function assemble() {
   await mkdir(outputDirectory, { recursive: true });
 
   await cp(resolve(root, 'apps/site/build/client'), outputDirectory, { recursive: true });
+
+  // CloudFront serves /404.html for missing paths (see infra/cloudfront/).
+  await rename(resolve(outputDirectory, '404/index.html'), resolve(outputDirectory, '404.html'));
+  await rm(resolve(outputDirectory, '404'), { recursive: true, force: true });
+  await rm(resolve(outputDirectory, '__spa-fallback.html'), { force: true });
 
   const games = await findPublishedGames(root);
 

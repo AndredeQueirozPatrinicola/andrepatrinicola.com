@@ -1,3 +1,9 @@
-import { type RouteConfig, index } from "@react-router/dev/routes";
+import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
-export default [index("routes/home.tsx")] satisfies RouteConfig;
+export default [
+  index("routes/language-select.tsx"),
+  route("404", "routes/not-found-page.tsx"),
+  // Every child of :lang must be pre-rendered (its loader runs at build
+  // time). Unknown URLs are answered by /404.html in production.
+  route(":lang", "routes/locale-layout.tsx", [index("routes/home.tsx")]),
+] satisfies RouteConfig;
