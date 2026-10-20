@@ -466,7 +466,7 @@ export class Meteor {
 
 
     private getSpeed(): number{
-        if (this.ctx.gamePoints === 1) {
+        if (this.ctx.gamePoints <= 1) {
             return this.getRandom(2, 3)
         }
         return this.getRandom(20, 30) * (Math.log(this.ctx.gamePoints) * 0.1);
