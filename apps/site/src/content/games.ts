@@ -127,23 +127,23 @@ export const games: GameEntry[] = [
     rules: {
       pt: [
         "São 5 vidas; depois de um impacto você fica 1 segundo invulnerável.",
-        "Um tiro destrói um meteoro, e a arma recarrega em 1,25 s.",
-        "Os meteoros ficam mais rápidos com o passar do tempo.",
+        "Um tiro destrói um meteoro, e a arma recarrega em 0,4 s.",
+        "Com o tempo, os meteoros ficam mais rápidos e mais frequentes.",
       ],
       en: [
         "You have 5 lives and stay invulnerable for 1 second after a hit.",
-        "One shot destroys one meteor, and the gun reloads in 1.25 s.",
-        "Meteors get faster as time goes on.",
+        "One shot destroys one meteor, and the gun reloads in 0.4 s.",
+        "Over time, meteors get faster and more frequent.",
       ],
       es: [
         "Tienes 5 vidas y quedas invulnerable 1 segundo después de un impacto.",
-        "Un disparo destruye un meteorito y el arma se recarga en 1,25 s.",
-        "Los meteoritos se vuelven más rápidos con el tiempo.",
+        "Un disparo destruye un meteorito y el arma se recarga en 0,4 s.",
+        "Con el tiempo, los meteoritos se vuelven más rápidos y frecuentes.",
       ],
     },
     controls: [
       { keys: ["W", "A", "S", "D"], action: { pt: "Mover a nave", en: "Move the ship", es: "Mover la nave" } },
-      { keys: ["enter"], action: { pt: "Atirar", en: "Shoot", es: "Disparar" } },
+      { keys: ["enter", "space"], action: { pt: "Atirar", en: "Shoot", es: "Disparar" } },
       {
         keys: ["space"],
         action: { pt: "Começar e recomeçar", en: "Start and restart", es: "Empezar y reiniciar" },
@@ -153,17 +153,17 @@ export const games: GameEntry[] = [
       pt: [
         "Hitbox circular da nave testada contra meteoros retangulares",
         "Um observer simples de eventos conecta tiros, impactos e destruição",
-        "A velocidade dos meteoros cresce de forma logarítmica com a pontuação",
+        "A velocidade dos meteoros cresce de forma logarítmica com a pontuação, e o intervalo entre eles diminui",
       ],
       en: [
         "The ship's circular hitbox is tested against rectangular meteors",
         "A small event observer wires shots, hits and destruction together",
-        "Meteor speed grows logarithmically with the score",
+        "Meteor speed grows logarithmically with the score, and the time between them shrinks",
       ],
       es: [
         "El hitbox circular de la nave se prueba contra meteoritos rectangulares",
         "Un observer de eventos sencillo conecta disparos, impactos y destrucción",
-        "La velocidad de los meteoritos crece de forma logarítmica con el puntaje",
+        "La velocidad de los meteoritos crece de forma logarítmica con el puntaje, y el intervalo entre ellos disminuye",
       ],
     },
     notes: keyboardOnly,

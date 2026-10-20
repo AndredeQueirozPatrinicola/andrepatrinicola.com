@@ -35,7 +35,7 @@ export class SpaceMeteor extends Game {
 
         this.eventsObserver = new EventObserver()
         this.meteors = []
-        this.meteorsInterval = 10;
+        this.meteorsInterval = 0.8;
         this.meteorsCounter = 0;
 
         this.gameState = SpaceMeteorGameState.NOT_STARTED
@@ -87,13 +87,13 @@ export class SpaceMeteor extends Game {
         if (this.gameState === SpaceMeteorGameState.PLAYING) {
             this.spaceShip.update(dt);
 
-            if (this.meteorsCounter >= this.meteorsInterval){
+            this.meteorsCounter += dt;
+
+            if (this.meteorsCounter >= this.getMeteorsInterval()){
                 this.meteors.push(
                     new Meteor(this, this.canvas)
                 )
                 this.meteorsCounter = 0;
-            } else {
-                this.meteorsCounter += 1;
             }
             
             for (const meteor of [...this.meteors]) {
@@ -106,6 +106,10 @@ export class SpaceMeteor extends Game {
 
             for (const mssl of [...this.spaceShip.storage]){
                 mssl.update(dt);
+
+                if (mssl.isOutOfScreenY()) {
+                    this.spaceShip.storage.splice(this.spaceShip.storage.indexOf(mssl), 1);
+                }
             }
 
 
@@ -119,6 +123,8 @@ export class SpaceMeteor extends Game {
         } else {
             if(this.globalInput.isKeyDown(' ')){
                 this.gamePoints = 0;
+                this.gamePointInterval = 0;
+                this.meteorsCounter = 0;
                 this.meteors = [];
                 this.spaceShip.life = 5;
                 this.gameState = SpaceMeteorGameState.PLAYING;
@@ -126,6 +132,10 @@ export class SpaceMeteor extends Game {
         }
 
         this.UI.update(dt);
+    }
+
+    private getMeteorsInterval(): number {
+        return Math.max(1 / 6, this.meteorsInterval / (1 + this.gamePoints / 8));
     }
 
     public render(): void {
@@ -193,7 +203,7 @@ export class SpaceShip {
         this.radius = this.dimension.x / 3;
         this.position = new Vector2({x: position.x - this.dimension.x/2, y:position.y});
 
-        this.misselTimeOut = 1.25
+        this.misselTimeOut = 0.4
         this.currentMisselTimeOut = 0
         this.isLoading = false
 
@@ -244,13 +254,13 @@ export class SpaceShip {
             this.position.y += -1 * this.speed * dt;
         } 
 
-        if(this.input.isKeyDown('enter') && !this.isLoading){
+        if((this.input.isKeyDown('enter') || this.input.isKeyDown(' ')) && !this.isLoading){
             this.ctx.eventsObserver.notify('shoot')
             const missile  = new Missile (
                 this.ctx, this.canvas, 
                 new Vector2({x: this.position.x + this.sprite.naturalWidth / 2 , y:this.position.y}), 
                 new Vector2({x: 0, y: -1}), 
-                new Vector2({x:3 ,y: 3}), 500, 5)
+                new Vector2({x: 4, y: 10}), 500, 5)
             this.storage.push(missile);
             this.isLoading = true;
         }
@@ -366,11 +376,17 @@ export class Missile  {
 
     public render(): void {
         this.ctx.context.imageSmoothingEnabled = false;
-        this.ctx.context.beginPath();
-        this.ctx.context.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, true);
-        this.ctx.context.closePath();
         this.ctx.context.fillStyle = 'black';
-        this.ctx.context.fill();
+        this.ctx.context.fillRect(
+            Math.round(this.position.x - this.dimension.x / 2),
+            Math.round(this.position.y),
+            this.dimension.x,
+            this.dimension.y
+        );
+    }
+
+    public isOutOfScreenY(): boolean {
+        return this.position.y + this.dimension.y < 0;
     }
 }
 
@@ -466,10 +482,7 @@ export class Meteor {
 
 
     private getSpeed(): number{
-        if (this.ctx.gamePoints <= 1) {
-            return this.getRandom(2, 3)
-        }
-        return this.getRandom(20, 30) * (Math.log(this.ctx.gamePoints) * 0.1);
+        return this.getRandom(20, 30) * (Math.log(this.ctx.gamePoints + 3) * 0.1);
     }
 
     private getRandom = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
