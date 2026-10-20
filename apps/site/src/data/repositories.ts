@@ -1,4 +1,5 @@
 import type { Game } from "../domain/game";
+import type { Profile } from "../domain/profile";
 import type { Locale } from "../i18n/config";
 
 /**
@@ -11,6 +12,11 @@ export interface GamesRepository {
   findBySlug(slug: string, locale: Locale): Promise<Game | undefined>;
 }
 
+export interface ProfileRepository {
+  get(locale: Locale): Promise<Profile>;
+}
+
 export type Repositories = {
   games: GamesRepository;
+  profile: ProfileRepository;
 };

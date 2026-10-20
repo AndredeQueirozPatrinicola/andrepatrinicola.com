@@ -1,0 +1,25 @@
+/* Display: VCR OSD Mono by Riciery Leal (MrManet), converted to WOFF2. */
+@font-face {
+  font-family: "VCR OSD Mono";
+  src: url("../assets/fonts/vcr-osd-mono.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Body: IBM Plex Sans, Latin subset (SIL Open Font License 1.1). */
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("../assets/fonts/ibm-plex-sans-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("../assets/fonts/ibm-plex-sans-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}

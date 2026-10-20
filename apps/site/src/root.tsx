@@ -11,6 +11,8 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import plexFont from "./assets/fonts/ibm-plex-sans-400.woff2?url";
+import displayFont from "./assets/fonts/vcr-osd-mono.woff2?url";
 import { NotFoundView } from "./features/errors/NotFoundView";
 import { defaultLocale, localeInfo } from "./i18n/config";
 import { localePath } from "./i18n/paths";
@@ -18,8 +20,19 @@ import type { loader as localeLoader } from "./routes/locale-layout";
 import { isStaticRoute } from "./routing/static-route";
 import { themeInitScript } from "./theme/theme";
 import "./styles/tokens.css";
+import "./styles/fonts.css";
 import "./styles/base.css";
+import "./styles/layout.css";
 import "./styles/global.css";
+
+export const links: Route.LinksFunction = () =>
+  [displayFont, plexFont].map((href) => ({
+    rel: "preload",
+    href,
+    as: "font",
+    type: "font/woff2",
+    crossOrigin: "anonymous" as const,
+  }));
 
 export function Layout({ children }: { children: ReactNode }) {
   const localeData = useRouteLoaderData<typeof localeLoader>("routes/locale-layout");
@@ -55,7 +68,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   const notFound = isRouteErrorResponse(error) && error.status === 404;
 
   return (
-    <main id="content">
+    <main id="content" className="app-main">
       <NotFoundView
         title={notFound ? "Página não encontrada" : "Algo deu errado"}
         body={

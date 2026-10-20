@@ -1,0 +1,176 @@
+.site-header {
+  border-bottom: var(--border);
+  background: var(--color-bg);
+}
+
+/* Flex with wrapping instead of fixed breakpoints: when the brand and the
+   tools no longer fit side by side, the tools drop to their own line. */
+.site-header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-8);
+  min-height: calc(var(--grid-cell) * 8);
+  padding-block: var(--space-2);
+}
+
+.wordmark {
+  margin-right: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* A single pixel that hops one cell on hover. */
+.wordmark-mark {
+  width: var(--grid-cell);
+  height: var(--grid-cell);
+  background: var(--color-accent);
+  transition: transform var(--duration-base) var(--ease-pixel);
+}
+
+.wordmark:hover {
+  color: inherit;
+}
+
+.wordmark:hover .wordmark-mark {
+  transform: translateY(calc(var(--grid-cell) * -1));
+}
+
+.primary-nav {
+  order: 1;
+}
+
+.primary-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.primary-nav a {
+  position: relative;
+  display: inline-block;
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-6);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+/* Menu cursor, as in a game's pause screen. */
+.primary-nav a::before {
+  content: "";
+  position: absolute;
+  left: var(--space-2);
+  top: 50%;
+  width: 6px;
+  height: 10px;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  opacity: 0;
+  transform: translate(-4px, -50%);
+  transition:
+    opacity var(--duration-fast) var(--ease-pixel),
+    transform var(--duration-fast) var(--ease-pixel);
+}
+
+.primary-nav a:hover::before,
+.primary-nav a:focus-visible::before,
+.primary-nav a[aria-current="page"]::before {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+.primary-nav a[aria-current="page"] {
+  color: var(--color-accent-ink);
+}
+
+.site-header-tools {
+  order: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.locale-switcher ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.locale-switcher a,
+.theme-switcher-option {
+  display: inline-grid;
+  place-items: center;
+  min-width: calc(var(--grid-cell) * 4);
+  height: calc(var(--grid-cell) * 4);
+  padding-inline: var(--space-1);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  text-decoration: none;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+}
+
+.locale-switcher a:hover,
+.theme-switcher-option:hover {
+  color: var(--color-ink);
+}
+
+.locale-switcher a[aria-current="true"],
+.theme-switcher-option:has(input:checked) {
+  background: var(--color-ink);
+  color: var(--color-bg);
+}
+
+.theme-switcher {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  border: var(--border);
+  border-color: var(--color-line-strong);
+}
+
+.theme-switcher-option:has(input:focus-visible) {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@media (max-width: 47.99rem) {
+  .site-header-tools {
+    gap: var(--space-2);
+  }
+
+  .locale-switcher a,
+  .theme-switcher-option {
+    min-width: calc(var(--grid-cell) * 3.5);
+    height: calc(var(--grid-cell) * 3.5);
+  }
+
+  .wordmark {
+    font-size: var(--text-sm);
+  }
+
+  .primary-nav {
+    order: 3;
+    flex-basis: 100%;
+    margin-inline: calc(var(--space-3) * -1);
+  }
+}
+
+@media (max-width: 26rem) {
+  .wordmark-mark {
+    display: none;
+  }
+}

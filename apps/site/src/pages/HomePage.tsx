@@ -30,7 +30,7 @@ export function HomePage({ games }: { games: Game[] }) {
 
 
   return (
-    <main className="page-shell">
+    <div className="page-shell">
       <Header id='header'>
         <h1>
           <TextType id="header-text-type" text={["Olá, seja bem-vindo!"]} typingSpeed={150}/>
@@ -48,6 +48,6 @@ export function HomePage({ games }: { games: Game[] }) {
       <ContentContainer id="content-container"> 
           {isLoading ? <Loader id="loader" pixelNumber={4}/> : currentContent}
       </ContentContainer>
-    </main>
+    </div>
   );
 }
