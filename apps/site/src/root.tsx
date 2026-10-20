@@ -16,6 +16,9 @@ import { defaultLocale, localeInfo } from "./i18n/config";
 import { localePath } from "./i18n/paths";
 import type { loader as localeLoader } from "./routes/locale-layout";
 import { isStaticRoute } from "./routing/static-route";
+import { themeInitScript } from "./theme/theme";
+import "./styles/tokens.css";
+import "./styles/base.css";
 import "./styles/global.css";
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -24,10 +27,13 @@ export function Layout({ children }: { children: ReactNode }) {
   const isStatic = useMatches().some(isStaticRoute);
 
   return (
-    <html lang={localeInfo[locale].tag}>
+    // The theme script sets data-theme before hydration.
+    <html lang={localeInfo[locale].tag} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="color-scheme" content="light dark" />
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <Meta />
         <Links />
       </head>

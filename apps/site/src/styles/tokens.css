@@ -1,0 +1,84 @@
+/*
+ * Design tokens.
+ *
+ * Light and dark values live side by side in light-dark(); the active scheme
+ * comes from `color-scheme` (the OS by default, or [data-theme] when the
+ * visitor picks one). A new theme only needs a block that overrides the
+ * semantic tokens below, e.g. `:root[data-theme="contrast"] { ... }`.
+ * All text pairs meet WCAG AA on --color-bg and --color-surface.
+ */
+:root {
+  color-scheme: light dark;
+
+  /* Semantic colors */
+  --color-bg: light-dark(#f7f7f7, #121212);
+  --color-surface: light-dark(#ffffff, #1b1b1b);
+  --color-ink: light-dark(#151515, #ececec);
+  --color-ink-muted: light-dark(#5c5c5c, #a3a3a3);
+  --color-line: light-dark(#d8d8d8, #2e2e2e);
+  --color-line-strong: light-dark(#8a8a8a, #6b6b6b);
+  --color-grid: light-dark(rgb(21 21 21 / 0.055), rgb(236 236 236 / 0.06));
+  --color-accent: light-dark(#e8590c, #ff7a33);
+  --color-accent-ink: light-dark(#b3440a, #ff8a4c);
+  --color-on-accent: light-dark(#151515, #121212);
+  --color-focus: var(--color-accent-ink);
+
+  /* The games draw dark shapes on a light canvas: their screen stays light. */
+  --color-screen: #f7f7f7;
+  --color-screen-ink: #151515;
+
+  /* Typography */
+  --font-display: "VCR OSD Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: clamp(1.75rem, 1.4rem + 1.4vw, 2.25rem);
+  --text-display: clamp(2.5rem, 1.6rem + 4.2vw, 5rem);
+  --leading-tight: 1.1;
+  --leading-body: 1.6;
+  --measure: 68ch;
+
+  /* Space: an 8px grid, the same one drawn in the background */
+  --grid-cell: 8px;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  /* Layout */
+  --page-max: 80rem;
+  --page-gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+
+  /* Shape and motion */
+  --radius: 2px;
+  --border: 1px solid var(--color-line);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --ease-pixel: steps(4, end);
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+  }
+}
