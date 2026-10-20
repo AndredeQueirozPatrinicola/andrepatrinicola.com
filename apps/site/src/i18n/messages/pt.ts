@@ -14,6 +14,7 @@ export const pt = {
     primaryNav: "Navegação principal",
     languageSwitcher: "Idioma",
     themeSwitcher: "Tema de cores",
+    externalSite: "site externo",
     externalLink: "abre em nova aba",
   },
   nav: {
@@ -46,6 +47,8 @@ export const pt = {
     playfield: {
       play: "Jogar",
       stop: "Parar",
+      pause: "Pausar animação",
+      resume: "Retomar animação",
       demo: "Demo",
       rally: "Rally",
       best: "Recorde",
@@ -74,7 +77,7 @@ export const pt = {
     goal: "Objetivo",
     controls: "Controles",
     rules: "Regras",
-    inGameLanguage: "O texto dentro do jogo está em português.",
+    inGamePortuguese: "O texto dentro do jogo está em português.",
     beforePlaying: "Antes de jogar",
     internals: "Por dentro",
     tech: "Tecnologias",

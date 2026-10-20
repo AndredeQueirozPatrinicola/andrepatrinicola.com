@@ -12,6 +12,7 @@ export const es: Messages = {
     primaryNav: "Navegación principal",
     languageSwitcher: "Idioma",
     themeSwitcher: "Tema de colores",
+    externalSite: "sitio externo",
     externalLink: "se abre en otra pestaña",
   },
   nav: {
@@ -44,6 +45,8 @@ export const es: Messages = {
     playfield: {
       play: "Jugar",
       stop: "Parar",
+      pause: "Pausar animación",
+      resume: "Reanudar animación",
       demo: "Demo",
       rally: "Rally",
       best: "Récord",
@@ -72,7 +75,7 @@ export const es: Messages = {
     goal: "Objetivo",
     controls: "Controles",
     rules: "Reglas",
-    inGameLanguage: "El texto dentro del juego está en portugués.",
+    inGamePortuguese: "El texto dentro del juego está en portugués.",
     beforePlaying: "Antes de jugar",
     internals: "Por dentro",
     tech: "Tecnologías",

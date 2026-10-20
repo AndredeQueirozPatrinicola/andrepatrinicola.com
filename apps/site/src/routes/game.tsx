@@ -62,7 +62,8 @@ export default function GameRoute({ loaderData }: Route.ComponentProps) {
   const { locale, messages } = useI18n();
   const { game, others } = loaderData;
   const text = messages.games;
-  const notes = game.language.startsWith(locale) ? game.notes : [...game.notes, text.inGameLanguage];
+  const notes =
+    game.language === "pt-BR" && locale !== "pt" ? [...game.notes, text.inGamePortuguese] : game.notes;
 
   return (
     <div className="page game-page">

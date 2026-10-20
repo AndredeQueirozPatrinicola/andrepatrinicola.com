@@ -82,6 +82,7 @@ export function HomePlayfield({ profile, intro, shortcuts }: HomePlayfieldProps)
   const [rally, setRally] = useState(0);
   const best = useSyncExternalStore(bestScore.subscribe, bestScore.get, () => 0);
   const [cleared, setCleared] = useState(false);
+  const [paused, setPaused] = useState(false);
 
   function flashTile(id: string) {
     if (!id.startsWith("tile-")) return;
@@ -103,6 +104,7 @@ export function HomePlayfield({ profile, intro, shortcuts }: HomePlayfieldProps)
         setMode(event.mode);
         if (event.mode === "demo") {
           playRequested.current = false;
+          setCleared(false);
           setRally(0);
           setUsingKeys(false);
           hitTiles.current.clear();
@@ -129,16 +131,22 @@ export function HomePlayfield({ profile, intro, shortcuts }: HomePlayfieldProps)
 
     let disposed = false;
     const start = () =>
-      import("./playfield/playfield").then(({ createPlayfield }) => {
-        if (disposed) return;
-        controllerRef.current = createPlayfield({
-          root,
-          canvas,
-          autoplay: !reducedMotion,
-          onEvent: (event) => onPlayfieldEvent(event),
-        });
-        if (playRequested.current) controllerRef.current.play();
-      });
+      import("./playfield/playfield")
+        .then(({ createPlayfield }) => {
+          if (disposed) return;
+          // Read before creating: the engine's initial "demo" event resets it.
+          const wantsPlay = playRequested.current;
+          controllerRef.current = createPlayfield({
+            root,
+            canvas,
+            autoplay: !reducedMotion,
+            onEvent: (event) => onPlayfieldEvent(event),
+          });
+          if (wantsPlay) controllerRef.current.play();
+        })
+        // The playfield is an enhancement: if its code fails to load, the hero
+        // still works as plain content.
+        .catch(() => undefined);
 
     const idle = window.requestIdleCallback ?? ((callback: () => void) => window.setTimeout(callback, 200));
     idle(() => void start());
@@ -147,10 +155,18 @@ export function HomePlayfield({ profile, intro, shortcuts }: HomePlayfieldProps)
       disposed = true;
       controllerRef.current?.destroy();
       controllerRef.current = null;
+      setPaused(false);
     };
   }, [reducedMotion]);
 
+  function togglePause() {
+    const next = !paused;
+    setPaused(next);
+    controllerRef.current?.setPaused(next);
+  }
+
   function togglePlay() {
+    setPaused(false);
     if (mode === "player") {
       playRequested.current = false;
       controllerRef.current?.stopPlaying();
@@ -188,7 +204,7 @@ export function HomePlayfield({ profile, intro, shortcuts }: HomePlayfieldProps)
                   {shortcut.external ? (
                     <>
                       <PixelIcon name="external" size={12} />
-                      <span className="visually-hidden"> ({messages.a11y.externalLink})</span>
+                      <span className="visually-hidden"> ({messages.a11y.externalSite})</span>
                     </>
                   ) : (
                     <PixelIcon name="arrow" size={12} />
@@ -227,9 +243,16 @@ export function HomePlayfield({ profile, intro, shortcuts }: HomePlayfieldProps)
             </span>
             {cleared && <span className="playfield-cleared">{text.cleared}</span>}
           </div>
-          <button type="button" className="playfield-play" aria-pressed={mode === "player"} onClick={togglePlay}>
-            {mode === "player" ? text.stop : text.play}
-          </button>
+          <div className="playfield-buttons">
+            <button type="button" className="playfield-play" aria-pressed={mode === "player"} onClick={togglePlay}>
+              {mode === "player" ? text.stop : text.play}
+            </button>
+            {!reducedMotion && (
+              <button type="button" className="playfield-pause" aria-pressed={paused} onClick={togglePause}>
+                {paused ? text.resume : text.pause}
+              </button>
+            )}
+          </div>
           <p className="playfield-hint">{hint}</p>
         </div>
       </div>

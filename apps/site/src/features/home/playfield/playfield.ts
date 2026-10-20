@@ -23,6 +23,8 @@ export type PlayfieldOptions = {
 export type PlayfieldController = {
   play(): void;
   stopPlaying(): void;
+  /** Freezes the animation (WCAG 2.2.2) until resumed or played. */
+  setPaused(paused: boolean): void;
   destroy(): void;
 };
 
@@ -38,7 +40,7 @@ type Spark = { x: number; y: number; vx: number; vy: number; life: number };
 
 export function createPlayfield({ root, canvas, onEvent, autoplay }: PlayfieldOptions): PlayfieldController {
   const context = canvas.getContext("2d");
-  if (!context) return { play() {}, stopPlaying() {}, destroy() {} };
+  if (!context) return { play() {}, stopPlaying() {}, setPaused() {}, destroy() {} };
   const ctx = context;
 
   let state: PlayfieldState = createState(root.clientWidth, root.clientHeight);
@@ -47,6 +49,7 @@ export function createPlayfield({ root, canvas, onEvent, autoplay }: PlayfieldOp
   let running = false;
   let visible = true;
   let enabled = autoplay;
+  let paused = false;
   let frame = 0;
   let lastTime = 0;
   let accumulator = 0;
@@ -95,6 +98,16 @@ export function createPlayfield({ root, canvas, onEvent, autoplay }: PlayfieldOp
     onEvent({ type: "mode", mode });
   }
 
+  /** Back to the demo; without autoplay (reduced motion) the loop stops. */
+  function toDemo() {
+    keyDirection = 0;
+    setMode("demo");
+    if (!autoplay) {
+      enabled = false;
+      updateRunning();
+    }
+  }
+
   function takeControl() {
     lastInput = performance.now();
     if (!enabled) {
@@ -109,7 +122,7 @@ export function createPlayfield({ root, canvas, onEvent, autoplay }: PlayfieldOp
     lastTime = time;
     accumulator += elapsed;
 
-    if (state.mode === "player" && time - lastInput > IDLE_MS) setMode("demo");
+    if (state.mode === "player" && time - lastInput > IDLE_MS) toDemo();
 
     while (accumulator >= STEP) {
       if (keyDirection !== 0) {
@@ -170,7 +183,7 @@ export function createPlayfield({ root, canvas, onEvent, autoplay }: PlayfieldOp
   }
 
   function updateRunning() {
-    const shouldRun = enabled && visible && !document.hidden;
+    const shouldRun = enabled && !paused && visible && !document.hidden;
     if (shouldRun === running) return;
     running = shouldRun;
     if (running) {
@@ -185,7 +198,7 @@ export function createPlayfield({ root, canvas, onEvent, autoplay }: PlayfieldOp
   // Pointer: a mouse over the field or a finger dragging on it takes control.
   // `touch-action: pan-y` on the root keeps vertical page scrolling intact.
   function onPointerMove(event: PointerEvent) {
-    if (event.pointerType === "touch" && event.buttons === 0) return;
+    if (paused || (event.pointerType === "touch" && event.buttons === 0)) return;
     const bounds = root.getBoundingClientRect();
     takeControl();
     aimPaddle(state, event.clientX - bounds.left);
@@ -197,15 +210,23 @@ export function createPlayfield({ root, canvas, onEvent, autoplay }: PlayfieldOp
   }
 
   function onKey(event: KeyboardEvent) {
-    if (state.mode !== "player" || !root.contains(document.activeElement)) return;
     const left = event.key === "ArrowLeft" || event.key.toLowerCase() === "a";
     const right = event.key === "ArrowRight" || event.key.toLowerCase() === "d";
     if (!left && !right) return;
+
+    // Releases always count, wherever focus is, so a direction never sticks.
+    if (event.type === "keyup") {
+      if ((left && keyDirection < 0) || (right && keyDirection > 0)) keyDirection = 0;
+      return;
+    }
+    if (state.mode !== "player" || !root.contains(document.activeElement)) return;
     event.preventDefault();
     lastInput = performance.now();
-    const pressed = event.type === "keydown";
-    if (pressed) keyDirection = left ? -1 : 1;
-    else if ((left && keyDirection < 0) || (right && keyDirection > 0)) keyDirection = 0;
+    keyDirection = left ? -1 : 1;
+  }
+
+  function releaseKeys() {
+    keyDirection = 0;
   }
 
   const resizeObserver = new ResizeObserver(measure);
@@ -223,29 +244,40 @@ export function createPlayfield({ root, canvas, onEvent, autoplay }: PlayfieldOp
   const themeObserver = new MutationObserver(onColorChange);
   themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
-  const onVisibility = () => updateRunning();
+  const onVisibility = () => {
+    releaseKeys();
+    updateRunning();
+  };
   root.addEventListener("pointermove", onPointerMove);
   root.addEventListener("pointerdown", onPointerDown);
   window.addEventListener("keydown", onKey);
   window.addEventListener("keyup", onKey);
+  window.addEventListener("blur", releaseKeys);
   document.addEventListener("visibilitychange", onVisibility);
   colorScheme.addEventListener("change", onColorChange);
   void document.fonts?.ready.then(measure);
 
   measure();
   updateRunning();
+  // Lets the UI start from the engine's real state (e.g. after a re-create).
+  onEvent({ type: "mode", mode: state.mode });
 
   return {
     play() {
+      paused = false;
       takeControl();
+      updateRunning();
     },
     stopPlaying() {
-      keyDirection = 0;
-      setMode("demo");
-      if (!autoplay) {
-        enabled = false;
-        updateRunning();
+      toDemo();
+    },
+    setPaused(value) {
+      paused = value;
+      if (paused) {
+        keyDirection = 0;
+        setMode("demo");
       }
+      updateRunning();
     },
     destroy() {
       cancelAnimationFrame(frame);
@@ -256,6 +288,7 @@ export function createPlayfield({ root, canvas, onEvent, autoplay }: PlayfieldOp
       root.removeEventListener("pointerdown", onPointerDown);
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("keyup", onKey);
+      window.removeEventListener("blur", releaseKeys);
       document.removeEventListener("visibilitychange", onVisibility);
       colorScheme.removeEventListener("change", onColorChange);
       state = createState(0, 0);
