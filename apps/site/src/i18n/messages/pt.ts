@@ -88,6 +88,39 @@ export const pt = {
     all: "Todos os jogos",
     breadcrumb: "Caminho",
   },
+  labs: {
+    title: "Labs",
+    eyebrow: "Andev Labs",
+    intro:
+      "Projetos pessoais e experimentos que não são só jogos: um motor, física, um jogo de cartas e este próprio site.",
+    status: { active: "Ativo", "in-progress": "Em andamento", experiment: "Experimento" },
+    explored: "O que explorei",
+    source: "Código-fonte",
+    page: "Ver os jogos",
+  },
+  about: {
+    title: "Sobre",
+    lead: "Engenheiro de software em São Paulo, com foco em backend e um gosto antigo por entender como as coisas funcionam por dentro.",
+    whoTitle: "Quem sou",
+    who: [
+      "Trabalho principalmente com backend: Node.js, TypeScript e Python, em plataformas SaaS, integrações e sistemas em produção. Hoje estou na Pixit, onde fui responsável técnico por grande parte do Lumoos, um SaaS multi-tenant.",
+      "Estou concluindo o bacharelado em Sistemas de Informação no Centro Universitário Senac, com previsão de término em dezembro de 2026.",
+    ],
+    pathTitle: "Trajetória",
+    path: {
+      fflch: "Dados públicos da universidade: visualização com Django e manutenção de sistemas em Laravel.",
+      technext: "Automação e controle de acesso: Raspberry Pi integrado a servidores Django e PostgreSQL.",
+      pixit: "SaaS multi-tenant, educação corporativa e experiências 3D interativas.",
+    },
+    whyTitle: "Por que jogos",
+    why: [
+      "Gosto de desenvolvimento de software, de jogos e de tecnologia, e principalmente de entender como as coisas funcionam.",
+      "Escrever um jogo do zero obriga a encarar o loop, a entrada, a colisão e a câmera sem uma engine escondendo os detalhes. Foi por isso que os jogos deste site rodam num motor próprio, e por isso a página inicial também é um jogo.",
+    ],
+    contactTitle: "Vamos conversar",
+    contact: "O jeito mais rápido de falar comigo é por e-mail ou pelo LinkedIn.",
+    resumeLink: "Ver o currículo completo",
+  },
   resume: {
     title: "Currículo",
     onThisPage: "Nesta página",

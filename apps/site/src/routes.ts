@@ -9,6 +9,8 @@ export default [
     index("routes/home.tsx"),
     route("games", "routes/games.tsx"),
     route("games/:slug", "routes/game.tsx"),
+    route("labs", "routes/labs.tsx"),
+    route("about", "routes/about.tsx"),
     route("resume", "routes/resume.tsx"),
   ]),
 ] satisfies RouteConfig;

@@ -48,6 +48,25 @@ body {
   margin-bottom: var(--space-6);
 }
 
+/* Small boxed labels for technologies. */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tag-list li {
+  padding: var(--space-1) var(--space-2);
+  border: var(--border);
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+}
+
 .skip-link {
   position: absolute;
   top: var(--space-2);

@@ -86,6 +86,39 @@ export const es: Messages = {
     all: "Todos los juegos",
     breadcrumb: "Ruta",
   },
+  labs: {
+    title: "Labs",
+    eyebrow: "Andev Labs",
+    intro:
+      "Proyectos personales y experimentos que no son solo juegos: un motor, física, un juego de cartas y este mismo sitio.",
+    status: { active: "Activo", "in-progress": "En desarrollo", experiment: "Experimento" },
+    explored: "Qué exploré",
+    source: "Código fuente",
+    page: "Ver los juegos",
+  },
+  about: {
+    title: "Sobre mí",
+    lead: "Ingeniero de software en São Paulo, enfocado en backend y con un viejo gusto por entender cómo funcionan las cosas por dentro.",
+    whoTitle: "Quién soy",
+    who: [
+      "Trabajo principalmente en backend: Node.js, TypeScript y Python, en plataformas SaaS, integraciones y sistemas en producción. Hoy estoy en Pixit, donde fui responsable técnico de gran parte de Lumoos, un SaaS multi-tenant.",
+      "Estoy terminando la licenciatura en Sistemas de Información en el Centro Universitário Senac, con finalización prevista para diciembre de 2026.",
+    ],
+    pathTitle: "Trayectoria",
+    path: {
+      fflch: "Datos públicos de la universidad: visualización con Django y mantenimiento de sistemas en Laravel.",
+      technext: "Automatización y control de acceso: Raspberry Pi integrado con servidores Django y PostgreSQL.",
+      pixit: "SaaS multi-tenant, educación corporativa y experiencias 3D interactivas.",
+    },
+    whyTitle: "Por qué juegos",
+    why: [
+      "Me gusta el desarrollo de software, los juegos y la tecnología, y sobre todo entender cómo funcionan las cosas.",
+      "Escribir un juego desde cero obliga a enfrentar el bucle, la entrada, las colisiones y la cámara sin un motor que esconda los detalles. Por eso los juegos de este sitio corren sobre un motor propio, y por eso la página de inicio también es un juego.",
+    ],
+    contactTitle: "Hablemos",
+    contact: "La forma más rápida de contactarme es por correo o por LinkedIn.",
+    resumeLink: "Ver el currículum completo",
+  },
   resume: {
     title: "Currículum",
     onThisPage: "En esta página",

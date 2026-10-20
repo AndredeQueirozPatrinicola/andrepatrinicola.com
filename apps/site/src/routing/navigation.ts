@@ -10,5 +10,7 @@ export type NavItem = {
 /** Primary navigation, in display order. Each page adds itself here. */
 export const primaryNavigation: NavItem[] = [
   { key: "games", path: "/games" },
+  { key: "labs", path: "/labs" },
+  { key: "about", path: "/about" },
   { key: "resume", path: "/resume" },
 ];

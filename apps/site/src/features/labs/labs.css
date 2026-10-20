@@ -1,0 +1,120 @@
+.labs {
+  display: grid;
+  padding-block: var(--space-8);
+}
+
+.lab {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-6);
+  padding-block: var(--space-12);
+  border-bottom: var(--border);
+}
+
+.lab-header {
+  grid-column: span 4;
+  display: flex;
+  gap: var(--space-4);
+  align-items: baseline;
+}
+
+.lab-index {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  color: var(--color-accent-ink);
+}
+
+.lab-header h2 {
+  font-size: var(--text-2xl);
+  overflow-wrap: anywhere;
+}
+
+.lab-meta {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.lab-meta [data-status="in-progress"],
+.lab-meta [data-status="experiment"] {
+  color: var(--color-accent-ink);
+}
+
+.lab-body {
+  grid-column: span 8;
+  display: grid;
+  gap: var(--space-4);
+  max-width: var(--measure);
+}
+
+.lab-summary {
+  font-size: var(--text-lg);
+}
+
+.lab-explored {
+  display: grid;
+  gap: var(--space-2);
+  padding-left: var(--space-4);
+}
+
+.lab-explored li::marker {
+  content: "▪  ";
+  color: var(--color-line-strong);
+}
+
+.lab-snippet {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.lab-snippet pre {
+  margin: 0;
+  padding: var(--space-4);
+  overflow-x: auto;
+  border: 1px solid var(--color-ink);
+  background: var(--color-surface);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.lab-footer {
+  grid-column: 5 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.lab-links {
+  display: flex;
+  gap: var(--space-4);
+  padding: 0;
+  list-style: none;
+}
+
+.lab-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+@media (max-width: 63.99rem) {
+  .lab {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lab-header,
+  .lab-body,
+  .lab-footer {
+    grid-column: 1 / -1;
+  }
+}

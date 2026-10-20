@@ -86,6 +86,39 @@ export const en: Messages = {
     all: "All games",
     breadcrumb: "Breadcrumb",
   },
+  labs: {
+    title: "Labs",
+    eyebrow: "Andev Labs",
+    intro:
+      "Personal projects and experiments that are not only games: an engine, physics, a card game and this very site.",
+    status: { active: "Active", "in-progress": "In progress", experiment: "Experiment" },
+    explored: "What I explored",
+    source: "Source code",
+    page: "See the games",
+  },
+  about: {
+    title: "About",
+    lead: "Software engineer in São Paulo, backend-focused, with a long-standing taste for understanding how things work under the hood.",
+    whoTitle: "Who I am",
+    who: [
+      "I work mostly on the backend: Node.js, TypeScript and Python, across SaaS platforms, integrations and production systems. I'm currently at Pixit, where I took technical ownership of much of Lumoos, a multi-tenant SaaS platform.",
+      "I'm finishing a bachelor's degree in Information Systems at Centro Universitário Senac, expected in December 2026.",
+    ],
+    pathTitle: "Path",
+    path: {
+      fflch: "University public data: visualization with Django and maintenance of Laravel systems.",
+      technext: "Automation and access control: Raspberry Pi devices talking to Django and PostgreSQL servers.",
+      pixit: "Multi-tenant SaaS, corporate learning and interactive 3D experiences.",
+    },
+    whyTitle: "Why games",
+    why: [
+      "I like software development, games and technology, and above all understanding how things work.",
+      "Writing a game from scratch means facing the loop, input, collision and camera without an engine hiding the details. That is why the games on this site run on an engine of my own, and why the home page is a game too.",
+    ],
+    contactTitle: "Let's talk",
+    contact: "The quickest way to reach me is by email or on LinkedIn.",
+    resumeLink: "See the full résumé",
+  },
   resume: {
     title: "Résumé",
     onThisPage: "On this page",
