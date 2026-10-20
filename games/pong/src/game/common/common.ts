@@ -11,4 +11,3 @@ export interface CollisionObject {
     radius?: number;
     bounce: (object: CollisionObject) => void;
 }
-

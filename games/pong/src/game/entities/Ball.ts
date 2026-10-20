@@ -71,6 +71,12 @@ export class Ball implements CollisionObject {
                 this.bounce(ctx.platform2)
             }
 
+            const platform = this.velocity.x < 0 ? ctx.platform1 : ctx.platform2;
+
+            if(this.reachesPlatform(platform, dt, ctx.canvas.height)){
+                this.bounce(platform)
+            }
+
             if(this.position.x < ctx.context.canvas.width && this.position.x > 0) {
                 this.position.x = this.position.x + this.velocity.x * this.speed * dt;
             }else {
@@ -124,8 +130,46 @@ export class Ball implements CollisionObject {
         return false;
     }
 
+    public reachesPlatform(platform: CollisionObject, dt: number, height: number) {
+        if (this.velocity.x === 0) {
+            return false;
+        }
+
+        const movingRight = this.velocity.x > 0;
+        const faceX = movingRight
+            ? platform.position.x - this.radius
+            : platform.position.x + platform.width + this.radius;
+
+        const nextX = this.position.x + this.velocity.x * this.speed * dt;
+        const crossesFace = movingRight
+            ? this.position.x <= faceX && nextX >= faceX
+            : this.position.x >= faceX && nextX <= faceX;
+
+        if (!crossesFace) {
+            return false;
+        }
+
+        const t = (faceX - this.position.x) / (nextX - this.position.x);
+        const y = Math.min(Math.max(this.position.y + this.velocity.y * this.speed * dt * t, 0), height);
+
+        if (y < platform.position.y - this.radius || y > platform.position.y + platform.height + this.radius) {
+            return false;
+        }
+
+        this.position.x = faceX;
+        this.position.y = y;
+
+        return true;
+    }
+
     public bounce(object: CollisionObject) {
-        this.velocity.x = this.velocity.x * -1
+        const direction = this.position.x < object.position.x + object.width / 2 ? -1 : 1;
+
+        if (Math.sign(this.velocity.x) === direction) {
+            return;
+        }
+
+        this.velocity.x = Math.abs(this.velocity.x) * direction
         this.velocity.y = this.velocity.y + object.velocity?.y
     }
 }

@@ -1,5 +1,5 @@
-import { Vector2 } from "../../andevengine/math/Vector2";
 import { Input } from "../../andevengine/input/Input";
+import { Vector2 } from "../../andevengine/math/Vector2";
 import { CollisionObject } from "../common/common";
 import { PongGame, PongGameState } from "../PongGame";
 
@@ -10,7 +10,50 @@ export class Player {
         this.input = new Input()
     }
 };
-export class AI {};
+export class AI {
+    public reaction = 0.4;
+    public anticipation = 0.8;
+    public slowDownDistance = 24;
+    public aimError = 0.9;
+    public angleError = 0.35;
+
+    private aimOffset = 0;
+    private wasApproaching = false;
+
+    public getDirection(platform: Platform, ball: CollisionObject, width: number, height: number): number {
+        const platformCenterY = platform.position.y + platform.height / 2;
+        const platformCenterX = platform.position.x + platform.width / 2;
+        const approaching = Math.sign(platformCenterX - ball.position.x) === Math.sign(ball.velocity.x);
+
+        if (approaching && !this.wasApproaching) {
+            const error = this.aimError + Math.abs(ball.velocity.y) * this.angleError;
+            this.aimOffset = (Math.random() - 0.5) * platform.height * error;
+        }
+        this.wasApproaching = approaching;
+
+        let targetY = height / 2;
+        const distance = Math.abs(platformCenterX - ball.position.x);
+
+        if (approaching && distance < width * (1 - this.reaction)) {
+            const predictedY = this.predictY(ball, platformCenterX, height);
+            targetY = ball.position.y + (predictedY - ball.position.y) * this.anticipation + this.aimOffset;
+        }
+
+        const differenceY = targetY - platformCenterY;
+
+        return Math.max(-1, Math.min(1, differenceY / this.slowDownDistance));
+    }
+
+    private predictY(ball: CollisionObject, x: number, height: number): number {
+        const speed = ball.speed ?? 1;
+        const time = (x - ball.position.x) / (ball.velocity.x * speed);
+        const y = ball.position.y + ball.velocity.y * speed * time;
+        const period = height * 2;
+        const folded = ((y % period) + period) % period;
+
+        return folded > height ? period - folded : folded;
+    }
+};
 
 
 type PlatformOptions = {
@@ -62,17 +105,7 @@ export class Platform implements CollisionObject {
                     this.velocity.y = 0
                 }
             }  else if (this.controller instanceof AI) {
-                const platformCenterY = this.position.y + this.height / 2;
-                const targetY = collisionObject.position.y;
-
-                const differenceY = targetY - platformCenterY;
-                const tolerance = 3;
-
-                if (Math.abs(differenceY) <= tolerance) {
-                    this.velocity.y = 0;
-                } else {
-                    this.velocity.y = Math.sign(differenceY);
-                }           
+                this.velocity.y = this.controller.getDirection(this, collisionObject, ctx.canvas.width, ctx.canvas.height);
             }
         }   else {
                 this.position.y = ctx.canvas.height / 2 - 30

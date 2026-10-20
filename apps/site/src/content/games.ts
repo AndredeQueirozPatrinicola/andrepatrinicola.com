@@ -85,18 +85,18 @@ export const games: GameEntry[] = [
     ],
     internals: {
       pt: [
-        "Colisão entre círculo e retângulo pelo ponto mais próximo da borda",
-        "A raquete do computador persegue a altura da bola com uma margem de tolerância",
+        "Colisão entre círculo e retângulo, com teste contínuo na face da raquete para a bola não atravessá-la",
+        "A raquete do computador prevê onde a bola vai chegar, com erro de mira e velocidade limitada",
         engineInternals.pt,
       ],
       en: [
-        "Circle–rectangle collision using the closest point on the edge",
-        "The computer paddle chases the ball's height within a tolerance margin",
+        "Circle–rectangle collision, with a swept test against the paddle face so the ball can't pass through",
+        "The computer paddle predicts where the ball will arrive, with aim error and limited speed",
         engineInternals.en,
       ],
       es: [
-        "Colisión entre círculo y rectángulo por el punto más cercano del borde",
-        "La paleta de la computadora persigue la altura de la pelota con un margen de tolerancia",
+        "Colisión entre círculo y rectángulo, con prueba continua en la cara de la paleta para que la pelota no la atraviese",
+        "La paleta de la computadora predice dónde llegará la pelota, con error de puntería y velocidad limitada",
         engineInternals.es,
       ],
     },
