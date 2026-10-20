@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "context": { "eventType": "viewer-request" },
+  "viewer": { "ip": "198.51.100.1" },
+  "request": {
+    "method": "GET",
+    "uri": "/pt/games/pong",
+    "querystring": {},
+    "headers": {},
+    "cookies": {}
+  }
+}

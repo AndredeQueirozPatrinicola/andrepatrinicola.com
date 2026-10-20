@@ -20,6 +20,6 @@
     "assemble": "node scripts/assemble-deploy.mjs",
     "preview": "node scripts/serve-deploy.mjs",
     "lint": "npm run lint --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present && node --test \"infra/**/*.test.mjs\""
   }
 }

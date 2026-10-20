@@ -36,7 +36,7 @@ export function sendFile(res, path, status = 200) {
   createReadStream(path).pipe(res);
 }
 
-/** Same rewrite as infra/cloudfront/rewrite-index.js. */
+/** Maps a directory URL to its index.html (used for the game builds in dev). */
 export function resolveIndex(uri) {
   if (uri.endsWith('/')) return `${uri}index.html`;
   if (!extname(uri)) return `${uri}/index.html`;

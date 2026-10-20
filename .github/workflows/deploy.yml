@@ -45,6 +45,10 @@ jobs:
 
       - name: Build all applications
         run: npm run build
+        env:
+          # Public origin for canonical URLs, Open Graph and the sitemap.
+          # Empty uses the CloudFront address (see apps/site/src/seo/site.ts).
+          VITE_SITE_URL: ${{ vars.SITE_URL }}
 
       - name: Verify deployment package
         run: |
@@ -60,10 +64,25 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
           role-session-name: github-actions-personal-website
 
-      - name: Deploy to S3
+      # Hashed assets first (cached for a year), then HTML and everything else
+      # (always revalidated), so a new page never references a missing file.
+      - name: Deploy hashed assets to S3
         run: |
           aws s3 sync ./.deploy "s3://${{ vars.AWS_S3_BUCKET }}" \
             --delete \
+            --exclude "*" \
+            --include "assets/*" \
+            --include "play/*/assets/*" \
+            --cache-control "public, max-age=31536000, immutable" \
+            --only-show-errors
+
+      - name: Deploy pages and other files to S3
+        run: |
+          aws s3 sync ./.deploy "s3://${{ vars.AWS_S3_BUCKET }}" \
+            --delete \
+            --exclude "assets/*" \
+            --exclude "play/*/assets/*" \
+            --cache-control "public, max-age=0, must-revalidate" \
             --only-show-errors
 
       - name: Invalidate CloudFront cache

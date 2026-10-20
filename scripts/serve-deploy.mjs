@@ -1,20 +1,38 @@
-// Serves the assembled `.deploy/` folder with the same URL rules as the
-// production CloudFront distribution (see infra/cloudfront/):
-//   - extensionless paths resolve to `<path>/index.html`
-//   - missing files answer `/404.html` with status 404
+// Serves the assembled `.deploy/` folder with the same rules as production:
+// URLs go through the CloudFront Function in infra/cloudfront/url-rewrite.js,
+// and missing files answer /404.html with status 404 (the distribution's
+// custom error response).
 // Usage: node scripts/serve-deploy.mjs [port]
 import { createServer } from 'node:http';
 import { join, normalize, resolve } from 'node:path';
 
-import { isFile, resolveIndex, sendFile } from './static-files.mjs';
+import { loadUrlRewrite } from '../infra/cloudfront/load-function.mjs';
+import { isFile, sendFile } from './static-files.mjs';
 
 const root = resolve(process.cwd(), '.deploy');
 const port = Number(process.argv[2] ?? process.env.PORT ?? 4173);
+const urlRewrite = loadUrlRewrite();
+
+function toQuerystring(searchParams) {
+  const querystring = {};
+  for (const [key, value] of searchParams) {
+    const entry = { value };
+    if (!querystring[key]) querystring[key] = entry;
+    else querystring[key] = { value: querystring[key].value, multiValue: [...(querystring[key].multiValue ?? [querystring[key]]), entry] };
+  }
+  return querystring;
+}
 
 const server = createServer(async (req, res) => {
-  const { pathname } = new URL(req.url ?? '/', 'http://localhost');
-  const filePath = normalize(join(root, resolveIndex(decodeURIComponent(pathname))));
+  const url = new URL(req.url ?? '/', 'http://localhost');
+  const result = urlRewrite({ request: { uri: url.pathname, querystring: toQuerystring(url.searchParams) } });
 
+  if (result.statusCode) {
+    res.writeHead(result.statusCode, { Location: result.headers.location.value }).end();
+    return;
+  }
+
+  const filePath = normalize(join(root, decodeURIComponent(result.uri)));
   if (filePath.startsWith(root) && (await isFile(filePath))) {
     sendFile(res, filePath);
     return;

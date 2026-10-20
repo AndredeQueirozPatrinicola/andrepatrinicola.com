@@ -36,6 +36,8 @@ jobs:
 
       - name: Build all applications
         run: npm run build
+        env:
+          VITE_SITE_URL: ${{ vars.SITE_URL }}
 
       - name: Verify deployment package
         run: |
