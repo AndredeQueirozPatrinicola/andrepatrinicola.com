@@ -45,6 +45,24 @@
   grid-column: span 3;
   align-self: end;
   justify-self: end;
+  display: grid;
+  justify-items: end;
+  gap: var(--space-1);
+}
+
+.site-footer-privacy {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.site-footer-privacy:hover {
+  color: var(--color-accent-ink);
 }
 
 @media (max-width: 47.99rem) {
@@ -53,6 +71,10 @@
   .site-footer-meta {
     grid-column: 1 / -1;
     justify-self: start;
+  }
+
+  .site-footer-meta {
+    justify-items: start;
   }
 }
 

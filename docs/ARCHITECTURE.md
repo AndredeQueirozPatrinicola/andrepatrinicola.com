@@ -109,6 +109,15 @@ embedded with an iframe that is created only when the visitor presses Play
 Vite plugin (`apps/site/vite/serve-game-builds.ts`) serves the games' builds at
 the same URLs, so the site needs no per-game ports.
 
+## Analytics
+
+Umami Cloud, loaded only after the visitor accepts the banner
+(`analytics/consent.ts`; an inline script in `<head>` loads it on later
+visits). It reports only on the production domains listed in
+`analytics/umami.ts`, where the event names live. Events are sent with
+`track()` from click handlers; page views come from the tracker. Declining
+also sets `umami.disabled`, which stops a tracker already loaded on the page.
+
 ## Quality
 
 - Unit tests (Vitest + Testing Library) for content integrity, repositories,

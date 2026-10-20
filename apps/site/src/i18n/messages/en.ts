@@ -30,6 +30,13 @@ export const en: Messages = {
   footer: {
     contact: "Contact",
     source: "Site source code",
+    privacy: "Cookies and analytics",
+  },
+  consent: {
+    title: "Cookies and analytics",
+    body: "I use Umami to count visits and clicks anonymously, with no tracking cookies and no personal data. Can I turn it on?",
+    accept: "Accept",
+    decline: "Decline",
   },
   keys: {
     space: "Space",

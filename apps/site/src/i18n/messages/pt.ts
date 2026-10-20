@@ -32,6 +32,13 @@ export const pt = {
   footer: {
     contact: "Contato",
     source: "Código-fonte do site",
+    privacy: "Cookies e métricas",
+  },
+  consent: {
+    title: "Cookies e métricas",
+    body: "Uso o Umami para contar visitas e cliques de forma anônima, sem cookies de rastreamento e sem dados pessoais. Posso ativar?",
+    accept: "Aceitar",
+    decline: "Recusar",
   },
   keys: {
     space: "Espaço",

@@ -1,6 +1,8 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { isRouteErrorResponse, Outlet, useLocation, useRouteLoaderData } from "react-router";
 
+import { useAnalyticsConsent } from "../analytics/useAnalyticsConsent";
+import { ConsentBanner } from "../components/layout/ConsentBanner";
 import { SiteFooter } from "../components/layout/SiteFooter";
 import { SiteHeader } from "../components/layout/SiteHeader";
 import { SkipLink } from "../components/layout/SkipLink";
@@ -47,6 +49,8 @@ function useFocusOnNavigation() {
 
 function Shell({ locale, messages, profile, children }: ShellProps) {
   useFocusOnNavigation();
+  const [consent, setConsent] = useAnalyticsConsent();
+  const [managingConsent, setManagingConsent] = useState(false);
 
   return (
     <I18nProvider value={{ locale, messages }}>
@@ -56,7 +60,15 @@ function Shell({ locale, messages, profile, children }: ShellProps) {
         <main id="content" className="app-main" tabIndex={-1}>
           {children}
         </main>
-        <SiteFooter profile={profile} />
+        <SiteFooter profile={profile} onManageConsent={() => setManagingConsent(true)} />
+        {(consent === null || managingConsent) && (
+          <ConsentBanner
+            onChoose={(choice) => {
+              setConsent(choice);
+              setManagingConsent(false);
+            }}
+          />
+        )}
       </div>
     </I18nProvider>
   );

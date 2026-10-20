@@ -2,6 +2,8 @@ import { expect, test, type Page } from "@playwright/test";
 
 type TrackedEvent = { name: string; data?: Record<string, string> };
 
+const UMAMI_SCRIPT = 'script[src="https://cloud.umami.is/script.js"]';
+
 test.beforeEach(async ({ page }) => {
   await page.route("https://cloud.umami.is/script.js", (route) =>
     route.fulfill({
@@ -10,6 +12,10 @@ test.beforeEach(async ({ page }) => {
     }),
   );
 });
+
+async function grantConsent(page: Page) {
+  await page.addInitScript(() => localStorage.setItem("analytics-consent", "granted"));
+}
 
 async function stayOnPage(page: Page) {
   await page.evaluate(() =>
@@ -25,9 +31,31 @@ function events(page: Page) {
   return page.evaluate(() => (window as unknown as { __events: TrackedEvent[] }).__events);
 }
 
+test("asks before loading Umami and remembers the answer", async ({ page }) => {
+  await page.goto("/en");
+  const banner = page.getByRole("region", { name: "Cookies and analytics" });
+  await expect(banner).toBeVisible();
+  await expect(page.locator(UMAMI_SCRIPT)).toHaveCount(0);
+
+  await banner.getByRole("button", { name: "Decline" }).click();
+  await expect(banner).toBeHidden();
+  await page.reload();
+  await expect(page.locator(UMAMI_SCRIPT)).toHaveCount(0);
+  await expect(banner).toBeHidden();
+
+  await page.getByRole("button", { name: "Cookies and analytics" }).click();
+  await banner.getByRole("button", { name: "Accept" }).click();
+  await expect(banner).toBeHidden();
+  await expect(page.locator(UMAMI_SCRIPT)).toHaveCount(1);
+  await page.reload();
+  await expect(page.locator(UMAMI_SCRIPT)).toHaveCount(1);
+  await expect(banner).toBeHidden();
+});
+
 test("loads Umami only for the production domains", async ({ page }) => {
+  await grantConsent(page);
   await page.goto("/pt");
-  const script = page.locator('script[src="https://cloud.umami.is/script.js"]');
+  const script = page.locator(UMAMI_SCRIPT);
 
   await expect(script).toHaveAttribute("data-website-id", "29383e2e-4db5-4448-a8b3-1d1155985516");
   await expect(script).toHaveAttribute("data-domains", /(^|,)andrepatrinicola\.com\.br(,|$)/);
@@ -35,6 +63,7 @@ test("loads Umami only for the production domains", async ({ page }) => {
 });
 
 test("tracks playing a game and the player toolbar", async ({ page }) => {
+  await grantConsent(page);
   await page.goto("/en/games/pong");
   await page.getByRole("button", { name: "Play: Classic Pong" }).click();
   await page.getByRole("button", { name: "Restart" }).click();
@@ -46,6 +75,7 @@ test("tracks playing a game and the player toolbar", async ({ page }) => {
 });
 
 test("tracks contact links with where they were clicked", async ({ page }) => {
+  await grantConsent(page);
   await page.goto("/en/about");
   await stayOnPage(page);
   await page.locator(".about-links").getByRole("link", { name: "LinkedIn" }).click();
@@ -58,6 +88,7 @@ test("tracks contact links with where they were clicked", async ({ page }) => {
 });
 
 test("tracks résumé downloads and skill highlights", async ({ page }) => {
+  await grantConsent(page);
   await page.goto("/en/resume");
   await stayOnPage(page);
   await page.getByRole("link", { name: "PDF in English" }).click();
@@ -71,6 +102,7 @@ test("tracks résumé downloads and skill highlights", async ({ page }) => {
 });
 
 test("tracks language and theme changes without breaking navigation", async ({ page }) => {
+  await grantConsent(page);
   await page.goto("/pt/games");
   await page.getByRole("link", { name: /^EN/ }).click();
   await expect(page).toHaveURL(/\/en\/games$/);

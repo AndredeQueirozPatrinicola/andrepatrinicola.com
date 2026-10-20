@@ -5,7 +5,12 @@ import "./site-footer.css";
 
 const SOURCE_URL = "https://github.com/AndredeQueirozPatrinicola/andrepatrinicola.com";
 
-export function SiteFooter({ profile }: { profile: Profile }) {
+type SiteFooterProps = {
+  profile: Profile;
+  onManageConsent: () => void;
+};
+
+export function SiteFooter({ profile, onManageConsent }: SiteFooterProps) {
   const { messages } = useI18n();
 
   return (
@@ -34,7 +39,10 @@ export function SiteFooter({ profile }: { profile: Profile }) {
           </ul>
         </div>
 
-        <p className="site-footer-meta">
+        <div className="site-footer-meta">
+          <button type="button" className="site-footer-privacy" onClick={onManageConsent}>
+            {messages.footer.privacy}
+          </button>
           <a
             href={SOURCE_URL}
             rel="noreferrer"
@@ -42,7 +50,7 @@ export function SiteFooter({ profile }: { profile: Profile }) {
           >
             {messages.footer.source}
           </a>
-        </p>
+        </div>
       </div>
     </footer>
   );
