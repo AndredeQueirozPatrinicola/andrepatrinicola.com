@@ -8,6 +8,7 @@ import {
 } from "react";
 import { Link } from "react-router";
 
+import { track } from "../../analytics/umami";
 import { PixelIcon } from "../../components/ui/PixelIcon";
 import type { Profile } from "../../domain/profile";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
@@ -215,7 +216,12 @@ export function HomePlayfield({ profile, intro, shortcuts }: HomePlayfieldProps)
               return (
                 <li key={shortcut.id}>
                   {shortcut.external ? (
-                    <a {...props} href={shortcut.href} rel="me noreferrer">
+                    <a
+                      {...props}
+                      href={shortcut.href}
+                      rel="me noreferrer"
+                      onClick={() => track("contact", { channel: shortcut.id, location: "home" })}
+                    >
                       {content}
                     </a>
                   ) : (
@@ -244,7 +250,15 @@ export function HomePlayfield({ profile, intro, shortcuts }: HomePlayfieldProps)
             {cleared && <span className="playfield-cleared">{text.cleared}</span>}
           </div>
           <div className="playfield-buttons">
-            <button type="button" className="playfield-play" aria-pressed={mode === "player"} onClick={togglePlay}>
+            <button
+              type="button"
+              className="playfield-play"
+              aria-pressed={mode === "player"}
+              onClick={() => {
+                track("home-playfield", { action: mode === "player" ? "stop" : "start" });
+                togglePlay();
+              }}
+            >
               {mode === "player" ? text.stop : text.play}
             </button>
             {!reducedMotion && (

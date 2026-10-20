@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
 
+import { track } from "../../analytics/umami";
 import { PixelIcon } from "../../components/ui/PixelIcon";
 import type { Resume } from "../../domain/resume";
 import { useI18n } from "../../i18n/context";
@@ -85,7 +86,12 @@ export function ResumeView({ resume, periods }: ResumeViewProps) {
           <ul>
             {resume.documents.map((document) => (
               <li key={document.href}>
-                <a href={document.href} hrefLang={document.language} download>
+                <a
+                  href={document.href}
+                  hrefLang={document.language}
+                  download
+                  onClick={() => track("resume-download", { language: document.language })}
+                >
                   {document.label}
                 </a>
               </li>
@@ -147,7 +153,10 @@ export function ResumeView({ resume, periods }: ResumeViewProps) {
                         className="skill-chip"
                         data-skill={skill.id}
                         aria-pressed={activeSkill === skill.id}
-                        onClick={() => setActiveSkill((current) => (current === skill.id ? null : skill.id))}
+                        onClick={() => {
+                          if (activeSkill !== skill.id) track("skill-highlight", { skill: skill.id });
+                          setActiveSkill((current) => (current === skill.id ? null : skill.id));
+                        }}
                       >
                         {skill.name}
                       </button>
@@ -181,7 +190,11 @@ export function ResumeView({ resume, periods }: ResumeViewProps) {
                 <li key={project.id} data-match={uses(project.skills)}>
                   <h3>
                     {external ? (
-                      <a href={project.href} rel="noreferrer">
+                      <a
+                        href={project.href}
+                        rel="noreferrer"
+                        onClick={() => track("resume-project", { project: project.id })}
+                      >
                         {project.title}
                         <PixelIcon name="external" size={12} />
                       </a>

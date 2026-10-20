@@ -1,3 +1,4 @@
+import { track } from "../../analytics/umami";
 import { useI18n } from "../../i18n/context";
 import { themePreferences, type ThemePreference } from "../../theme/theme";
 import { useThemePreference } from "../../theme/useThemePreference";
@@ -23,7 +24,10 @@ export function ThemeSwitcher() {
             name="theme"
             value={option}
             checked={preference === option}
-            onChange={() => setPreference(option)}
+            onChange={() => {
+              track("theme-change", { theme: option });
+              setPreference(option);
+            }}
             className="visually-hidden"
           />
           <PixelIcon name={iconFor[option]} />

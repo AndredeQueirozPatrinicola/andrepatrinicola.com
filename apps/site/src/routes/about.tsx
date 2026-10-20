@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 
+import { track } from "../analytics/umami";
 import { PageIntro } from "../components/ui/PageIntro";
 import { repositories } from "../data";
 import { localeInfo } from "../i18n/config";
@@ -115,7 +116,11 @@ export default function AboutRoute({ loaderData }: Route.ComponentProps) {
             <ul className="about-links">
               {profile.links.map((link) => (
                 <li key={link.kind}>
-                  <a href={link.href} rel={link.kind === "email" ? undefined : "me noreferrer"}>
+                  <a
+                    href={link.href}
+                    rel={link.kind === "email" ? undefined : "me noreferrer"}
+                    onClick={() => track("contact", { channel: link.kind, location: "about" })}
+                  >
                     {link.label}
                   </a>
                 </li>

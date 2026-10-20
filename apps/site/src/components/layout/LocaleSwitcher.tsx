@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router";
 
+import { track } from "../../analytics/umami";
 import { localeInfo, locales } from "../../i18n/config";
 import { useI18n } from "../../i18n/context";
 import { switchLocalePath } from "../../i18n/paths";
@@ -21,7 +22,10 @@ export function LocaleSwitcher() {
                 hrefLang={info.tag}
                 lang={info.tag}
                 aria-current={option === locale ? "true" : undefined}
-                onClick={() => rememberLocale(option)}
+                onClick={() => {
+                  if (option !== locale) track("language-change", { from: locale, to: option });
+                  rememberLocale(option);
+                }}
               >
                 {option.toUpperCase()}
                 {/* The accessible name keeps the visible code and adds the full name. */}

@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 
+import { track } from "../../analytics/umami";
 import { PixelIcon } from "../../components/ui/PixelIcon";
 import type { Project } from "../../domain/project";
 import { useI18n } from "../../i18n/context";
@@ -44,7 +45,11 @@ export function ProjectEntry({ project, index }: { project: Project; index: numb
           {project.links.map((link) =>
             link.kind === "source" ? (
               <li key={link.href}>
-                <a href={link.href} rel="noreferrer">
+                <a
+                  href={link.href}
+                  rel="noreferrer"
+                  onClick={() => track("project-source", { project: project.slug, location: "labs" })}
+                >
                   {text.source}
                   <PixelIcon name="external" size={12} />
                 </a>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { track } from "../../analytics/umami";
 import { useI18n } from "../../i18n/context";
 
 type ShareState = "idle" | "copied" | "failed";
@@ -19,6 +20,7 @@ export function ShareButton({ title, className }: ShareButtonProps) {
 
   async function share() {
     const url = window.location.href;
+    track("share", { page: window.location.pathname, method: "share" in navigator ? "native" : "copy" });
 
     if (navigator.share) {
       try {

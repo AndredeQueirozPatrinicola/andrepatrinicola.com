@@ -1,5 +1,6 @@
 import { data, Link } from "react-router";
 
+import { track } from "../analytics/umami";
 import { repositories } from "../data";
 import { ControlsLegend } from "../features/games/ControlsLegend";
 import { GameCard } from "../features/games/GameCard";
@@ -156,7 +157,11 @@ export default function GameRoute({ loaderData }: Route.ComponentProps) {
             <div>
               <dt className="label">{text.source}</dt>
               <dd>
-                <a href={game.sourceUrl} rel="noreferrer">
+                <a
+                  href={game.sourceUrl}
+                  rel="noreferrer"
+                  onClick={() => track("game-source", { game: game.slug })}
+                >
                   {game.sourceUrl.replace("https://", "")}
                 </a>
               </dd>

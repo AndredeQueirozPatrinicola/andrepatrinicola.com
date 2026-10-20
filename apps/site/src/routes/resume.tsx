@@ -1,3 +1,4 @@
+import { track } from "../analytics/umami";
 import { PageIntro } from "../components/ui/PageIntro";
 import { repositories } from "../data";
 import { ResumeView, type ExperiencePeriod } from "../features/resume/ResumeView";
@@ -67,7 +68,11 @@ export default function ResumeRoute({ loaderData }: Route.ComponentProps) {
           <ul className="resume-contact">
             {profile.links.map((link) => (
               <li key={link.kind}>
-                <a href={link.href} rel={link.kind === "email" ? undefined : "me noreferrer"}>
+                <a
+                  href={link.href}
+                  rel={link.kind === "email" ? undefined : "me noreferrer"}
+                  onClick={() => track("contact", { channel: link.kind, location: "resume" })}
+                >
                   {link.label}
                 </a>
               </li>

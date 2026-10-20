@@ -11,6 +11,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import { UMAMI_DOMAINS, UMAMI_SCRIPT_URL, UMAMI_WEBSITE_ID } from "./analytics/umami";
 import bodyFont from "./assets/fonts/atkinson-hyperlegible-next-400.woff2?url";
 import displayFont from "./assets/fonts/vcr-osd-mono.woff2?url";
 import { NotFoundView } from "./features/errors/NotFoundView";
@@ -52,6 +53,12 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta name="theme-color" content="#f7f7f7" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script
+          defer
+          src={UMAMI_SCRIPT_URL}
+          data-website-id={UMAMI_WEBSITE_ID}
+          data-domains={UMAMI_DOMAINS.join(",")}
+        />
         <Meta />
         <Links />
       </head>

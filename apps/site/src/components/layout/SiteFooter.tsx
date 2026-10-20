@@ -1,3 +1,4 @@
+import { track } from "../../analytics/umami";
 import type { Profile } from "../../domain/profile";
 import { useI18n } from "../../i18n/context";
 import "./site-footer.css";
@@ -21,7 +22,11 @@ export function SiteFooter({ profile }: { profile: Profile }) {
           <ul>
             {profile.links.map((link) => (
               <li key={link.kind}>
-                <a href={link.href} rel={link.kind === "email" ? undefined : "me noreferrer"}>
+                <a
+                  href={link.href}
+                  rel={link.kind === "email" ? undefined : "me noreferrer"}
+                  onClick={() => track("contact", { channel: link.kind, location: "footer" })}
+                >
                   {link.label}
                 </a>
               </li>
@@ -30,7 +35,11 @@ export function SiteFooter({ profile }: { profile: Profile }) {
         </div>
 
         <p className="site-footer-meta">
-          <a href={SOURCE_URL} rel="noreferrer">
+          <a
+            href={SOURCE_URL}
+            rel="noreferrer"
+            onClick={() => track("project-source", { project: "andrepatrinicola-com", location: "footer" })}
+          >
             {messages.footer.source}
           </a>
         </p>
