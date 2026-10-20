@@ -28,3 +28,8 @@ test('keeps the trailing slash games need for relative assets', () => {
   assert.equal(run('/play/pong/').uri, '/play/pong/index.html');
   assert.equal(run('/play/pong').headers.location.value, '/play/pong/');
 });
+
+test('never redirects to another host', () => {
+  assert.equal(run('//evil.com/').statusCode, 404);
+  assert.equal(run('/\\evil.com/').statusCode, 404);
+});

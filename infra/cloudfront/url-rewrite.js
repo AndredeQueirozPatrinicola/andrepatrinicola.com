@@ -22,6 +22,11 @@ function handler(event) {
     return request;
   }
 
+  // "//evil.com/" must not become a redirect to another host.
+  if (uri.indexOf("//") === 0 || uri.indexOf("\\") !== -1) {
+    return notFound();
+  }
+
   if (uri.charAt(uri.length - 1) === "/") {
     if (isGame) {
       request.uri = uri + "index.html";
@@ -36,6 +41,10 @@ function handler(event) {
 
   request.uri = uri + "/index.html";
   return request;
+}
+
+function notFound() {
+  return { statusCode: 404, statusDescription: "Not Found" };
 }
 
 function redirect(location, querystring) {
