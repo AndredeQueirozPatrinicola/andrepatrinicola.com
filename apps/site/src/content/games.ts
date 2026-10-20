@@ -1,11 +1,6 @@
 import type { Game, GameControl } from "../domain/game";
 import type { Localized } from "../domain/localized";
 
-import flappyCover from "../assets/images/flappy.png";
-import letritasCover from "../assets/images/letreco.png";
-import meteorCover from "../assets/images/meteors.png";
-import pongCover from "../assets/images/pong.png";
-
 type LocalizedControl = Omit<GameControl, "action"> & { action: Localized };
 
 export type GameEntry = Omit<
@@ -47,7 +42,7 @@ export const games: GameEntry[] = [
     year: 2026,
     status: "playable",
     hosting: { kind: "embedded", path: "/play/pong/index.html" },
-    cover: pongCover,
+    cover: "/images/games/pong.png",
     inputs: ["keyboard"],
     tech: engineTech,
     sourceUrl: `${GITHUB}/ClassicPong`,
@@ -111,7 +106,7 @@ export const games: GameEntry[] = [
     year: 2026,
     status: "playable",
     hosting: { kind: "embedded", path: "/play/meteor/index.html" },
-    cover: meteorCover,
+    cover: "/images/games/meteor.png",
     inputs: ["keyboard"],
     tech: engineTech,
     sourceUrl: `${GITHUB}/SpaceshipMeteor`,
@@ -175,7 +170,7 @@ export const games: GameEntry[] = [
     year: 2026,
     status: "playable",
     hosting: { kind: "embedded", path: "/play/flappy/index.html" },
-    cover: flappyCover,
+    cover: "/images/games/flappy.png",
     inputs: ["keyboard", "mouse"],
     tech: engineTech,
     sourceUrl: `${GITHUB}/FlappyThing`,
@@ -241,7 +236,7 @@ export const games: GameEntry[] = [
     year: 2023,
     status: "playable",
     hosting: { kind: "external", url: "https://andredequeirozpatrinicola.github.io/letreco/" },
-    cover: letritasCover,
+    cover: "/images/games/letritas.png",
     inputs: ["keyboard"],
     tech: ["React", "JavaScript", "Tailwind CSS", "Vite"],
     sourceUrl: `${GITHUB}/letreco`,
