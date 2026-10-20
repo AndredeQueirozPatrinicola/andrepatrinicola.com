@@ -8,3 +8,5 @@ build/
 npm-debug.log*
 .deploy/
 **/dist/
+test-results/
+playwright-report/
