@@ -38,6 +38,9 @@ jobs:
         run: npm run build
         env:
           VITE_SITE_URL: ${{ vars.SITE_URL }}
+          # The end-to-end tests stub this API and the Turnstile script.
+          VITE_CONTACT_API_URL: https://api.example.test/contact
+          VITE_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
 
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium

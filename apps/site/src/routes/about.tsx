@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { track } from "../analytics/umami";
 import { PageIntro } from "../components/ui/PageIntro";
 import { repositories } from "../data";
+import { ContactForm, contactFormEnabled } from "../features/contact/ContactForm";
 import { localeInfo } from "../i18n/config";
 import { useI18n } from "../i18n/context";
 import { formatYearMonth } from "../i18n/format";
@@ -129,6 +130,7 @@ export default function AboutRoute({ loaderData }: Route.ComponentProps) {
                 <Link to={localePath(locale, "/resume")}>{text.resumeLink}</Link>
               </li>
             </ul>
+            {contactFormEnabled && <ContactForm />}
           </div>
         </section>
       </div>

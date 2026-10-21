@@ -50,6 +50,9 @@ jobs:
           # Public origin for canonical URLs, Open Graph and the sitemap.
           # Empty uses the CloudFront address (see apps/site/src/seo/site.ts).
           VITE_SITE_URL: ${{ vars.SITE_URL }}
+          # Without both, the contact form is not rendered.
+          VITE_CONTACT_API_URL: ${{ vars.CONTACT_API_URL }}
+          VITE_TURNSTILE_SITE_KEY: ${{ vars.TURNSTILE_SITE_KEY }}
 
       - name: Verify deployment package
         run: |

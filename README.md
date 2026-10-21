@@ -72,4 +72,10 @@ URLs and real 404s; see [infra/README.md](infra/README.md).
 
 Set the repository variable `SITE_URL` when a custom domain is added.
 
+The contact form on the About page posts to the
+[andrepatrinicola-api](https://github.com/AndredeQueirozPatrinicola/andrepatrinicola-api)
+backend and needs two repository variables at build time: `CONTACT_API_URL`
+(its `contact_url` output) and `TURNSTILE_SITE_KEY` (public Cloudflare
+Turnstile key). Without them the page shows only the contact links.
+
 More on the design decisions in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).

@@ -14,6 +14,7 @@ export type AnalyticsEvent =
   | "game-source"
   | "share"
   | "contact"
+  | "contact-form"
   | "resume-download"
   | "resume-project"
   | "project-source"
