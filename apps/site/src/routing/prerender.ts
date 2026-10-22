@@ -1,7 +1,7 @@
 import { games } from "../content/games";
 import { createSnapshotBlogRepository } from "../data/snapshot/blog";
 import { loadSnapshot } from "../data/snapshot/content";
-import { locales } from "../i18n/config";
+import { defaultLocale, locales } from "../i18n/config";
 import { localePath } from "../i18n/paths";
 
 /** Paths below the locale prefix that exist in every language. */
@@ -10,12 +10,20 @@ export function localizedPaths(): string[] {
 }
 
 /**
+ * With `ssr: false`, every route with a loader must be pre-rendered at least
+ * once. When nothing is published yet, this path stands in for the post
+ * route: its loader answers with a redirect to the blog index.
+ */
+export const EMPTY_BLOG_PLACEHOLDER = "index";
+
+/**
  * Blog URLs come from the content snapshot: one page per published
  * language, a redirect page per earlier slug and one feed per language.
  */
 export async function blogPaths(): Promise<string[]> {
   const entries = await createSnapshotBlogRepository(loadSnapshot).entries();
   return [
+    ...(entries.length ? [] : [localePath(defaultLocale, `/blog/${EMPTY_BLOG_PLACEHOLDER}`)]),
     ...entries.flatMap((entry) =>
       [entry.slug, ...entry.previousSlugs].map((slug) => localePath(entry.locale, `/blog/${slug}`)),
     ),

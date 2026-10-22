@@ -12,6 +12,7 @@ import { format } from "../i18n/format";
 import { getMessages } from "../i18n/messages";
 import { localePath } from "../i18n/paths";
 import { requireLocale } from "../i18n/route";
+import { EMPTY_BLOG_PLACEHOLDER } from "../routing/prerender";
 import { buildMeta } from "../seo/meta";
 import { absoluteUrl } from "../seo/site";
 import { blogPostingSchema, breadcrumbSchema } from "../seo/structured-data";
@@ -28,6 +29,7 @@ export async function loader({ params }: Route.LoaderArgs) {
     // An older slug of a published article: permanent redirect (a meta refresh page when pre-rendered).
     const moved = await repositories.blog.findMovedSlug(params.slug, locale);
     if (moved) throw redirect(localePath(locale, `/blog/${moved}`), 301);
+    if (params.slug === EMPTY_BLOG_PLACEHOLDER) throw redirect(localePath(locale, "/blog"), 302);
     throw data(null, { status: 404 });
   }
 
