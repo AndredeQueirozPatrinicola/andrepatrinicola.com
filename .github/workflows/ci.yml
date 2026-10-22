@@ -50,6 +50,11 @@ jobs:
           # The end-to-end tests stub this API and the Turnstile script.
           VITE_CONTACT_API_URL: https://api.example.test/contact
           VITE_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
+          # The admin end-to-end tests stub the Studio API and Cognito.
+          VITE_STUDIO_API_URL: https://studio-api.example.test
+          VITE_COGNITO_AUTHORITY: https://cognito-idp.us-east-1.amazonaws.com/us-east-1_E2ETEST
+          VITE_COGNITO_CLIENT_ID: e2e-client
+          VITE_COGNITO_DOMAIN: https://auth.example.test
 
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
