@@ -97,6 +97,25 @@ export function widthsFor(originalWidth: number): number[] {
 /** Public path of a re-encoded image variant, generated at build time. */
 export const mediaPath = (id: string, width: number) => `/media/${id}-${width}.webp`;
 
+/**
+ * Link previews (Open Graph, LinkedIn) get a JPEG, the format every crawler
+ * reads, made for each article's cover and per-language preview image.
+ */
+export const shareImageWidth = 1200;
+export const shareImagePath = (id: string) => `/media/${id}-share.jpg`;
+
+/** Media used as a link preview: covers and per-language Open Graph images. */
+export function shareImageIds(articles: Pick<SnapshotArticle, "coverMediaId" | "locales">[]): Set<string> {
+  const ids = new Set<string>();
+  for (const article of articles) {
+    if (article.coverMediaId) ids.add(article.coverMediaId);
+    for (const locale of article.locales) if (locale.ogMediaId) ids.add(locale.ogMediaId);
+  }
+  return ids;
+}
+
+export type ShareImage = { src: string; width: number; height: number; alt: string };
+
 export type PublicImage = {
   id: string;
   width: number;
@@ -128,7 +147,8 @@ export type BlogPost = BlogPostSummary & {
   seoTitle: string;
   seoDescription: string;
   canonicalUrl?: string;
-  ogImage: PublicImage | null;
+  /** Link preview (JPEG): the language's Open Graph image, or the cover. */
+  ogImage: ShareImage | null;
   updatedLabel: string;
   content: ContentDoc;
   /** Images referenced by the body, by media id. */

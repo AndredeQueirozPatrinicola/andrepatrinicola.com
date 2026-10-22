@@ -20,7 +20,11 @@ test('writes the variants and removes only stale files', async () => {
     writeFileSync(join(dir, 'originals', id), png);
     writeFileSync(
       join(dir, 'snapshot.json'),
-      JSON.stringify({ schemaVersion: 1, articles: [], media: [{ id, sha256: sha256(png), width: 1000, height: 500 }] }),
+      JSON.stringify({
+        schemaVersion: 1,
+        articles: [{ coverMediaId: id, locales: [] }],
+        media: [{ id, sha256: sha256(png), width: 1000, height: 500 }],
+      }),
     );
     mkdirSync(join(dir, 'out'));
     writeFileSync(join(dir, 'out', 'old-image-480.webp'), 'stale');
@@ -28,7 +32,10 @@ test('writes the variants and removes only stale files', async () => {
 
     execFileSync(process.execPath, [script, '--snapshot', join(dir, 'snapshot.json'), '--originals', join(dir, 'originals'), '--out', join(dir, 'out')]);
 
-    assert.deepEqual(readdirSync(join(dir, 'out')).sort(), [`${id}-480.webp`, `${id}-960.webp`]);
+    assert.deepEqual(readdirSync(join(dir, 'out')).sort(), [`${id}-480.webp`, `${id}-960.webp`, `${id}-share.jpg`]);
+    const share = await sharp(join(dir, 'out', `${id}-share.jpg`)).metadata();
+    assert.equal(share.format, 'jpeg');
+    assert.equal(share.width, 1000);
     assert.equal((await sharp(join(dir, 'out', `${id}-960.webp`)).metadata()).width, 960);
     assert.equal((await sharp(join(dir, 'out', `${id}-480.webp`)).metadata()).format, 'webp');
   } finally {

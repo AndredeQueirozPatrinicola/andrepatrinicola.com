@@ -49,7 +49,7 @@ export async function loader({ params }: Route.LoaderArgs) {
       return [language, localePath(language, slug ? `/blog/${slug}` : "/blog")];
     }),
   );
-  const image = post.ogImage ?? post.cover;
+  const image = post.ogImage;
 
   return {
     post: { ...post, content: highlightDocument(post.content) },

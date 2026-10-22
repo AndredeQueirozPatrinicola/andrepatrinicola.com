@@ -116,3 +116,12 @@ test("serves the re-encoded images", async ({ request }) => {
   expect(response.status()).toBe(200);
   expect(response.headers()["content-type"]).toBe("image/webp");
 });
+
+test("link previews use a JPEG", async ({ request }) => {
+  const html = await (await request.get("/pt/blog/arquitetura-serverless-do-portfolio")).text();
+  const image = /<meta property="og:image" content="([^"]+)"/.exec(html)?.[1];
+  expect(image).toMatch(/\/media\/8f1c2b4e-6a0d-4c1e-9b7a-2d3e4f5a6b7c-share\.jpg$/);
+  const response = await request.get(new URL(image!).pathname);
+  expect(response.status()).toBe(200);
+  expect(response.headers()["content-type"]).toBe("image/jpeg");
+});

@@ -46,6 +46,17 @@ describe("snapshot blog repository", () => {
     expect(english?.cover?.alt).toBe("Architecture diagram");
   });
 
+  it("previews links with the JPEG made for sharing", async () => {
+    const post = await blog.findBySlug("arquitetura-serverless-do-portfolio", "pt");
+    expect(post?.ogImage).toEqual({
+      src: `/media/${post?.cover?.id}-share.jpg`,
+      // The fixture is 640 px wide: never upscaled to 1200.
+      width: 640,
+      height: 360,
+      alt: "Diagrama da arquitetura",
+    });
+  });
+
   it("finds the current slug of an earlier one", async () => {
     expect(await blog.findMovedSlug("arquitetura-do-portfolio", "pt")).toBe("arquitetura-serverless-do-portfolio");
     expect(await blog.findMovedSlug("arquitetura-do-portfolio", "en")).toBeUndefined();

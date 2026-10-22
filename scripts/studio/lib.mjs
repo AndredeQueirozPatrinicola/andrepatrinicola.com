@@ -11,6 +11,19 @@ export function widthsFor(originalWidth) {
   return widths.length ? widths : [originalWidth];
 }
 
+/** Same as shareImageWidth / shareImagePath / shareImageIds in apps/site/src/domain/blog.ts. */
+export const shareImageWidth = 1200;
+export const shareImageName = (id) => `${id}-share.jpg`;
+
+export function shareImageIds(articles) {
+  const ids = new Set();
+  for (const article of articles) {
+    if (article.coverMediaId) ids.add(article.coverMediaId);
+    for (const locale of article.locales ?? []) if (locale.ogMediaId) ids.add(locale.ogMediaId);
+  }
+  return ids;
+}
+
 export const DEFAULT_SNAPSHOT = 'apps/site/content/blog-snapshot.json';
 export const DEFAULT_MEDIA_DIR = '.studio-media';
 export const DEFAULT_AUDIENCE = 'andrepatrinicola-api';

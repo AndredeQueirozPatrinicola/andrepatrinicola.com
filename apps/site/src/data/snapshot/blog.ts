@@ -1,10 +1,13 @@
 import {
   mediaPath,
+  shareImagePath,
+  shareImageWidth,
   widthsFor,
   type BlogPost,
   type BlogPostSummary,
   type ContentSnapshot,
   type PublicImage,
+  type ShareImage,
   type SnapshotArticle,
   type SnapshotLocale,
   type SnapshotMedia,
@@ -28,6 +31,12 @@ export function toPublicImage(media: SnapshotMedia, alt: string): PublicImage {
   };
 }
 
+/** The JPEG made by process-media for link previews (never upscaled). */
+export function toShareImage(media: SnapshotMedia, alt: string): ShareImage {
+  const width = Math.min(shareImageWidth, media.width);
+  return { src: shareImagePath(media.id), width, height: Math.round((media.height * width) / media.width), alt };
+}
+
 type Found = { article: SnapshotArticle; draft: SnapshotLocale };
 
 export function createSnapshotBlogRepository(load: () => ContentSnapshot): BlogRepository {
@@ -43,6 +52,11 @@ export function createSnapshotBlogRepository(load: () => ContentSnapshot): BlogR
     const item = id ? media.get(id) : undefined;
     if (!item) return null;
     return toPublicImage(item, alt || item.alt[locale] || "");
+  }
+
+  function share(media: Map<string, SnapshotMedia>, id: string | null | undefined, locale: Locale) {
+    const item = id ? media.get(id) : undefined;
+    return item ? toShareImage(item, item.alt[locale] || "") : null;
   }
 
   function summary({ article, draft }: Found, media: Map<string, SnapshotMedia>): BlogPostSummary {
@@ -91,7 +105,7 @@ export function createSnapshotBlogRepository(load: () => ContentSnapshot): BlogR
         ...summary(found, media),
         seoTitle: draft.seoTitle || draft.title,
         seoDescription: draft.seoDescription || draft.excerpt,
-        ogImage: image(media, draft.ogMediaId, locale) ?? image(media, article.coverMediaId, locale),
+        ogImage: share(media, draft.ogMediaId, locale) ?? share(media, article.coverMediaId, locale),
         updatedLabel: formatDate(article.updatedAt, localeInfo[locale].tag),
         content: draft.content,
         images,

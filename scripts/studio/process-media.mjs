@@ -1,7 +1,8 @@
 // Re-encodes every published image of the snapshot to WebP in the widths the
 // site uses (apps/site/src/domain/blog.ts): rotated by EXIF, metadata
 // stripped, never upscaled. Output: apps/site/public/media/<id>-<width>.webp,
-// served next to the pages; the originals stay private.
+// served next to the pages, plus <id>-share.jpg (1200 px) for covers and
+// Open Graph images; the originals stay private.
 // Usage: node scripts/studio/process-media.mjs [--snapshot path] [--originals dir] [--out dir]
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -9,7 +10,7 @@ import { parseArgs } from 'node:util';
 
 import sharp from 'sharp';
 
-import { DEFAULT_MEDIA_DIR, DEFAULT_SNAPSHOT, sha256, validateSnapshot, widthsFor } from './lib.mjs';
+import { DEFAULT_MEDIA_DIR, DEFAULT_SNAPSHOT, sha256, shareImageIds, shareImageName, shareImageWidth, validateSnapshot, widthsFor } from './lib.mjs';
 
 const { values } = parseArgs({
   options: {
@@ -40,7 +41,9 @@ if (!existsSync(snapshotPath)) {
 }
 
 const snapshot = validateSnapshot(JSON.parse(readFileSync(snapshotPath, 'utf8')));
+const shared = shareImageIds(snapshot.articles);
 const expected = new Set(snapshot.media.flatMap((media) => widthsFor(media.width).map((width) => `${media.id}-${width}.webp`)));
+for (const id of shared) expected.add(shareImageName(id));
 removeStale(expected);
 let files = 0;
 
@@ -54,6 +57,17 @@ for (const media of snapshot.media) {
       .resize({ width, withoutEnlargement: true })
       .webp({ quality: 80 })
       .toFile(join(output, `${media.id}-${width}.webp`));
+    files += 1;
+  }
+
+  // Link previews: a JPEG (read by every crawler), flattened on white.
+  if (shared.has(media.id)) {
+    await sharp(original, { limitInputPixels: 40_000_000 })
+      .rotate()
+      .resize({ width: shareImageWidth, withoutEnlargement: true })
+      .flatten({ background: '#ffffff' })
+      .jpeg({ quality: 85, mozjpeg: true })
+      .toFile(join(output, shareImageName(media.id)));
     files += 1;
   }
 }

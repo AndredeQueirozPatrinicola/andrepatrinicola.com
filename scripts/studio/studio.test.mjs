@@ -2,13 +2,24 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
-import { apiBase, imageWidths, isSecureUrl, isUuid, validateSnapshot, widthsFor, withoutMediaUrls } from './lib.mjs';
+import { apiBase, imageWidths, isSecureUrl, isUuid, shareImageIds, shareImageName, shareImageWidth, validateSnapshot, widthsFor, withoutMediaUrls } from './lib.mjs';
 import { reportBody } from './report-deployment.mjs';
 
 test('image widths match the site', () => {
   const domain = readFileSync(new URL('../../apps/site/src/domain/blog.ts', import.meta.url), 'utf8');
   const match = /imageWidths = \[([^\]]+)\]/.exec(domain);
   assert.deepEqual(match[1].split(',').map((value) => Number(value.trim())), imageWidths);
+});
+
+test('share images match the site', () => {
+  const domain = readFileSync(new URL('../../apps/site/src/domain/blog.ts', import.meta.url), 'utf8');
+  assert.equal(Number(/shareImageWidth = (\d+)/.exec(domain)[1]), shareImageWidth);
+  assert.ok(domain.includes('`/media/${id}-share.jpg`'));
+  assert.equal(shareImageName('x'), 'x-share.jpg');
+  assert.deepEqual(
+    [...shareImageIds([{ coverMediaId: 'a', locales: [{ ogMediaId: 'b' }, {}] }, { coverMediaId: null, locales: [] }])],
+    ['a', 'b'],
+  );
 });
 
 test('never upscales', () => {
