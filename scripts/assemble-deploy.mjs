@@ -1,4 +1,4 @@
-import { cp, mkdir, rename, rm } from 'node:fs/promises';
+import { cp, mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 import { findPublishedGames } from './games.mjs';
@@ -15,9 +15,23 @@ async function assemble() {
   // CloudFront serves /404.html for missing paths (see infra/cloudfront/).
   await rename(resolve(outputDirectory, '404/index.html'), resolve(outputDirectory, '404.html'));
   await rm(resolve(outputDirectory, '404'), { recursive: true, force: true });
-  // Not used: there is no SPA fallback, and resource routes need no client data.
+  // Portfolio Studio (/admin) is client-only: React Router's SPA fallback
+  // (root layout, no page content) is its shell, served by the CloudFront
+  // Function for every /admin URL. It must never be indexed.
+  const shell = await readFile(resolve(outputDirectory, '__spa-fallback.html'), 'utf8');
+  if (!shell.includes('<head>')) throw new Error('Unexpected SPA fallback: no <head>');
+  await mkdir(resolve(outputDirectory, 'admin'), { recursive: true });
+  await writeFile(
+    resolve(outputDirectory, 'admin/index.html'),
+    shell.replace('<head>', '<head><meta name="robots" content="noindex, nofollow"/>'),
+  );
+
+  // Not used: resource routes need no client data.
   for (const unused of ['__spa-fallback.html', '404.data', 'sitemap.xml.data', 'robots.txt.data']) {
     await rm(resolve(outputDirectory, unused), { force: true });
+  }
+  for (const locale of await readdir(outputDirectory, { withFileTypes: true })) {
+    if (locale.isDirectory()) await rm(resolve(outputDirectory, locale.name, 'blog/rss.xml.data'), { force: true });
   }
 
   const games = await findPublishedGames(root);
