@@ -25,6 +25,7 @@ export default [
   route("admin/signed-out", "routes/admin/signed-out.tsx"),
   route("admin", "routes/admin/layout.tsx", [
     index("routes/admin/dashboard.tsx"),
+    route("media", "routes/admin/media.tsx"),
     route("settings", "routes/admin/settings.tsx"),
   ]),
 ] satisfies RouteConfig;
