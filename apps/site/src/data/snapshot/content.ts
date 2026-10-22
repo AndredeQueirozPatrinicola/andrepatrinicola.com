@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import { isAbsolute, resolve } from "node:path";
 
 import { contentTypes, type ContentSnapshot } from "../../domain/blog";
@@ -80,12 +80,17 @@ export function snapshotPath(env: NodeJS.ProcessEnv = process.env, cwd = process
   return isAbsolute(configured) ? configured : resolve(env.INIT_CWD ?? cwd, configured);
 }
 
-let cached: { path: string; snapshot: ContentSnapshot } | undefined;
+let cached: { path: string; modified: number; snapshot: ContentSnapshot } | undefined;
 
+/**
+ * Read once per file version: a new snapshot (a local publish while the dev
+ * server runs) is picked up on the next request without a restart.
+ */
 export function loadSnapshot(): ContentSnapshot {
   const path = snapshotPath();
-  if (cached?.path === path) return cached.snapshot;
-  const snapshot = existsSync(path) ? parseSnapshot(JSON.parse(readFileSync(path, "utf8"))) : emptySnapshot();
-  cached = { path, snapshot };
+  const modified = statSync(path, { throwIfNoEntry: false })?.mtimeMs ?? -1;
+  if (cached?.path === path && cached.modified === modified) return cached.snapshot;
+  const snapshot = modified < 0 ? emptySnapshot() : parseSnapshot(JSON.parse(readFileSync(path, "utf8")));
+  cached = { path, modified, snapshot };
   return snapshot;
 }

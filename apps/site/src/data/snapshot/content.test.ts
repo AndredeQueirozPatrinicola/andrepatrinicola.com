@@ -1,6 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { mkdtempSync, rmSync, utimesSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
-import { parseSnapshot, snapshotPath } from "./content";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { loadSnapshot, parseSnapshot, snapshotPath } from "./content";
 
 const article = {
   id: "5a0b7f0e-1111-4c4c-8a8a-000000000001",
@@ -37,5 +41,29 @@ describe("snapshotPath", () => {
       "/repo/apps/site/e2e/x.json",
     );
     expect(snapshotPath({ CONTENT_SNAPSHOT: "/tmp/x.json" }, "/repo")).toBe("/tmp/x.json");
+  });
+});
+
+describe("loadSnapshot", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("reads a new snapshot when the file changes (local publishing)", () => {
+    const dir = mkdtempSync(join(tmpdir(), "snapshot-"));
+    const path = join(dir, "blog-snapshot.json");
+    vi.stubEnv("CONTENT_SNAPSHOT", path);
+    try {
+      expect(loadSnapshot().articles).toEqual([]);
+
+      writeFileSync(path, JSON.stringify(snapshot([article])));
+      utimesSync(path, new Date(1_000_000), new Date(1_000_000));
+      expect(loadSnapshot().articles).toHaveLength(1);
+      expect(loadSnapshot()).toBe(loadSnapshot());
+
+      writeFileSync(path, JSON.stringify(snapshot([])));
+      utimesSync(path, new Date(2_000_000), new Date(2_000_000));
+      expect(loadSnapshot().articles).toEqual([]);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
