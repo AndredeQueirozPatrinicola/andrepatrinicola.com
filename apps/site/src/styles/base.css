@@ -60,6 +60,12 @@ iframe {
   max-width: 100%;
 }
 
+/* width/height attributes reserve space without fixing the height: images
+   keep their proportions (and CSS aspect-ratio rules apply) at any width. */
+img {
+  height: auto;
+}
+
 a {
   color: inherit;
   text-decoration-thickness: 1px;
