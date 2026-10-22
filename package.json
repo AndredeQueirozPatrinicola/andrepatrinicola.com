@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "dev": "npm run build:games && npm run dev:site",
+    "dev:studio": "npm run build:games && npm run dev:studio --workspace @andrepatrinicola/site",
     "dev:site": "npm run dev --workspace @andrepatrinicola/site",
     "dev:pong": "npm run dev --workspace @andrepatrinicola/pong",
     "dev:meteor": "npm run dev --workspace @andrepatrinicola/meteor",

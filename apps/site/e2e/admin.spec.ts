@@ -1,3 +1,5 @@
+import { readdirSync, readFileSync } from "node:fs";
+
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
@@ -40,6 +42,18 @@ test.describe("signing in", () => {
     const stored = await page.evaluate(() => ({ local: JSON.stringify(localStorage), session: Object.keys(sessionStorage) }));
     expect(stored.local).not.toContain("access_token");
     expect(stored.session.some((key) => key.startsWith("oidc.user:"))).toBe(true);
+  });
+
+  test("a build never contains the local mode's simulated login", async ({ page }) => {
+    const assets = new URL("../build/client/assets/", import.meta.url);
+    const code = readdirSync(assets)
+      .filter((name) => name.endsWith(".js"))
+      .map((name) => readFileSync(new URL(name, assets), "utf8"))
+      .join("\n");
+    expect(code).toContain(CLIENT_ID);
+    expect(code).not.toContain("admin@localhost");
+    expect(code).not.toContain("local-dev");
+    await page.close();
   });
 
   test("the admin shell is never indexed", async ({ page, request }) => {

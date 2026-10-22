@@ -42,7 +42,41 @@ type ProviderProps = {
   config?: StudioConfig | null;
 };
 
-export function AuthProvider({ children, manager: injected, config = studioConfig }: ProviderProps) {
+export function AuthProvider({ children, manager, config = studioConfig }: ProviderProps) {
+  // import.meta.env.DEV is a constant false in builds: the local provider is not even bundled.
+  if (import.meta.env.DEV && config?.local) return <LocalAuthProvider config={config}>{children}</LocalAuthProvider>;
+  return (
+    <CognitoAuthProvider manager={manager} config={config}>
+      {children}
+    </CognitoAuthProvider>
+  );
+}
+
+/**
+ * Local development (npm run dev:studio): always signed in as the local
+ * admin. The API's local server accepts any bearer token; nothing here would
+ * get past the real API.
+ */
+function LocalAuthProvider({ children, config }: { children: ReactNode; config: StudioConfig }) {
+  const [status, setStatus] = useState<AuthStatus>("signedIn");
+
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      status,
+      email: "admin@localhost",
+      signIn: async () => setStatus("signedIn"),
+      signOut: async () => window.location.assign("/admin/signed-out"),
+      getAccessToken: async () => (status === "signedIn" ? "local-dev" : null),
+      markExpired: () => setStatus((current) => (current === "signedIn" ? "expired" : current)),
+      config,
+    }),
+    [status, config],
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+function CognitoAuthProvider({ children, manager: injected, config = studioConfig }: ProviderProps) {
   const managerRef = useRef<UserManager | null>(injected ?? null);
   const [status, setStatus] = useState<AuthStatus>(config ? "loading" : "unconfigured");
   const [user, setUser] = useState<User | null>(null);

@@ -24,6 +24,17 @@ describe("readStudioConfig", () => {
     expect(readStudioConfig({ ...env, VITE_COGNITO_CLIENT_ID: "" })).toBeNull();
     expect(readStudioConfig({})).toBeNull();
   });
+
+  it("uses the API's local server and a simulated login only on the dev server in studio-local mode", () => {
+    expect(readStudioConfig({ DEV: true, MODE: "studio-local" })).toMatchObject({ apiUrl: "http://localhost:3001", local: true });
+    expect(readStudioConfig({ DEV: true, MODE: "studio-local", VITE_STUDIO_API_URL: "http://localhost:4000/" })?.apiUrl).toBe(
+      "http://localhost:4000",
+    );
+    // A build is never local, even with the same mode.
+    expect(readStudioConfig({ DEV: false, MODE: "studio-local" })).toBeNull();
+    expect(readStudioConfig({ ...env, DEV: false, MODE: "studio-local" })?.local).toBeUndefined();
+    expect(readStudioConfig({ DEV: true, MODE: "development" })).toBeNull();
+  });
 });
 
 describe("safeReturnTo", () => {

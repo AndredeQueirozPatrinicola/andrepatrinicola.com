@@ -13,7 +13,7 @@ const navigation = [
 
 /** Frame of every admin page: sidebar (a menu on small screens), header and content. */
 export function AdminShell({ children, banner }: { children: ReactNode; banner?: ReactNode }) {
-  const { email, signOut } = useAuth();
+  const { email, signOut, config } = useAuth();
   const { pathname } = useLocation();
   // The menu (small screens) closes by itself when the page changes.
   const [openOn, setOpenOn] = useState<string | null>(null);
@@ -66,6 +66,11 @@ export function AdminShell({ children, banner }: { children: ReactNode; banner?:
         </nav>
       </aside>
       <main id="admin-content" className="admin-main" tabIndex={-1}>
+        {config?.local && (
+          <p className="admin-banner" role="note">
+            <strong>Modo local.</strong> Login simulado; os dados e a publicação são do servidor local da API ({config.apiUrl}).
+          </p>
+        )}
         {banner}
         {children}
       </main>
