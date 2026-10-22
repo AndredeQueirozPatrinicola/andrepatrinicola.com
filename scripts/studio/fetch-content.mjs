@@ -14,6 +14,7 @@ import {
   DEFAULT_SNAPSHOT,
   apiBase,
   describeError,
+  isSecureUrl,
   isUuid,
   oidcToken,
   request,
@@ -38,7 +39,7 @@ async function createDeployment(api, token) {
 }
 
 async function downloadMedia(media, directory) {
-  if (typeof media.url !== 'string' || !media.url.startsWith('https://')) throw new Error(`Media ${media.id} has no download URL`);
+  if (typeof media.url !== 'string' || !isSecureUrl(media.url)) throw new Error(`Media ${media.id} has no download URL`);
   const response = await request(media.url, {}, { timeoutMs: 60_000 });
   if (!response.ok) throw new Error(`Could not download media ${media.id} (HTTP ${response.status})`);
   const bytes = new Uint8Array(await response.arrayBuffer());

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
-import { apiBase, imageWidths, isUuid, validateSnapshot, widthsFor, withoutMediaUrls } from './lib.mjs';
+import { apiBase, imageWidths, isSecureUrl, isUuid, validateSnapshot, widthsFor, withoutMediaUrls } from './lib.mjs';
 import { reportBody } from './report-deployment.mjs';
 
 test('image widths match the site', () => {
@@ -28,6 +28,15 @@ test('requires https for the API', () => {
   assert.equal(apiBase('http://localhost:3000'), 'http://localhost:3000');
   assert.throws(() => apiBase('http://api.example.com'));
   assert.throws(() => apiBase(''));
+});
+
+test('downloads media only over https, or from this machine', () => {
+  assert.equal(isSecureUrl('https://bucket.s3.amazonaws.com/media/x?X-Amz-Signature=s'), true);
+  assert.equal(isSecureUrl('http://localhost:3001/_s3/studio-local/media/x'), true);
+  assert.equal(isSecureUrl('http://127.0.0.1:3001/x'), true);
+  assert.equal(isSecureUrl('http://bucket.s3.amazonaws.com/media/x'), false);
+  assert.equal(isSecureUrl('file:///etc/passwd'), false);
+  assert.equal(isSecureUrl('not a url'), false);
 });
 
 test('validates snapshots and drops signed URLs', () => {

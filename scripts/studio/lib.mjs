@@ -25,15 +25,23 @@ export function sha256(data) {
   return createHash('sha256').update(data).digest('hex');
 }
 
+/** HTTPS, or plain HTTP to this machine (tests and the API's local server). */
+export function isSecureUrl(value) {
+  let url;
+  try {
+    url = new URL(value);
+  } catch {
+    return false;
+  }
+  const local = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+  return url.protocol === 'https:' || (local && url.protocol === 'http:');
+}
+
 /** Base URL of the API, without a trailing slash. HTTPS only (or localhost for tests). */
 export function apiBase(value) {
   if (!value) throw new Error('STUDIO_API_URL is not set');
-  const url = new URL(value);
-  const local = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
-  if (url.protocol !== 'https:' && !(local && url.protocol === 'http:')) {
-    throw new Error('STUDIO_API_URL must use https');
-  }
-  return url.toString().replace(/\/+$/, '');
+  if (!isSecureUrl(value)) throw new Error('STUDIO_API_URL must use https');
+  return new URL(value).toString().replace(/\/+$/, '');
 }
 
 /** The checks the build relies on before anything is written. */
