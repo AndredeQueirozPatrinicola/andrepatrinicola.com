@@ -22,3 +22,10 @@ export function formatYearMonth(value: string, localeTag: string): string {
     timeZone: "UTC",
   }).format(new Date(Date.UTC(year, month - 1, 1)));
 }
+
+/** "2026-10-21T…" → "21 de outubro de 2026" / "October 21, 2026", at build time. */
+export function formatDate(value: string, localeTag: string): string {
+  return new Intl.DateTimeFormat(localeTag, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(
+    new Date(value),
+  );
+}

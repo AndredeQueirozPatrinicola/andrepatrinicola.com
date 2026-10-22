@@ -22,9 +22,15 @@ export type BlockNode =
   | { type: "bulletList"; content: ListItemNode[] }
   | { type: "orderedList"; attrs: { start: number }; content: ListItemNode[] }
   | { type: "blockquote"; content: BlockNode[] }
-  | { type: "codeBlock"; attrs: { language: string | null }; content?: TextNode[] }
+  | { type: "codeBlock"; attrs: { language: string | null }; content?: TextNode[]; tokens?: CodeToken[] }
   | { type: "horizontalRule" }
   | { type: "image"; attrs: { mediaId: string; alt: string; caption: string } };
+
+/**
+ * Syntax-highlighted code, computed at build time (the highlighter never
+ * reaches the browser): plain strings and spans with highlight.js classes.
+ */
+export type CodeToken = string | { className: string; children: CodeToken[] };
 
 export type ListItemNode = { type: "listItem"; content: BlockNode[] };
 export type ContentDoc = { type: "doc"; content: BlockNode[] };
