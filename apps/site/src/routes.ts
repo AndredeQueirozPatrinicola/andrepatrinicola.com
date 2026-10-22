@@ -14,5 +14,8 @@ export default [
     route("labs", "routes/labs.tsx"),
     route("about", "routes/about.tsx"),
     route("resume", "routes/resume.tsx"),
+    route("blog", "routes/blog.tsx"),
+    route("blog/:slug", "routes/blog-post.tsx"),
   ]),
+  route(":lang/blog/rss.xml", "routes/blog-rss.ts"),
 ] satisfies RouteConfig;
