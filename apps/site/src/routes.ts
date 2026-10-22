@@ -18,4 +18,13 @@ export default [
     route("blog/:slug", "routes/blog-post.tsx"),
   ]),
   route(":lang/blog/rss.xml", "routes/blog-rss.ts"),
+
+  // Portfolio Studio: client-only pages, never pre-rendered or listed in the
+  // sitemap. CloudFront serves the SPA shell (/admin/index.html) for them.
+  route("admin/callback", "routes/admin/callback.tsx"),
+  route("admin/signed-out", "routes/admin/signed-out.tsx"),
+  route("admin", "routes/admin/layout.tsx", [
+    index("routes/admin/dashboard.tsx"),
+    route("settings", "routes/admin/settings.tsx"),
+  ]),
 ] satisfies RouteConfig;

@@ -22,7 +22,11 @@ export function readConsent(): AnalyticsConsent | null {
   }
 }
 
+/** Portfolio Studio is private: no page views or events from /admin. */
+export const isPrivatePath = (pathname: string) => pathname === "/admin" || pathname.startsWith("/admin/");
+
 export function loadUmami(): void {
+  if (isPrivatePath(window.location.pathname)) return;
   if (document.querySelector(`script[src="${UMAMI_SCRIPT_URL}"]`)) return;
 
   const script = document.createElement("script");
@@ -66,6 +70,7 @@ export function subscribeToConsent(onChange: () => void): () => void {
 }
 
 export const umamiInitScript = `(function () {
+  if (location.pathname === "/admin" || location.pathname.indexOf("/admin/") === 0) return;
   try { if (localStorage.getItem(${JSON.stringify(CONSENT_STORAGE_KEY)}) !== "granted") return; } catch (e) { return; }
   var script = document.createElement("script");
   script.defer = true;
