@@ -92,8 +92,10 @@ The workflow uploads hashed files (`assets/`, `play/*/assets/`) with
 `Cache-Control: public, max-age=31536000, immutable` (old ones are kept, so
 pages opened before a deploy keep working; prune them occasionally with an S3
 lifecycle rule if they ever matter) and everything else
-(HTML, `.data`, images, PDFs) with `max-age=0, must-revalidate`, then
-invalidates `/*`. If the distribution uses a cache policy that ignores origin
+(HTML, `.data`, images, PDFs, blog feeds and the re-encoded article images
+in `media/`) with `max-age=0, must-revalidate`, then invalidates `/*`.
+Article images keep stable names (`media/<id>-<width>.webp`) and disappear
+with `--delete` when no published article uses them. If the distribution uses a cache policy that ignores origin
 headers, switch the default behavior to **CachingOptimized** or a policy that
 honors `Cache-Control`.
 

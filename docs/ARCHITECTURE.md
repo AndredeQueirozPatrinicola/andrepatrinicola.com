@@ -38,6 +38,8 @@ crawlers).
 /{lang}/labs           projects and experiments
 /{lang}/about          about
 /{lang}/resume         interactive résumé + PDFs
+/{lang}/blog[/:slug]   articles and build logs (slugs per language)
+/{lang}/blog/rss.xml   RSS 2.0 feed per language
 /404.html              static, trilingual, no JavaScript (served by CloudFront)
 /play/:slug/           each game's own build, loaded in an iframe
 ```
@@ -73,6 +75,41 @@ live, a `clientLoader` on those routes.
 **Future admin area:** authentication and editing would live under a separate
 `/admin` segment with its own layout and `clientLoader`s, excluded from
 prerendering and from the sitemap. Nothing of it exists yet by design.
+
+## Blog and publishing
+
+**Requirement:** articles written in Portfolio Studio (the CMS in
+`andrepatrinicola-api`) must be pre-rendered like every other page, with the
+same SEO, and nothing unpublished may reach the site.
+
+**Decision:** the content arrives at build time as a *snapshot*, never at
+visit time:
+
+1. The deploy workflow's first step (`scripts/studio/fetch-content.mjs`)
+   proves with the run's GitHub OIDC token which run is calling, and the API
+   freezes what should be live at that moment: only published revisions and
+   only languages marked ready. A push creates its own deployment; the CMS
+   dispatches the workflow with `deployment_id`.
+2. `process-media.mjs` re-encodes each image (WebP in 480/960/1200/1600 px,
+   EXIF rotation applied, metadata stripped) into `public/media/`; the
+   originals stay in the API's private bucket.
+3. Loaders read the snapshot through the `blog` repository
+   (`data/snapshot/`); `routing/prerender.ts` adds one page per published
+   language, a redirect page per earlier slug and the feeds.
+4. `report-deployment.mjs` tells the API how the job ended; only then does
+   the CMS show the article as published.
+
+Bodies are structured documents (Tiptap JSON), rendered by
+`features/blog/ArticleContent.tsx` with React elements only; code is
+highlighted in loaders (lowlight never ships to the browser). Pages advertise
+hreflang alternates only for the languages an article exists in, and the
+language switcher follows the translated slug or falls back to that
+language's blog index. Unpublishing removes the article from the next
+snapshot, so `s3 sync --delete` removes its page, feed entry and images.
+
+Local builds without a snapshot have an empty blog; tests use
+`CONTENT_SNAPSHOT=apps/site/e2e/fixtures/blog-snapshot.json` after
+`node scripts/studio/process-media.mjs --snapshot apps/site/e2e/fixtures/blog-snapshot.json --originals apps/site/e2e/fixtures/media`.
 
 ## Styling and themes
 
