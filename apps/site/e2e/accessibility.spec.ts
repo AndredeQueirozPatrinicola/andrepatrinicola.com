@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const paths = ["/pt", "/en/games", "/en/games/pong", "/es/labs", "/en/about", "/pt/resume", "/404.html"];
+const paths = ["/pt", "/en/games", "/en/games/pong", "/es/labs", "/en/about", "/pt/resume", "/404.html", "/pt/blog", "/pt/blog/arquitetura-serverless-do-portfolio"];
 
 for (const colorScheme of ["light", "dark"] as const) {
   test.describe(`${colorScheme} theme`, () => {
