@@ -143,6 +143,17 @@ three languages. Build variables: `VITE_STUDIO_API_URL`,
 (without them `/admin` explains it is not configured). End-to-end tests run
 the real build against stand-ins for Cognito and the API (`e2e/support/studio.ts`).
 
+Local development (`npm run dev:studio`, with the API's `npm run dev`): the
+`studio-local` Vite mode swaps the Cognito provider for a simulated signed-in
+session pointing at `localhost:3001`. Both the config and the provider check
+`import.meta.env.DEV`, a constant `false` in builds, so production bundles
+contain neither (an E2E test reads the bundle to confirm). Two dev-only
+helpers keep a local publish visible without restarts: `loadSnapshot` re-reads
+the snapshot when its modification time changes, and
+`vite/reload-content-snapshot.ts` refreshes React Router's list of
+pre-rendered paths (with `ssr: false`, data requests are only answered for
+those) and reloads the browser.
+
 ## Styling and themes
 
 - `styles/tokens.css`: semantic colors written with `light-dark()`, type

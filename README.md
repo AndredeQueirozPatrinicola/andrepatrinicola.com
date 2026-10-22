@@ -39,6 +39,7 @@ docs/               Architecture notes
 ```bash
 npm install
 npm run dev        # builds the games, then starts the site at localhost:5173
+npm run dev:studio # same, with /admin against the API's local server (see below)
 npm run build      # site + games, assembled into .deploy/
 npm run preview    # serves .deploy/ with the production URL rules (localhost:4173)
 npm run lint       # TypeScript + ESLint
@@ -84,6 +85,16 @@ first asks the API for the content to publish, using the job's GitHub OIDC
 token, and reports the result at the end. The deploy job must keep
 `environment: production`, which the API checks. Publishing from the admin
 needs the GitHub App described in the API's README.
+
+**Portfolio Studio locally, without AWS.** In the API repository run
+`npm run dev` (a local server at `localhost:3001` with simulated AWS, GitHub
+and LinkedIn; see its README), then here `npm run dev:studio`. The admin opens
+already signed in (simulated login, dev server only: `--mode studio-local`
+is ignored by every build, and a test checks that the bundle has none of it).
+Publishing runs this repository's deploy scripts against the local API: the
+snapshot goes to `apps/site/content/`, images to `apps/site/public/media/`
+(both git-ignored) and the blog updates without restarting.
+`VITE_STUDIO_API_URL` overrides the API address.
 
 To run the admin locally against the real API, add `http://localhost:5173` to
 the API's `studio_dev_origins` and `studio_callback_urls`/`studio_logout_urls`
