@@ -1,0 +1,396 @@
+{
+  "schemaVersion": 1,
+  "deploymentId": "00000000-0000-4000-8000-000000000001",
+  "sequence": 1,
+  "generatedAt": "2026-10-21T12:00:00.000Z",
+  "articles": [
+    {
+      "id": "5a0b7f0e-1111-4c4c-8a8a-000000000002",
+      "type": "build_log",
+      "tags": [
+        "cms"
+      ],
+      "revision": 3,
+      "publishedAt": "2026-10-20T15:00:00.000Z",
+      "updatedAt": "2026-10-20T15:00:00.000Z",
+      "coverMediaId": null,
+      "locales": [
+        {
+          "locale": "pt",
+          "slug": "diario-de-bordo-cms",
+          "previousSlugs": [],
+          "title": "Diário de bordo: o editor do CMS",
+          "excerpt": "Autosave, revisões e o que aprendi no caminho.",
+          "content": {
+            "type": "doc",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Diário de bordo: hoje o editor ganhou salvamento automático e histórico de revisões."
+                  }
+                ]
+              },
+              {
+                "type": "heading",
+                "attrs": {
+                  "level": 2
+                },
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "O que mudou"
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Autosave com debounce e controle de versão otimista."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "5a0b7f0e-1111-4c4c-8a8a-000000000001",
+      "type": "article",
+      "tags": [
+        "aws",
+        "serverless"
+      ],
+      "revision": 7,
+      "publishedAt": "2026-10-10T12:00:00.000Z",
+      "updatedAt": "2026-10-18T09:30:00.000Z",
+      "coverMediaId": "8f1c2b4e-6a0d-4c1e-9b7a-2d3e4f5a6b7c",
+      "locales": [
+        {
+          "locale": "pt",
+          "slug": "arquitetura-serverless-do-portfolio",
+          "previousSlugs": [
+            "arquitetura-do-portfolio"
+          ],
+          "title": "Arquitetura serverless do portfólio",
+          "excerpt": "Como o site continua estático enquanto um CMS publica artigos em três idiomas & <tags>.",
+          "seoTitle": "Arquitetura serverless do portfólio",
+          "seoDescription": "Cognito, Lambda, DynamoDB e GitHub Actions publicando um site estático.",
+          "content": {
+            "type": "doc",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Este artigo descreve como o "
+                  },
+                  {
+                    "type": "text",
+                    "text": "Portfolio Studio",
+                    "marks": [
+                      {
+                        "type": "bold"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "text",
+                    "text": " publica conteúdo sem servidor: o site continua estático e cada publicação gera um novo build."
+                  }
+                ]
+              },
+              {
+                "type": "heading",
+                "attrs": {
+                  "level": 2
+                },
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Por que manter o site estático?"
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Páginas pré-renderizadas carregam rápido e são lidas por buscadores. Veja a "
+                  },
+                  {
+                    "type": "text",
+                    "text": "documentação do React Router",
+                    "marks": [
+                      {
+                        "type": "link",
+                        "attrs": {
+                          "href": "https://reactrouter.com/how-to/pre-rendering"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "text",
+                    "text": "."
+                  }
+                ]
+              },
+              {
+                "type": "bulletList",
+                "content": [
+                  {
+                    "type": "listItem",
+                    "content": [
+                      {
+                        "type": "paragraph",
+                        "content": [
+                          {
+                            "type": "text",
+                            "text": "HTML pronto no CloudFront"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "listItem",
+                    "content": [
+                      {
+                        "type": "paragraph",
+                        "content": [
+                          {
+                            "type": "text",
+                            "text": "Nenhuma consulta à API por visita"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "image",
+                "attrs": {
+                  "mediaId": "8f1c2b4e-6a0d-4c1e-9b7a-2d3e4f5a6b7c",
+                  "alt": "Diagrama da publicação",
+                  "caption": "Do painel ao CloudFront"
+                }
+              },
+              {
+                "type": "heading",
+                "attrs": {
+                  "level": 3
+                },
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "O cliente do DynamoDB"
+                  }
+                ]
+              },
+              {
+                "type": "codeBlock",
+                "attrs": {
+                  "language": "typescript"
+                },
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "import { DynamoDBDocumentClient } from \"@aws-sdk/lib-dynamodb\";\n\nexport const table = process.env.TABLE_NAME ?? \"studio\";\nconst limit = 20; // items per page\n"
+                  }
+                ]
+              },
+              {
+                "type": "blockquote",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "Rascunhos nunca chegam ao site."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "orderedList",
+                "attrs": {
+                  "start": 1
+                },
+                "content": [
+                  {
+                    "type": "listItem",
+                    "content": [
+                      {
+                        "type": "paragraph",
+                        "content": [
+                          {
+                            "type": "text",
+                            "text": "Salvar"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "listItem",
+                    "content": [
+                      {
+                        "type": "paragraph",
+                        "content": [
+                          {
+                            "type": "text",
+                            "text": "Publicar"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "horizontalRule"
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Um link inseguro vira texto: "
+                  },
+                  {
+                    "type": "text",
+                    "text": "não clique",
+                    "marks": [
+                      {
+                        "type": "link",
+                        "attrs": {
+                          "href": "javascript:alert(1)"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "text",
+                    "text": ". Use "
+                  },
+                  {
+                    "type": "text",
+                    "text": "inline code",
+                    "marks": [
+                      {
+                        "type": "code"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "text",
+                    "text": "."
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "locale": "en",
+          "slug": "portfolio-serverless-architecture",
+          "previousSlugs": [],
+          "title": "The portfolio's serverless architecture",
+          "excerpt": "How the site stays static while a CMS publishes articles in three languages.",
+          "content": {
+            "type": "doc",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "This article explains how "
+                  },
+                  {
+                    "type": "text",
+                    "text": "Portfolio Studio",
+                    "marks": [
+                      {
+                        "type": "bold"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "text",
+                    "text": " publishes content without a server: the site stays static and every publication triggers a new build."
+                  }
+                ]
+              },
+              {
+                "type": "heading",
+                "attrs": {
+                  "level": 2
+                },
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Why keep the site static?"
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Pre-rendered pages load fast and are read by search engines."
+                  }
+                ]
+              },
+              {
+                "type": "image",
+                "attrs": {
+                  "mediaId": "8f1c2b4e-6a0d-4c1e-9b7a-2d3e4f5a6b7c",
+                  "alt": "",
+                  "caption": ""
+                }
+              },
+              {
+                "type": "codeBlock",
+                "attrs": {
+                  "language": "bash"
+                },
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "npm run build\n"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "media": [
+    {
+      "id": "8f1c2b4e-6a0d-4c1e-9b7a-2d3e4f5a6b7c",
+      "contentType": "image/png",
+      "width": 640,
+      "height": 360,
+      "alt": {
+        "pt": "Diagrama da arquitetura",
+        "en": "Architecture diagram"
+      },
+      "sha256": "2269712f9bdf775b81f1358adbfee5cb2831ae7166dd4f6370e492ab704ee6ae"
+    }
+  ]
+}

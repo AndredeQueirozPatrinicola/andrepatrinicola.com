@@ -7,6 +7,7 @@
 //   /pt/games/pong/    -> 301 /pt/games/pong          (one canonical URL)
 //   /play/pong         -> 301 /play/pong/             (games use relative assets)
 //   /play/pong/        -> /play/pong/index.html       (rewrite)
+//   /admin, /admin/...  -> /admin/index.html            (Portfolio Studio SPA shell)
 //   files with an extension and / pass through unchanged.
 //
 // scripts/serve-deploy.mjs runs this same file locally, so the preview server
@@ -25,6 +26,13 @@ function handler(event) {
   // "//evil.com/" must not become a redirect to another host.
   if (uri.indexOf("//") === 0 || uri.indexOf("\\") !== -1) {
     return notFound();
+  }
+
+  // Portfolio Studio is a client-side app: every /admin URL gets the same
+  // shell, which holds no content of its own (data comes from the API).
+  if (uri === "/admin" || uri.indexOf("/admin/") === 0) {
+    request.uri = "/admin/index.html";
+    return request;
   }
 
   if (uri.charAt(uri.length - 1) === "/") {

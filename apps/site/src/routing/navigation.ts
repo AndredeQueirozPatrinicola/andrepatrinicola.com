@@ -11,6 +11,7 @@ export type NavItem = {
 export const primaryNavigation: NavItem[] = [
   { key: "games", path: "/games" },
   { key: "labs", path: "/labs" },
+  { key: "blog", path: "/blog" },
   { key: "about", path: "/about" },
   { key: "resume", path: "/resume" },
 ];

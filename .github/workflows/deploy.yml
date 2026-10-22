@@ -5,7 +5,14 @@ on:
     branches:
       - main
 
+  # Portfolio Studio dispatches this workflow to publish content; it can also
+  # be run by hand (leave deployment_id empty for a normal deploy).
   workflow_dispatch:
+    inputs:
+      deployment_id:
+        description: Content deployment created by Portfolio Studio
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -35,6 +42,17 @@ jobs:
           node-version: 22
           cache: npm
 
+      # First thing in the run: the API freezes what should be live now (see
+      # scripts/studio/fetch-content.mjs). Without STUDIO_API_URL the blog is
+      # built empty, as before Portfolio Studio existed.
+      - name: Freeze published content
+        id: content
+        if: vars.STUDIO_API_URL != ''
+        env:
+          STUDIO_API_URL: ${{ vars.STUDIO_API_URL }}
+          DEPLOYMENT_ID: ${{ inputs.deployment_id }}
+        run: node scripts/studio/fetch-content.mjs
+
       - name: Install dependencies
         run: npm ci
 
@@ -43,6 +61,10 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Process published images
+        if: steps.content.outputs.deployment_id != ''
+        run: node scripts/studio/process-media.mjs
 
       - name: Build all applications
         run: npm run build
@@ -53,6 +75,11 @@ jobs:
           # Without both, the contact form is not rendered.
           VITE_CONTACT_API_URL: ${{ vars.CONTACT_API_URL }}
           VITE_TURNSTILE_SITE_KEY: ${{ vars.TURNSTILE_SITE_KEY }}
+          # Portfolio Studio (/admin). Without them the admin explains it is not configured.
+          VITE_STUDIO_API_URL: ${{ vars.STUDIO_API_URL }}
+          VITE_COGNITO_AUTHORITY: ${{ vars.COGNITO_AUTHORITY }}
+          VITE_COGNITO_CLIENT_ID: ${{ vars.COGNITO_CLIENT_ID }}
+          VITE_COGNITO_DOMAIN: ${{ vars.COGNITO_DOMAIN }}
 
       - name: Verify deployment package
         run: |
@@ -102,7 +129,19 @@ jobs:
 
           echo "CloudFront invalidation criada: ${INVALIDATION_ID}"
 
+      # Tells Portfolio Studio how the deploy ended (also on failure or
+      # cancellation), so articles only show as published after a real upload.
+      - name: Report the content deployment
+        if: always() && steps.content.outputs.deployment_id != ''
+        env:
+          STUDIO_API_URL: ${{ vars.STUDIO_API_URL }}
+          DEPLOYMENT_ID: ${{ steps.content.outputs.deployment_id }}
+          JOB_STATUS: ${{ job.status }}
+        run: node scripts/studio/report-deployment.mjs "$JOB_STATUS"
+
       - name: Deployment summary
+        env:
+          DEPLOYMENT_ID: ${{ steps.content.outputs.deployment_id }}
         run: |
           {
             echo "## Deploy concluído"
@@ -112,4 +151,5 @@ jobs:
             echo "- Bucket: \`${{ vars.AWS_S3_BUCKET }}\`"
             echo "- CloudFront: \`${{ vars.AWS_CLOUDFRONT_DISTRIBUTION_ID }}\`"
             echo "- URL: https://${{ vars.AWS_CLOUDFRONT_DOMAIN }}"
+            echo "- Content deployment: \`${DEPLOYMENT_ID:-none}\`"
           } >> "$GITHUB_STEP_SUMMARY"

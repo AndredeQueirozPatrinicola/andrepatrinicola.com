@@ -10,3 +10,8 @@ npm-debug.log*
 **/dist/
 test-results/
 playwright-report/
+
+# Portfolio Studio content fetched by the deploy (scripts/studio)
+apps/site/content/
+apps/site/public/media/
+.studio-media/

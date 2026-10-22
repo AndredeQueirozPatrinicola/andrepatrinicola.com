@@ -33,3 +33,12 @@ test('never redirects to another host', () => {
   assert.equal(run('//evil.com/').statusCode, 404);
   assert.equal(run('/\\evil.com/').statusCode, 404);
 });
+
+test('serves the Portfolio Studio shell for every /admin URL', () => {
+  assert.equal(run('/admin').uri, '/admin/index.html');
+  assert.equal(run('/admin/').uri, '/admin/index.html');
+  assert.equal(run('/admin/articles/abc/edit').uri, '/admin/index.html');
+  assert.equal(run('/admin/callback', { code: { value: 'x' }, state: { value: 'y' } }).uri, '/admin/index.html');
+  // Other paths that merely start with "admin" are ordinary pages.
+  assert.equal(run('/administration').uri, '/administration/index.html');
+});

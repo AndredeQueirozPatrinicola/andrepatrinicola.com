@@ -1,6 +1,7 @@
+import type { BlogPost } from "../domain/blog";
 import type { Game } from "../domain/game";
 import type { Profile } from "../domain/profile";
-import type { Locale } from "../i18n/config";
+import { localeInfo, type Locale } from "../i18n/config";
 import { localePath } from "../i18n/paths";
 import { absoluteUrl } from "./site";
 
@@ -46,5 +47,26 @@ export function breadcrumbSchema(items: { name: string; path: string }[]) {
       name: item.name,
       item: absoluteUrl(item.path),
     })),
+  };
+}
+
+export function blogPostingSchema(post: BlogPost, profile: Profile, url: string, section: string) {
+  const author = { "@type": "Person", name: profile.name, url: absoluteUrl(localePath(post.locale)) };
+  const images = [post.ogImage, post.cover].flatMap((image) => (image ? [absoluteUrl(image.src)] : []));
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.seoDescription,
+    url,
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    datePublished: post.publishedAt,
+    dateModified: post.updatedAt,
+    inLanguage: localeInfo[post.locale].tag,
+    articleSection: section,
+    ...(post.tags.length ? { keywords: post.tags.join(", ") } : {}),
+    ...(images.length ? { image: [...new Set(images)] } : {}),
+    author,
+    publisher: author,
   };
 }

@@ -38,6 +38,8 @@ crawlers).
 /{lang}/labs           projects and experiments
 /{lang}/about          about
 /{lang}/resume         interactive résumé + PDFs
+/{lang}/blog[/:slug]   articles and build logs (slugs per language)
+/{lang}/blog/rss.xml   RSS 2.0 feed per language
 /404.html              static, trilingual, no JavaScript (served by CloudFront)
 /play/:slug/           each game's own build, loaded in an iframe
 ```
@@ -70,9 +72,87 @@ Because pages are pre-rendered, an API would be called at build time; content
 edited later would need a rebuild (a deploy hook) or, for pages that must be
 live, a `clientLoader` on those routes.
 
-**Future admin area:** authentication and editing would live under a separate
-`/admin` segment with its own layout and `clientLoader`s, excluded from
-prerendering and from the sitemap. Nothing of it exists yet by design.
+
+## Blog and publishing
+
+**Requirement:** articles written in Portfolio Studio (the CMS in
+`andrepatrinicola-api`) must be pre-rendered like every other page, with the
+same SEO, and nothing unpublished may reach the site.
+
+**Decision:** the content arrives at build time as a *snapshot*, never at
+visit time:
+
+1. The deploy workflow's first step (`scripts/studio/fetch-content.mjs`)
+   proves with the run's GitHub OIDC token which run is calling, and the API
+   freezes what should be live at that moment: only published revisions and
+   only languages marked ready. A push creates its own deployment; the CMS
+   dispatches the workflow with `deployment_id`.
+2. `process-media.mjs` re-encodes each image (WebP in 480/960/1200/1600 px,
+   EXIF rotation applied, metadata stripped) into `public/media/`; the
+   originals stay in the API's private bucket.
+3. Loaders read the snapshot through the `blog` repository
+   (`data/snapshot/`); `routing/prerender.ts` adds one page per published
+   language, a redirect page per earlier slug and the feeds.
+4. `report-deployment.mjs` tells the API how the job ended; only then does
+   the CMS show the article as published.
+
+Bodies are structured documents (Tiptap JSON), rendered by
+`features/blog/ArticleContent.tsx` with React elements only; code is
+highlighted in loaders (lowlight never ships to the browser). Pages advertise
+hreflang alternates only for the languages an article exists in, and the
+language switcher follows the translated slug or falls back to that
+language's blog index. Unpublishing removes the article from the next
+snapshot, so `s3 sync --delete` removes its page, feed entry and images.
+
+Local builds without a snapshot have an empty blog; tests use
+`CONTENT_SNAPSHOT=apps/site/e2e/fixtures/blog-snapshot.json` after
+`node scripts/studio/process-media.mjs --snapshot apps/site/e2e/fixtures/blog-snapshot.json --originals apps/site/e2e/fixtures/media`.
+
+## Portfolio Studio (`/admin`)
+
+**Requirement:** a private editor for the blog that never puts private
+content in static files, never trusts the browser for authorization and
+keeps the public site static.
+
+**Decision:** a client-only area inside the same app:
+
+- Routes under `/admin` have no loaders and are not pre-rendered. The build's
+  SPA fallback (root layout, no content) becomes `/admin/index.html`
+  (`scripts/assemble-deploy.mjs`, with `noindex`), and the CloudFront Function
+  serves it for every `/admin` URL. `robots.txt` disallows `/admin`; the sitemap
+  never lists it; Umami does not load there.
+- Sign-in: Cognito managed login with the authorization code flow and PKCE
+  through `oidc-client-ts` (`src/auth/`); tokens live in `sessionStorage`
+  only, are renewed with the refresh token and revoked on sign-out. Every
+  request carries the access token and the API checks the admin group: the
+  admin UI only decides what to *show*.
+- The editor is Tiptap 3 (`features/admin/editor/`), limited to the nodes and
+  marks the API accepts; images point at the media library by id. Drafts
+  autosave 1.5 s after typing stops, with optimistic locking: a stale version
+  opens a "keep mine / take theirs" choice instead of overwriting. Unsaved
+  edits are copied to `sessionStorage` when a save fails, the session expires
+  or the tab closes, and offered back on the next visit.
+- Preview uses the public renderer (`features/blog/ArticleContent.tsx`), so
+  what is previewed is what is published.
+- Publishing returns a deployment id; the panel follows it until the deploy
+  reports, and only then shows the article as live.
+
+The admin UI is in Portuguese only (single user); the public site keeps its
+three languages. Build variables: `VITE_STUDIO_API_URL`,
+`VITE_COGNITO_AUTHORITY`, `VITE_COGNITO_CLIENT_ID`, `VITE_COGNITO_DOMAIN`
+(without them `/admin` explains it is not configured). End-to-end tests run
+the real build against stand-ins for Cognito and the API (`e2e/support/studio.ts`).
+
+Local development (`npm run dev:studio`, with the API's `npm run dev`): the
+`studio-local` Vite mode swaps the Cognito provider for a simulated signed-in
+session pointing at `localhost:3001`. Both the config and the provider check
+`import.meta.env.DEV`, a constant `false` in builds, so production bundles
+contain neither (an E2E test reads the bundle to confirm). Two dev-only
+helpers keep a local publish visible without restarts: `loadSnapshot` re-reads
+the snapshot when its modification time changes, and
+`vite/reload-content-snapshot.ts` refreshes React Router's list of
+pre-rendered paths (with `ssr: false`, data requests are only answered for
+those) and reloads the browser.
 
 ## Styling and themes
 

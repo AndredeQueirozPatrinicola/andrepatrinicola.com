@@ -8,19 +8,23 @@ type ShareState = "idle" | "copied" | "failed";
 type ShareButtonProps = {
   title: string;
   className?: string;
+  /** Replaces the default "share" event, e.g. to report it as an article share. */
+  onShare?: (method: "native" | "copy") => void;
 };
 
 /**
  * Uses the native share sheet when the browser has one (mostly mobile) and
  * falls back to copying the current URL.
  */
-export function ShareButton({ title, className }: ShareButtonProps) {
+export function ShareButton({ title, className, onShare }: ShareButtonProps) {
   const { messages } = useI18n();
   const [state, setState] = useState<ShareState>("idle");
 
   async function share() {
     const url = window.location.href;
-    track("share", { page: window.location.pathname, method: "share" in navigator ? "native" : "copy" });
+    const method = "share" in navigator ? "native" : "copy";
+    if (onShare) onShare(method);
+    else track("share", { page: window.location.pathname, method });
 
     if (navigator.share) {
       try {

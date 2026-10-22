@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "dev": "npm run build:games && npm run dev:site",
+    "dev:studio": "npm run build:games && npm run dev:studio --workspace @andrepatrinicola/site",
     "dev:site": "npm run dev --workspace @andrepatrinicola/site",
     "dev:pong": "npm run dev --workspace @andrepatrinicola/pong",
     "dev:meteor": "npm run dev --workspace @andrepatrinicola/meteor",
@@ -20,10 +21,11 @@
     "assemble": "node scripts/assemble-deploy.mjs",
     "preview": "node scripts/serve-deploy.mjs",
     "lint": "npm run lint --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present && node --test \"infra/**/*.test.mjs\"",
+    "test": "npm run test --workspaces --if-present && node --test \"infra/**/*.test.mjs\" \"scripts/**/*.test.mjs\"",
     "test:e2e": "npm run test:e2e --workspace @andrepatrinicola/site"
   },
   "devDependencies": {
-    "playwright-core": "1.56.1"
+    "playwright-core": "1.56.1",
+    "sharp": "^0.35.5"
   }
 }

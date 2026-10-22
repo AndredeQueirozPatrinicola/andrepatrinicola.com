@@ -1,3 +1,4 @@
+import type { BlogPost, BlogPostSummary } from "../domain/blog";
 import type { Game } from "../domain/game";
 import type { Profile } from "../domain/profile";
 import type { Project } from "../domain/project";
@@ -26,7 +27,28 @@ export interface ResumeRepository {
   get(locale: Locale): Promise<Resume>;
 }
 
+/** One published language of an article, for the sitemap and the pre-render list. */
+export type BlogEntry = {
+  id: string;
+  locale: Locale;
+  slug: string;
+  previousSlugs: string[];
+  updatedAt: string;
+  /** Slug of the article in each published language, this one included. */
+  translations: Partial<Record<Locale, string>>;
+};
+
+export interface BlogRepository {
+  /** Newest first. */
+  list(locale: Locale): Promise<BlogPostSummary[]>;
+  findBySlug(slug: string, locale: Locale): Promise<BlogPost | undefined>;
+  /** Current slug of an article that was published under `slug` before. */
+  findMovedSlug(slug: string, locale: Locale): Promise<string | undefined>;
+  entries(): Promise<BlogEntry[]>;
+}
+
 export type Repositories = {
+  blog: BlogRepository;
   games: GamesRepository;
   profile: ProfileRepository;
   projects: ProjectsRepository;

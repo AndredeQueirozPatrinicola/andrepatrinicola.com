@@ -34,13 +34,27 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Run content pipeline tests
+        run: node --test "scripts/**/*.test.mjs"
+
+      # Pull requests never reach the API: the blog is built from a committed
+      # fixture, through the same image pipeline as a deploy.
+      - name: Process fixture images
+        run: node scripts/studio/process-media.mjs --snapshot apps/site/e2e/fixtures/blog-snapshot.json --originals apps/site/e2e/fixtures/media
+
       - name: Build all applications
         run: npm run build
         env:
+          CONTENT_SNAPSHOT: apps/site/e2e/fixtures/blog-snapshot.json
           VITE_SITE_URL: ${{ vars.SITE_URL }}
           # The end-to-end tests stub this API and the Turnstile script.
           VITE_CONTACT_API_URL: https://api.example.test/contact
           VITE_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
+          # The admin end-to-end tests stub the Studio API and Cognito.
+          VITE_STUDIO_API_URL: https://studio-api.example.test
+          VITE_COGNITO_AUTHORITY: https://cognito-idp.us-east-1.amazonaws.com/us-east-1_E2ETEST
+          VITE_COGNITO_CLIENT_ID: e2e-client
+          VITE_COGNITO_DOMAIN: https://auth.example.test
 
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
