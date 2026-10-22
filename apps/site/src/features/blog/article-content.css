@@ -1,0 +1,158 @@
+/* Article body: reading measure, rhythm and code. */
+
+.article-content {
+  max-width: var(--measure);
+  font-size: var(--text-lg);
+  line-height: 1.7;
+  overflow-wrap: break-word;
+}
+
+.article-content > * + * {
+  margin-top: var(--space-6);
+}
+
+.article-content h2,
+.article-content h3,
+.article-content h4 {
+  margin-top: var(--space-12);
+  scroll-margin-top: var(--space-8);
+}
+
+.article-content h2 {
+  font-size: var(--text-2xl);
+}
+
+.article-content h3 {
+  font-size: var(--text-xl);
+}
+
+.article-content h4 {
+  font-size: var(--text-lg);
+}
+
+.article-content h2 + *,
+.article-content h3 + *,
+.article-content h4 + * {
+  margin-top: var(--space-4);
+}
+
+.article-content ul,
+.article-content ol {
+  padding-left: var(--space-6);
+}
+
+.article-content li + li,
+.article-content li > * + * {
+  margin-top: var(--space-2);
+}
+
+.article-content a {
+  color: var(--color-accent-ink);
+}
+
+.article-content blockquote {
+  padding-left: var(--space-4);
+  border-left: 3px solid var(--color-accent);
+  color: var(--color-ink-muted);
+}
+
+.article-content blockquote > * + * {
+  margin-top: var(--space-3);
+}
+
+.article-content hr {
+  border: 0;
+  border-top: var(--border);
+}
+
+.article-content :not(pre) > code {
+  padding: 0.1em 0.3em;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  font-size: 0.9em;
+}
+
+.article-code {
+  overflow-x: auto;
+  padding: var(--space-4);
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  tab-size: 2;
+}
+
+.article-code code {
+  font: inherit;
+}
+
+.article-figure img {
+  width: 100%;
+  height: auto;
+  border: var(--border);
+}
+
+.article-figure figcaption {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
+/* highlight.js classes; every color meets AA on --color-surface in both themes. */
+.article-code .hljs-comment,
+.article-code .hljs-quote {
+  color: light-dark(#5c5c5c, #a3a3a3);
+  font-style: italic;
+}
+
+.article-code .hljs-keyword,
+.article-code .hljs-selector-tag,
+.article-code .hljs-built_in,
+.article-code .hljs-meta {
+  color: light-dark(#8a2a7a, #e39adb);
+}
+
+.article-code .hljs-string,
+.article-code .hljs-regexp,
+.article-code .hljs-template-string,
+.article-code .hljs-addition {
+  color: light-dark(#1f6a2e, #8fd19e);
+}
+
+.article-code .hljs-number,
+.article-code .hljs-literal,
+.article-code .hljs-symbol,
+.article-code .hljs-variable,
+.article-code .hljs-template-variable {
+  color: light-dark(#8a4b08, #f0b46e);
+}
+
+.article-code .hljs-title,
+.article-code .hljs-section,
+.article-code .hljs-function,
+.article-code .hljs-attr,
+.article-code .hljs-attribute,
+.article-code .hljs-property {
+  color: light-dark(#2f5c9e, #8aaeea);
+}
+
+.article-code .hljs-type,
+.article-code .hljs-class,
+.article-code .hljs-params {
+  color: light-dark(#6b4a00, #e4c27a);
+}
+
+.article-code .hljs-deletion {
+  color: light-dark(#a3242a, #ff9a9e);
+}
+
+.article-code .hljs-emphasis {
+  font-style: italic;
+}
+
+.article-code .hljs-strong {
+  font-weight: 600;
+}
