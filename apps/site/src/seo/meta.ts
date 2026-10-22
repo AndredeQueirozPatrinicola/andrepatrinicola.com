@@ -13,9 +13,21 @@ type PageMeta = {
   siteName: string;
   description: string;
   image?: { url: string; alt: string; width?: number; height?: number };
-  type?: "website" | "profile";
+  type?: "website" | "profile" | "article";
   /** Structured data objects (schema.org), rendered as JSON-LD. */
   jsonLd?: object[];
+  /**
+   * Path of this page in each language it exists in (below the locale
+   * prefix). Defaults to `path` in every language. Only these become hreflang
+   * alternates, so a missing translation is never advertised.
+   */
+  alternates?: Partial<Record<Locale, string>>;
+  /** Canonical URL when the content was first published elsewhere. */
+  canonicalUrl?: string;
+  /** Open Graph article properties (og:type "article"). */
+  article?: { publishedTime: string; modifiedTime: string; tags: string[] };
+  /** Feeds advertised with <link rel="alternate" type="application/rss+xml">. */
+  feeds?: { title: string; href: string }[];
 };
 
 /**
@@ -33,22 +45,38 @@ export function buildMeta({
   image,
   type = "website",
   jsonLd = [],
+  alternates,
+  canonicalUrl,
+  article,
+  feeds = [],
 }: PageMeta): MetaDescriptor[] {
   const fullTitle = title ? `${title} · ${siteName}` : siteName;
-  const url = absoluteUrl(localePath(locale, path));
+  const url = canonicalUrl ?? absoluteUrl(localePath(locale, path));
   const ogImage = image ?? { url: DEFAULT_OG_IMAGE, alt: siteName, width: 1200, height: 630 };
+  const languages = alternates ?? Object.fromEntries(locales.map((alternate) => [alternate, path]));
+  // A page in every language lets "/" pick one; otherwise the Portuguese version, if any.
+  const xDefault = alternates ? (alternates.pt !== undefined ? absoluteUrl(localePath("pt", alternates.pt)) : undefined) : absoluteUrl("/");
 
   return [
     { title: fullTitle },
     { name: "description", content: description },
     { tagName: "link", rel: "canonical", href: url },
-    ...locales.map((alternate) => ({
+    ...locales
+      .filter((alternate) => languages[alternate] !== undefined)
+      .map((alternate) => ({
+        tagName: "link",
+        rel: "alternate",
+        hrefLang: localeInfo[alternate].tag,
+        href: absoluteUrl(localePath(alternate, languages[alternate])),
+      })),
+    ...(xDefault ? [{ tagName: "link", rel: "alternate", hrefLang: "x-default", href: xDefault }] : []),
+    ...feeds.map((feed) => ({
       tagName: "link",
       rel: "alternate",
-      hrefLang: localeInfo[alternate].tag,
-      href: absoluteUrl(localePath(alternate, path)),
+      type: "application/rss+xml",
+      title: feed.title,
+      href: absoluteUrl(feed.href),
     })),
-    { tagName: "link", rel: "alternate", hrefLang: "x-default", href: absoluteUrl("/") },
     { property: "og:type", content: type },
     { property: "og:site_name", content: siteName },
     { property: "og:title", content: fullTitle },
@@ -56,8 +84,15 @@ export function buildMeta({
     { property: "og:url", content: url },
     { property: "og:locale", content: localeInfo[locale].ogLocale },
     ...locales
-      .filter((alternate) => alternate !== locale)
+      .filter((alternate) => alternate !== locale && languages[alternate] !== undefined)
       .map((alternate) => ({ property: "og:locale:alternate", content: localeInfo[alternate].ogLocale })),
+    ...(article
+      ? [
+          { property: "article:published_time", content: article.publishedTime },
+          { property: "article:modified_time", content: article.modifiedTime },
+          ...article.tags.map((tag) => ({ property: "article:tag", content: tag })),
+        ]
+      : []),
     { property: "og:image", content: absoluteUrl(ogImage.url) },
     { property: "og:image:alt", content: ogImage.alt },
     ...(ogImage.width && ogImage.height
