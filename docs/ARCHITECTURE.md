@@ -72,9 +72,6 @@ Because pages are pre-rendered, an API would be called at build time; content
 edited later would need a rebuild (a deploy hook) or, for pages that must be
 live, a `clientLoader` on those routes.
 
-**Future admin area:** authentication and editing would live under a separate
-`/admin` segment with its own layout and `clientLoader`s, excluded from
-prerendering and from the sitemap. Nothing of it exists yet by design.
 
 ## Blog and publishing
 
@@ -110,6 +107,41 @@ snapshot, so `s3 sync --delete` removes its page, feed entry and images.
 Local builds without a snapshot have an empty blog; tests use
 `CONTENT_SNAPSHOT=apps/site/e2e/fixtures/blog-snapshot.json` after
 `node scripts/studio/process-media.mjs --snapshot apps/site/e2e/fixtures/blog-snapshot.json --originals apps/site/e2e/fixtures/media`.
+
+## Portfolio Studio (`/admin`)
+
+**Requirement:** a private editor for the blog that never puts private
+content in static files, never trusts the browser for authorization and
+keeps the public site static.
+
+**Decision:** a client-only area inside the same app:
+
+- Routes under `/admin` have no loaders and are not pre-rendered. The build's
+  SPA fallback (root layout, no content) becomes `/admin/index.html`
+  (`scripts/assemble-deploy.mjs`, with `noindex`), and the CloudFront Function
+  serves it for every `/admin` URL. `robots.txt` disallows `/admin`; the sitemap
+  never lists it; Umami does not load there.
+- Sign-in: Cognito managed login with the authorization code flow and PKCE
+  through `oidc-client-ts` (`src/auth/`); tokens live in `sessionStorage`
+  only, are renewed with the refresh token and revoked on sign-out. Every
+  request carries the access token and the API checks the admin group: the
+  admin UI only decides what to *show*.
+- The editor is Tiptap 3 (`features/admin/editor/`), limited to the nodes and
+  marks the API accepts; images point at the media library by id. Drafts
+  autosave 1.5 s after typing stops, with optimistic locking: a stale version
+  opens a "keep mine / take theirs" choice instead of overwriting. Unsaved
+  edits are copied to `sessionStorage` when a save fails, the session expires
+  or the tab closes, and offered back on the next visit.
+- Preview uses the public renderer (`features/blog/ArticleContent.tsx`), so
+  what is previewed is what is published.
+- Publishing returns a deployment id; the panel follows it until the deploy
+  reports, and only then shows the article as live.
+
+The admin UI is in Portuguese only (single user); the public site keeps its
+three languages. Build variables: `VITE_STUDIO_API_URL`,
+`VITE_COGNITO_AUTHORITY`, `VITE_COGNITO_CLIENT_ID`, `VITE_COGNITO_DOMAIN`
+(without them `/admin` explains it is not configured). End-to-end tests run
+the real build against stand-ins for Cognito and the API (`e2e/support/studio.ts`).
 
 ## Styling and themes
 

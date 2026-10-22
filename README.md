@@ -1,8 +1,10 @@
 # andrepatrinicola.com
 
 Personal site and portfolio of André de Queiroz Patrinicola: browser games
-written from scratch on a small engine of my own, labs, an interactive résumé,
-in Portuguese, English and Spanish.
+written from scratch on a small engine of my own, labs, an interactive résumé
+and a blog, in Portuguese, English and Spanish. Articles are written in
+**Portfolio Studio** (`/admin`), a private CMS backed by
+[andrepatrinicola-api](https://github.com/AndredeQueirozPatrinicola/andrepatrinicola-api).
 
 Every page is pre-rendered to static HTML (React Router in framework mode with
 `ssr: false`) and served from S3 through CloudFront. There is no runtime server.
@@ -13,15 +15,17 @@ Every page is pre-rendered to static HTML (React Router in framework mode with
 apps/site/          The site (React Router 8, React 19, TypeScript, Vite 8)
   src/content/      Typed content: games, projects, résumé, profile
   src/data/         Repository interfaces + local implementations
-  src/routes/       One module per page: loader, meta and component
-  src/features/     Page-specific components (home playfield, games, résumé…)
+  src/routes/       One module per page: loader, meta and component (admin/ = Portfolio Studio)
+  src/features/     Page-specific components (home playfield, games, résumé, blog, admin…)
+  src/auth/         Cognito sign-in for the admin (OIDC + PKCE)
   src/i18n/         Locales, typed dictionaries, URL helpers
   src/seo/          Metadata, structured data, site origin
   src/styles/       Design tokens, themes, base styles
   e2e/              Playwright end-to-end and accessibility tests
 games/              Canvas games, each a standalone Vite + TypeScript app
 infra/              CloudFront Function and distribution setup guide
-scripts/            Deploy assembly and the local production preview server
+scripts/            Deploy assembly, the local production preview server and
+                    studio/ (fetch the published content, re-encode images, report the deploy)
 docs/               Architecture notes
 ```
 
@@ -71,6 +75,20 @@ distribution needs a URL-rewrite function and custom error responses for clean
 URLs and real 404s; see [infra/README.md](infra/README.md).
 
 Set the repository variable `SITE_URL` when a custom domain is added.
+
+**Portfolio Studio.** Variables for the deploy: `STUDIO_API_URL` (the API's
+`studio_api_url` output) and, from its `studio_auth` output,
+`COGNITO_AUTHORITY`, `COGNITO_CLIENT_ID` and `COGNITO_DOMAIN`. With
+`STUDIO_API_URL` set, every deploy (a push or a publication from the admin)
+first asks the API for the content to publish, using the job's GitHub OIDC
+token, and reports the result at the end. The deploy job must keep
+`environment: production`, which the API checks. Publishing from the admin
+needs the GitHub App described in the API's README.
+
+To run the admin locally against the real API, add `http://localhost:5173` to
+the API's `studio_dev_origins` and `studio_callback_urls`/`studio_logout_urls`
+(`/admin/callback`, `/admin/signed-out`) and start `npm run dev` with the four
+`VITE_*` variables above.
 
 The contact form on the About page posts to the
 [andrepatrinicola-api](https://github.com/AndredeQueirozPatrinicola/andrepatrinicola-api)

@@ -17,8 +17,10 @@ Mapping every error to `/index.html` would hide the problem but turn every
 missing URL into a "200 home page" for crawlers. Instead:
 
 1. **A CloudFront Function** (`cloudfront/url-rewrite.js`) rewrites clean URLs
-   to their `index.html`, redirects `/page/` to `/page` (one canonical URL) and
-   keeps the trailing slash on `/play/<game>/`, whose builds use relative paths.
+   to their `index.html`, redirects `/page/` to `/page` (one canonical URL),
+   keeps the trailing slash on `/play/<game>/`, whose builds use relative paths,
+   and answers every `/admin` URL with the Portfolio Studio shell
+   (`/admin/index.html`).
 2. **Custom error responses** answer missing files with `/404.html` and a real
    `404` status.
 
@@ -114,3 +116,23 @@ locally are comparable (mobile, simulated throttling, 2026-10-19: performance
 4. Set the repository variable **`SITE_URL`** (GitHub → Settings → Variables)
    to `https://your-domain`, and deploy. Canonical URLs, Open Graph and the
    sitemap switch to the new origin; the CloudFront address keeps working.
+
+## Portfolio Studio
+
+The function must be updated (and published) before the first deploy that
+contains `/admin`; otherwise `/admin/articles` and the sign-in callback answer
+404. Use the update commands above with the new `url-rewrite.js`:
+
+```bash
+ETAG=$(aws cloudfront describe-function --name portfolio-url-rewrite --query ETag --output text)
+aws cloudfront update-function --name portfolio-url-rewrite --if-match "$ETAG" \
+  --function-config Comment="Clean URLs to index.html",Runtime=cloudfront-js-2.0 \
+  --function-code fileb://infra/cloudfront/url-rewrite.js
+ETAG=$(aws cloudfront describe-function --name portfolio-url-rewrite --query ETag --output text)
+aws cloudfront publish-function --name portfolio-url-rewrite --if-match "$ETAG"
+curl -sI https://andrepatrinicola.com.br/admin/articles | head -1   # 200 (the shell)
+```
+
+Published images are part of the site build (`/media/<id>-<width>.webp`) and
+follow the "pages and other files" cache rule; nothing else changes in the
+distribution.
