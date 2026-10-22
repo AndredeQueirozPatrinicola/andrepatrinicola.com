@@ -29,6 +29,8 @@ export default [
     route("articles/new", "routes/admin/article-new.tsx"),
     route("articles/:id/edit", "routes/admin/article-edit.tsx"),
     route("media", "routes/admin/media.tsx"),
+    route("publications", "routes/admin/publications.tsx"),
+    route("publications/:id", "routes/admin/publication.tsx"),
     route("settings", "routes/admin/settings.tsx"),
   ]),
 ] satisfies RouteConfig;
