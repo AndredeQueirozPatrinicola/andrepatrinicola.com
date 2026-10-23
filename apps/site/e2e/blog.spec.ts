@@ -19,6 +19,19 @@ test("lists the posts of one language with a type filter", async ({ page }) => {
   await expect(titles).toHaveCount(2);
 });
 
+test("the home page shows the latest posts and opens them", async ({ page }) => {
+  await page.goto("/pt");
+  const section = page.getByRole("region", { name: "Últimos posts" });
+  const titles = section.getByRole("heading", { level: 3 });
+  await expect(titles).toHaveText(["Diário de bordo: o editor do CMS", "Arquitetura serverless do portfólio"]);
+  await section.getByRole("link", { name: "Arquitetura serverless do portfólio" }).click();
+  await expect(page).toHaveURL(/\/pt\/blog\/arquitetura-serverless-do-portfolio$/);
+
+  // No posts in a language, no section.
+  await page.goto("/es");
+  await expect(page.getByRole("region", { name: "Últimas publicaciones" })).toHaveCount(0);
+});
+
 test("a language without posts says so", async ({ page }) => {
   await page.goto("/es/blog");
   await expect(page.getByText("Todavía no hay publicaciones en este idioma.")).toBeVisible();

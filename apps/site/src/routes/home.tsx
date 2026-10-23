@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import { repositories } from "../data";
+import { LatestPosts } from "../features/blog/LatestPosts";
 import { GameCatalog } from "../features/games/GameCatalog";
 import { HomePlayfield, type Shortcut } from "../features/home/HomePlayfield";
 import { useI18n } from "../i18n/context";
@@ -18,13 +19,15 @@ export { shouldRevalidate } from "../i18n/route";
 export async function loader({ params }: Route.LoaderArgs) {
   const locale = requireLocale(params);
   const messages = getMessages(locale);
-  const [games, profile] = await Promise.all([
+  const [games, profile, posts] = await Promise.all([
     repositories.games.list(locale),
     repositories.profile.get(locale),
+    repositories.blog.list(locale),
   ]);
 
   return {
     recentGames: games.slice(0, 3),
+    latestPosts: posts.slice(0, 3),
     gameCount: games.length,
     profile,
     meta: buildMeta({
@@ -43,7 +46,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 
 export default function Home({ loaderData }: Route.ComponentProps) {
   const { locale, messages } = useI18n();
-  const { recentGames, gameCount, profile } = loaderData;
+  const { recentGames, gameCount, profile, latestPosts } = loaderData;
 
   const shortcuts: Shortcut[] = [
     ...primaryNavigation.map((item) => ({
@@ -71,6 +74,18 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           </div>
           <GameCatalog games={recentGames} />
         </section>
+
+        {latestPosts.length > 0 && (
+          <section className="section-block" aria-labelledby="home-posts">
+            <div className="section-head">
+              <h2 id="home-posts" className="label">
+                {messages.home.postsTitle}
+              </h2>
+              <Link to={localePath(locale, "/blog")}>{messages.home.allPosts}</Link>
+            </div>
+            <LatestPosts posts={latestPosts} />
+          </section>
+        )}
       </div>
     </>
   );

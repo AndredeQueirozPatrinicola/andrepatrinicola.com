@@ -69,6 +69,8 @@ export const pt = {
     },
     gamesTitle: "Jogos recentes",
     allGames: "Ver todos os jogos",
+    postsTitle: "Últimos posts",
+    allPosts: "Ver todos os posts",
   },
   games: {
     title: "Jogos",

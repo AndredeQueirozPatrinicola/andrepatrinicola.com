@@ -67,6 +67,8 @@ export const en: Messages = {
     },
     gamesTitle: "Recent games",
     allGames: "See all games",
+    postsTitle: "Latest posts",
+    allPosts: "See all posts",
   },
   games: {
     title: "Games",
