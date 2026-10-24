@@ -7,6 +7,8 @@ build/
 .env.*
 npm-debug.log*
 .deploy/
+# Portfolio assistant documents, written by the build next to .deploy/
+.knowledge/
 **/dist/
 test-results/
 playwright-report/

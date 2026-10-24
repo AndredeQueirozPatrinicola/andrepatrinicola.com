@@ -37,5 +37,5 @@ export async function getPrerenderPaths(): Promise<string[]> {
     localizedPaths().map((path) => localePath(locale, path)),
   );
 
-  return ["/", "/404", "/sitemap.xml", "/robots.txt", ...localized, ...(await blogPaths())];
+  return ["/", "/404", "/sitemap.xml", "/robots.txt", "/ai-knowledge.json", ...localized, ...(await blogPaths())];
 }

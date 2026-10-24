@@ -75,6 +75,9 @@ jobs:
           # Without both, the contact form is not rendered.
           VITE_CONTACT_API_URL: ${{ vars.CONTACT_API_URL }}
           VITE_TURNSTILE_SITE_KEY: ${{ vars.TURNSTILE_SITE_KEY }}
+          # Portfolio assistant (API output ai_chat_url). Without it (or the
+          # Turnstile key) the chat button is not rendered.
+          VITE_AI_CHAT_API_URL: ${{ vars.AI_CHAT_API_URL }}
           # Portfolio Studio (/admin). Without them the admin explains it is not configured.
           VITE_STUDIO_API_URL: ${{ vars.STUDIO_API_URL }}
           VITE_COGNITO_AUTHORITY: ${{ vars.COGNITO_AUTHORITY }}
@@ -128,6 +131,18 @@ jobs:
           )
 
           echo "CloudFront invalidation criada: ${INVALIDATION_ID}"
+
+      # The assistant's documents about projects, games, résumé and profile
+      # (rendered by the build into .knowledge/, never uploaded to the bucket).
+      # The API indexes them only once the report below says "succeeded". A
+      # failure here never fails the deploy: the assistant keeps the previous ones.
+      - name: Upload assistant documents
+        if: success() && steps.content.outputs.deployment_id != '' && vars.AI_CHAT_API_URL != ''
+        continue-on-error: true
+        env:
+          STUDIO_API_URL: ${{ vars.STUDIO_API_URL }}
+          DEPLOYMENT_ID: ${{ steps.content.outputs.deployment_id }}
+        run: node scripts/ai/upload-knowledge.mjs
 
       # Tells Portfolio Studio how the deploy ended (also on failure or
       # cancellation), so articles only show as published after a real upload.

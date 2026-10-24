@@ -5,6 +5,8 @@ export default [
   route("404", "routes/not-found-page.tsx"),
   route("sitemap.xml", "routes/sitemap.ts"),
   route("robots.txt", "routes/robots.ts"),
+  // Build-time only: moved out of the deploy package (scripts/assemble-deploy.mjs).
+  route("ai-knowledge.json", "routes/ai-knowledge.ts"),
   // Every child of :lang must be pre-rendered (its loader runs at build
   // time). Unknown URLs are answered by /404.html in production.
   route(":lang", "routes/locale-layout.tsx", [

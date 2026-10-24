@@ -5,6 +5,9 @@ import { findPublishedGames } from './games.mjs';
 
 const root = process.cwd();
 const outputDirectory = resolve(root, '.deploy');
+// The assistant's documents (apps/site/src/routes/ai-knowledge.ts): kept next
+// to the package for the deploy workflow, never inside it.
+const knowledgeDirectory = resolve(root, '.knowledge');
 
 async function assemble() {
   await rm(outputDirectory, { recursive: true, force: true });
@@ -26,8 +29,12 @@ async function assemble() {
     shell.replace('<head>', '<head><meta name="robots" content="noindex, nofollow"/>'),
   );
 
+  await rm(knowledgeDirectory, { recursive: true, force: true });
+  await mkdir(knowledgeDirectory, { recursive: true });
+  await rename(resolve(outputDirectory, 'ai-knowledge.json'), resolve(knowledgeDirectory, 'site-knowledge.json'));
+
   // Not used: resource routes need no client data.
-  for (const unused of ['__spa-fallback.html', '404.data', 'sitemap.xml.data', 'robots.txt.data']) {
+  for (const unused of ['__spa-fallback.html', '404.data', 'sitemap.xml.data', 'robots.txt.data', 'ai-knowledge.json.data']) {
     await rm(resolve(outputDirectory, unused), { force: true });
   }
   for (const locale of await readdir(outputDirectory, { withFileTypes: true })) {
