@@ -16,7 +16,7 @@ apps/site/          The site (React Router 8, React 19, TypeScript, Vite 8)
   src/content/      Typed content: games, projects, résumé, profile
   src/data/         Repository interfaces + local implementations
   src/routes/       One module per page: loader, meta and component (admin/ = Portfolio Studio)
-  src/features/     Page-specific components (home playfield, games, résumé, blog, admin…)
+  src/features/     Page-specific components (home playfield, games, résumé, blog, admin, assistant…)
   src/auth/         Cognito sign-in for the admin (OIDC + PKCE)
   src/i18n/         Locales, typed dictionaries, URL helpers
   src/seo/          Metadata, structured data, site origin
@@ -106,5 +106,17 @@ The contact form on the About page posts to the
 backend and needs two repository variables at build time: `CONTACT_API_URL`
 (its `contact_url` output) and `TURNSTILE_SITE_KEY` (public Cloudflare
 Turnstile key). Without them the page shows only the contact links.
+
+**Portfolio assistant.** A chat button on the public pages
+(`apps/site/src/features/assistant/`), backed by the API's `POST /ai/chat`
+(Amazon Bedrock over the site's public content; design, limits and costs in
+the API's `docs/AI_ASSISTANT.md`). It needs the repository variable
+`AI_CHAT_API_URL` (the API's `ai_chat_url` output) and `TURNSTILE_SITE_KEY`;
+without them the button is not rendered. Nothing is downloaded or sent until
+the visitor opens it (the panel is a lazy chunk). The build also renders the
+site's content as documents for the assistant (`/ai-knowledge.json`, moved to
+`.knowledge/` by `scripts/assemble-deploy.mjs`, never uploaded to the bucket);
+the deploy sends them to the API with `scripts/ai/upload-knowledge.mjs`
+before reporting the deployment, and the API indexes them only if it succeeded.
 
 More on the design decisions in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
