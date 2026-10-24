@@ -6,6 +6,8 @@ type RenderOptions = {
   language: string;
   theme: "auto" | "light" | "dark";
   size: "flexible";
+  /** "interaction-only": the widget stays hidden unless the visitor must act. */
+  appearance?: "always" | "execute" | "interaction-only";
   callback: (token: string) => void;
   "expired-callback": () => void;
   "error-callback": () => void;

@@ -3,6 +3,7 @@ import { isRouteErrorResponse, Outlet, useLocation, useRouteLoaderData } from "r
 
 import { useAnalyticsConsent } from "../analytics/useAnalyticsConsent";
 import { ConsentBanner } from "../components/layout/ConsentBanner";
+import { AssistantLauncher } from "../features/assistant/AssistantLauncher";
 import { SiteFooter } from "../components/layout/SiteFooter";
 import { SiteHeader } from "../components/layout/SiteHeader";
 import { SkipLink } from "../components/layout/SkipLink";
@@ -51,6 +52,7 @@ function Shell({ locale, messages, profile, children }: ShellProps) {
   useFocusOnNavigation();
   const [consent, setConsent] = useAnalyticsConsent();
   const [managingConsent, setManagingConsent] = useState(false);
+  const showConsent = consent === null || managingConsent;
 
   return (
     <I18nProvider value={{ locale, messages }}>
@@ -61,7 +63,9 @@ function Shell({ locale, messages, profile, children }: ShellProps) {
           {children}
         </main>
         <SiteFooter profile={profile} onManageConsent={() => setManagingConsent(true)} />
-        {(consent === null || managingConsent) && (
+        {/* Below the consent banner on small screens: hidden while the banner is up. */}
+        <AssistantLauncher concealed={showConsent} />
+        {showConsent && (
           <ConsentBanner
             onChoose={(choice) => {
               setConsent(choice);

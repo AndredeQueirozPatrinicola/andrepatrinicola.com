@@ -1,0 +1,311 @@
+/*
+ * Portfolio assistant: a small square button in the bottom-right corner and,
+ * once opened, a compact panel above it. Same vocabulary as the consent
+ * banner (2px ink border, offset flat shadow, display font for labels).
+ */
+.assistant {
+  --assistant-button: calc(var(--grid-cell) * 5.5);
+  --assistant-gap: var(--space-3);
+}
+
+.assistant-launcher {
+  position: fixed;
+  right: var(--page-gutter);
+  bottom: var(--page-gutter);
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  width: var(--assistant-button);
+  height: var(--assistant-button);
+  padding: 0;
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: calc(var(--grid-cell) / 2) calc(var(--grid-cell) / 2) 0 var(--color-line);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.assistant-launcher:hover,
+.assistant[data-open] .assistant-launcher {
+  border-color: var(--color-accent-ink);
+  color: var(--color-accent-ink);
+}
+
+.assistant-panel {
+  position: fixed;
+  right: var(--page-gutter);
+  bottom: calc(var(--page-gutter) + var(--assistant-button) + var(--assistant-gap));
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  width: min(24rem, calc(100vw - 2 * var(--page-gutter)));
+  height: min(36rem, calc(100dvh - 2 * var(--page-gutter) - var(--assistant-button) - var(--assistant-gap)));
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--grid-cell) var(--grid-cell) 0 var(--color-line);
+  font-size: var(--text-sm);
+}
+
+.assistant-panel[hidden] {
+  display: none;
+}
+
+.assistant-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border);
+}
+
+.assistant-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.assistant-title::before {
+  content: "";
+  width: var(--grid-cell);
+  height: var(--grid-cell);
+  background: var(--color-accent);
+}
+
+.assistant-icon-button {
+  display: grid;
+  place-items: center;
+  width: calc(var(--grid-cell) * 4);
+  height: calc(var(--grid-cell) * 4);
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  cursor: pointer;
+}
+
+.assistant-icon-button:hover {
+  border-color: var(--color-line-strong);
+}
+
+.assistant-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-4);
+}
+
+.assistant-intro {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.assistant-privacy {
+  color: var(--color-ink-muted);
+  font-size: var(--text-xs);
+}
+
+.assistant-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-muted);
+}
+
+.assistant-suggestions {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  list-style: none;
+}
+
+.assistant-suggestion {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.assistant-suggestion:hover:not(:disabled) {
+  border-color: var(--color-accent-ink);
+  color: var(--color-accent-ink);
+}
+
+.assistant-suggestion:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.assistant-messages {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.assistant-message {
+  display: grid;
+  gap: var(--space-2);
+  max-width: 92%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  overflow-wrap: anywhere;
+}
+
+.assistant-message ul,
+.assistant-message ol {
+  padding-left: var(--space-6);
+}
+
+.assistant-message code {
+  font-size: 0.9em;
+}
+
+.assistant-message-user {
+  justify-self: end;
+  border-color: var(--color-ink);
+  background: var(--color-bg);
+  white-space: pre-wrap;
+}
+
+.assistant-message-assistant {
+  justify-self: start;
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
+
+.assistant-thinking {
+  color: var(--color-ink-muted);
+}
+
+.assistant-sources {
+  display: grid;
+  gap: var(--space-1);
+  padding-top: var(--space-2);
+  border-top: var(--border);
+}
+
+.assistant-sources ul {
+  display: grid;
+  gap: var(--space-1);
+  padding-left: var(--space-4);
+}
+
+.assistant-widget:empty {
+  display: none;
+}
+
+.assistant-widget {
+  padding: 0 var(--space-4);
+}
+
+.assistant-form {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4) 0;
+  border-top: var(--border);
+}
+
+.assistant-form textarea {
+  flex: 1;
+  min-height: calc(var(--grid-cell) * 5);
+  max-height: 8rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font: inherit;
+  resize: none;
+}
+
+.assistant-form textarea:hover {
+  border-color: var(--color-ink);
+}
+
+.assistant-send {
+  display: grid;
+  place-items: center;
+  width: calc(var(--grid-cell) * 5);
+  height: calc(var(--grid-cell) * 5);
+  padding: 0;
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius);
+  background: var(--color-ink);
+  color: var(--color-bg);
+  cursor: pointer;
+}
+
+.assistant-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.assistant-footer {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4) var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+}
+
+.assistant-status:empty {
+  display: none;
+}
+
+.assistant-status[data-error] {
+  color: var(--color-ink);
+}
+
+.assistant-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.assistant-new {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius);
+  background: transparent;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.assistant-new:hover {
+  border-color: var(--color-accent-ink);
+}
+
+/* Phones: the panel takes most of the screen above the button. */
+@media (max-width: 40rem) {
+  .assistant-panel {
+    right: var(--space-2);
+    left: var(--space-2);
+    width: auto;
+    height: calc(100dvh - var(--page-gutter) - var(--assistant-button) - var(--assistant-gap) - var(--space-2));
+  }
+}
+
+@media print {
+  .assistant {
+    display: none;
+  }
+}
