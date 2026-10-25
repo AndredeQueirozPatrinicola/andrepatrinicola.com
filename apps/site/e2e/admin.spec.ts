@@ -225,3 +225,46 @@ test.describe("signed in", () => {
     }
   });
 });
+
+test.describe("queue lab (AWS Live Mode)", () => {
+  test.beforeEach(async ({ page }) => {
+    await stubCognito(page);
+    await signIn(page);
+  });
+
+  test("starts a real run, follows it by polling and stops when it ends", async ({ page }) => {
+    const fake = await fakeStudio(page);
+    await page.goto("/admin/labs");
+    await expect(page.getByRole("heading", { name: "Labs", level: 1 })).toBeVisible();
+    await expect(page.getByRole("note").filter({ hasText: "AWS Live Mode" })).toContainText("mensagens reais");
+
+    await page.getByLabel("Mensagens (1 a 10)").fill("4");
+    await page.getByLabel("Cenário").selectOption("poison-message");
+    await page.getByRole("button", { name: "Executar na AWS" }).click();
+
+    await expect(page.getByText("Concluída")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("img", { name: /Mensagens da execução real/ })).toBeVisible();
+    await expect(page.getByRole("row", { name: /m01 poison Na DLQ \(inferido\) 3/ })).toBeVisible();
+    expect(fake.requests.filter((request) => request.method === "POST" && request.path === "/admin/labs/queue-runs")).toEqual([
+      { method: "POST", path: "/admin/labs/queue-runs", body: { messageCount: 4, failureScenario: "poison-message" } },
+    ]);
+
+    const polls = () => fake.requests.filter((request) => request.path.startsWith("/admin/labs/queue-runs/")).length;
+    const settled = polls();
+    expect(settled).toBe(4);
+    await page.waitForTimeout(4500);
+    expect(polls()).toBe(settled);
+
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations.filter((violation) => ["serious", "critical"].includes(violation.impact ?? "")).map((violation) => `${violation.id}: ${violation.nodes.map((node) => node.target).join(", ")}`)).toEqual([]);
+  });
+
+  test("explains why a run cannot start while the consumer is off", async ({ page }) => {
+    const fake = await fakeStudio(page);
+    fake.lab.consumerState = "Disabled";
+    await page.goto("/admin/labs");
+    await expect(page.getByText("Disabled", { exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Executar na AWS" })).toBeDisabled();
+    await expect(page.getByText(/queue_lab_enabled = true/)).toBeVisible();
+  });
+});

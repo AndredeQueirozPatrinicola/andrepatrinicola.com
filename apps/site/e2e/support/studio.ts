@@ -109,7 +109,59 @@ export type FakeStudio = {
   failNextPatch: boolean;
   /** Every request answers 401 (expired session). */
   expired: boolean;
+  /** Queue lab: switches and runs (each status request moves a run one step forward). */
+  lab: { enabled: boolean; consumerState: string; runs: Map<string, { scenario: string; count: number; polls: number; createdAt: string }> };
 };
+
+/** A queue lab run as the API reports it after `polls` status requests (poison-message scenario). */
+function labRun(runId: string, run: { scenario: string; count: number; polls: number; createdAt: string }) {
+  const step = run.polls;
+  const done = step >= 3;
+  const messages = Array.from({ length: run.count }, (_, index) => {
+    const poison = index === 0;
+    const status = poison ? (done ? "dlq" : step === 2 ? "exhausted" : step === 1 ? "retrying" : "queued") : step >= 1 ? "processed" : "queued";
+    return {
+      messageId: `m${String(index + 1).padStart(2, "0")}`,
+      scenario: poison ? "poison" : "success",
+      status,
+      receives: poison ? Math.min(step + 1, 3) : step >= 1 ? 1 : 0,
+      deliveries: poison ? Math.min(step + 1, 3) : step >= 1 ? 1 : 0,
+      effects: !poison && step >= 1 ? 1 : 0,
+      updatedAt: run.createdAt,
+    };
+  });
+  const count = (status: string) => messages.filter((message) => message.status === status).length;
+  return {
+    runId,
+    status: done ? "completed" : "running",
+    scenario: run.scenario,
+    requestedMessages: run.count,
+    acceptedMessages: run.count,
+    duplicatesSent: 0,
+    maxReceives: 3,
+    createdAt: run.createdAt,
+    deadline: run.createdAt,
+    finishedAt: done ? run.createdAt : null,
+    counts: {
+      queued: count("queued"),
+      processing: 0,
+      retrying: count("retrying"),
+      awaitingDlq: count("exhausted"),
+      dlq: count("dlq"),
+      processed: count("processed"),
+      sendFailed: 0,
+      failedAttempts: Math.min(step, 3),
+      deliveries: messages.reduce((sum, message) => sum + message.deliveries, 0),
+      duplicatesSkipped: 0,
+    },
+    messages,
+    events: [
+      { at: run.createdAt, type: "run-started", detail: run.scenario },
+      ...(step >= 1 ? [{ at: run.createdAt, type: "failed", messageId: "m01", receiveCount: 1, detail: "retry in 5s" }] : []),
+      ...(step >= 2 ? [{ at: run.createdAt, type: "exhausted", messageId: "m01", receiveCount: 3 }] : []),
+    ],
+  };
+}
 
 const doc = (text: string) => ({ type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text }] }] });
 
@@ -153,6 +205,7 @@ export async function fakeStudio(page: Page): Promise<FakeStudio> {
     requests: [],
     failNextPatch: false,
     expired: false,
+    lab: { enabled: true, consumerState: "Enabled", runs: new Map() },
   };
 
   await page.route("https://uploads.example.test/**", (route) => route.fulfill({ status: 204, headers: cors }));
@@ -311,6 +364,33 @@ export async function fakeStudio(page: Page): Promise<FakeStudio> {
     }
 
     if (resource === "integrations") return json(route, 200, { configured: false, connected: false });
+
+    if (resource === "labs") {
+      if (id === "queue" && method === "GET") {
+        const runs = [...fake.lab.runs.entries()];
+        return json(route, 200, {
+          enabled: fake.lab.enabled,
+          consumerState: fake.lab.consumerState,
+          limits: { maxMessages: 10, runsPerDay: 20, maxReceives: 3, scenarios: ["happy-path", "transient-failure", "poison-message", "duplicate-delivery", "mixed"] },
+          usage: { runsToday: runs.length },
+          activeRunId: null,
+          deadLetterQueue: { visible: runs.filter(([, run]) => run.polls >= 3).length, inFlight: 0 },
+          recentRuns: runs.map(([runId, run]) => ({ runId, scenario: run.scenario, createdAt: run.createdAt })),
+        });
+      }
+      if (id === "queue-runs" && !action && method === "POST") {
+        if (!fake.lab.enabled) return json(route, 503, { error: "disabled", reason: "lab_disabled" });
+        const runId = `00000000-0000-4000-8000-${String(fake.lab.runs.size + 1).padStart(12, "0")}`;
+        fake.lab.runs.set(runId, { scenario: String(body?.failureScenario), count: Number(body?.messageCount), polls: -1, createdAt: now });
+        return json(route, 202, { runId, status: "queued", acceptedMessages: Number(body?.messageCount), duplicatesSent: 0 });
+      }
+      const run = id === "queue-runs" ? fake.lab.runs.get(action ?? "") : undefined;
+      if (run && method === "GET") {
+        run.polls++;
+        return json(route, 200, labRun(action!, run));
+      }
+      return json(route, 404, { error: "not_found" });
+    }
 
     return json(route, 404, { error: "not_found" });
   });

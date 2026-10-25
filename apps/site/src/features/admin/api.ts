@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import { useAuth } from "../../auth/AuthProvider";
+import type { QueueLabOverview, QueueRun, RunScenario, StartedRun } from "../queue-lab/live/types";
 import type { Locale } from "../../i18n/config";
 import type {
   Article,
@@ -170,6 +171,12 @@ export function createStudioApi({ apiUrl, getAccessToken, onUnauthorized, fetch:
         request<Publication>("POST", `/admin/publications/${id(publicationId)}/mark-published`, input),
       reset: (publicationId: string, version: number) =>
         request<Publication>("POST", `/admin/publications/${id(publicationId)}/reset`, { version, confirmChecked: true }),
+    },
+
+    labs: {
+      queue: () => request<QueueLabOverview>("GET", "/admin/labs/queue"),
+      startRun: (input: { messageCount: number; failureScenario: RunScenario }) => request<StartedRun>("POST", "/admin/labs/queue-runs", input),
+      run: (runId: string, signal?: AbortSignal) => request<QueueRun>("GET", `/admin/labs/queue-runs/${id(runId)}`, undefined, signal),
     },
 
     linkedin: {

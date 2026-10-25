@@ -1,3 +1,5 @@
+import { readdirSync, readFileSync } from "node:fs";
+
 import { expect, test } from "@playwright/test";
 
 test.describe("Distributed Systems Playground", () => {
@@ -32,6 +34,18 @@ test.describe("Distributed Systems Playground", () => {
     await expect(page.locator('[data-metric="dlq"] dd')).toHaveText("1");
     await expect(page.getByText(/moved to the DLQ after 3 receives/)).toBeVisible();
     expect(requests.filter((url) => /example\.test|amazonaws|execute-api/.test(url))).toEqual([]);
+  });
+
+  test("the public page's code knows nothing of the admin API", async ({ page }) => {
+    const assets = new URL("../build/client/assets/", import.meta.url);
+    const publicChunks = readdirSync(assets).filter((name) => /^(lab-distributed-systems|queue-lab)-.*\.js$/.test(name));
+    expect(publicChunks.length).toBeGreaterThan(0);
+    for (const name of publicChunks) {
+      const code = readFileSync(new URL(name, assets), "utf8");
+      expect(code).not.toContain("/admin/labs");
+      expect(code).not.toContain("studio-api.example.test");
+    }
+    await page.close();
   });
 
   test("step, pause and reset", async ({ page }) => {

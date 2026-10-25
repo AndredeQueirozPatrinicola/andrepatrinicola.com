@@ -34,6 +34,7 @@ export default [
     route("media", "routes/admin/media.tsx"),
     route("publications", "routes/admin/publications.tsx"),
     route("publications/:id", "routes/admin/publication.tsx"),
+    route("labs", "routes/admin/labs.tsx"),
     route("settings", "routes/admin/settings.tsx"),
   ]),
 ] satisfies RouteConfig;

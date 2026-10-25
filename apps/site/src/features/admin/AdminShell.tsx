@@ -8,6 +8,7 @@ const navigation = [
   { to: "/admin/articles", label: "Artigos", end: false },
   { to: "/admin/media", label: "Mídia", end: false },
   { to: "/admin/publications", label: "Divulgação", end: false },
+  { to: "/admin/labs", label: "Labs", end: false },
   { to: "/admin/settings", label: "Configurações", end: false },
 ];
 
