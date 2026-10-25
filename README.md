@@ -16,7 +16,7 @@ apps/site/          The site (React Router 8, React 19, TypeScript, Vite 8)
   src/content/      Typed content: games, projects, résumé, profile
   src/data/         Repository interfaces + local implementations
   src/routes/       One module per page: loader, meta and component (admin/ = Portfolio Studio)
-  src/features/     Page-specific components (home playfield, games, résumé, blog, admin, assistant…)
+  src/features/     Page-specific components (home playfield, games, résumé, blog, admin, assistant, queue lab…)
   src/auth/         Cognito sign-in for the admin (OIDC + PKCE)
   src/i18n/         Locales, typed dictionaries, URL helpers
   src/seo/          Metadata, structured data, site origin
@@ -118,5 +118,13 @@ site's content as documents for the assistant (`/ai-knowledge.json`, moved to
 `.knowledge/` by `scripts/assemble-deploy.mjs`, never uploaded to the bucket);
 the deploy sends them to the API with `scripts/ai/upload-knowledge.mjs`
 before reporting the deployment, and the API indexes them only if it succeeded.
+
+**Distributed Systems Playground.** `/{pt,en,es}/labs/distributed-systems`
+(`apps/site/src/features/queue-lab/`): an SQS queue simulated in the browser
+(`simulation/engine.ts`, a deterministic discrete-event model with no React or
+network), drawn by `diagram/`. It needs no variable and makes no requests. Its
+AWS Live Mode is admin-only (`/admin/labs`, `features/queue-lab/live/`), uses
+the Studio API and login, and only works when the API's `queue_lab_enabled`
+is on. The lesson behind both is the API's `docs/DISTRIBUTED_SYSTEMS_LAB.md`.
 
 More on the design decisions in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
