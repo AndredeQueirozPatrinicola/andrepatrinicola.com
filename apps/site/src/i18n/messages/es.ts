@@ -104,11 +104,12 @@ export const es: Messages = {
     title: "Labs",
     eyebrow: "Andev Labs",
     intro:
-      "Proyectos personales y experimentos que no son solo juegos: un motor, física, un juego de cartas y este mismo sitio.",
+      "Proyectos personales y experimentos que no son solo juegos: un laboratorio de mensajería, un motor, física, un juego de cartas y este mismo sitio.",
     status: { active: "Activo", "in-progress": "En desarrollo", experiment: "Experimento" },
     explored: "Detalles técnicos",
     source: "Código fuente",
     page: "Ver los juegos",
+    lab: "Abrir el laboratorio",
   },
   about: {
     title: "Sobre mí",

@@ -6,10 +6,13 @@ import { createLocalProjectsRepository } from "./projects";
 
 describe("local projects repository", () => {
   it("localizes text and internal links", async () => {
-    const [engine] = await createLocalProjectsRepository().list("es");
+    const list = await createLocalProjectsRepository().list("es");
+    const engine = list.find((project) => project.slug === "andevengine")!;
+    const lab = list.find((project) => project.slug === "distributed-systems")!;
 
     expect(engine.summary).toMatch(/^Motor 2D en TypeScript/);
     expect(engine.links).toContainEqual({ kind: "page", href: "/es/games" });
+    expect(lab.links).toContainEqual({ kind: "lab", href: "/es/labs/distributed-systems" });
   });
 
   it("has unique slugs and the same number of items in every language", () => {

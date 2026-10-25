@@ -104,11 +104,12 @@ export const en: Messages = {
     title: "Labs",
     eyebrow: "Andev Labs",
     intro:
-      "Personal projects and experiments that are not only games: an engine, physics, a card game and this very site.",
+      "Personal projects and experiments that are not only games: a messaging lab, an engine, physics, a card game and this very site.",
     status: { active: "Active", "in-progress": "In progress", experiment: "Experiment" },
     explored: "Technical details",
     source: "Source code",
     page: "See the games",
+    lab: "Open the lab",
   },
   about: {
     title: "About",

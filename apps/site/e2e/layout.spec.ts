@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const paths = ["/pt", "/es/games", "/es/games/meteor", "/en/labs", "/es/about", "/es/resume", "/en/404", "/pt/blog", "/pt/blog/arquitetura-serverless-do-portfolio"];
+const paths = ["/pt", "/es/games", "/es/games/meteor", "/en/labs", "/pt/labs/distributed-systems", "/es/about", "/es/resume", "/en/404", "/pt/blog", "/pt/blog/arquitetura-serverless-do-portfolio"];
 
 for (const path of paths) {
   test(`${path} has no horizontal overflow`, async ({ page }) => {

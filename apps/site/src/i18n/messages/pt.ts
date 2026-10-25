@@ -106,11 +106,12 @@ export const pt = {
     title: "Labs",
     eyebrow: "Andev Labs",
     intro:
-      "Projetos pessoais e experimentos que não são só jogos: um motor, física, um jogo de cartas e este próprio site.",
+      "Projetos pessoais e experimentos que não são só jogos: um laboratório de mensageria, um motor, física, um jogo de cartas e este próprio site.",
     status: { active: "Ativo", "in-progress": "Em andamento", experiment: "Experimento" },
     explored: "Detalhes técnicos",
     source: "Código-fonte",
     page: "Ver os jogos",
+    lab: "Abrir o laboratório",
   },
   about: {
     title: "Sobre",

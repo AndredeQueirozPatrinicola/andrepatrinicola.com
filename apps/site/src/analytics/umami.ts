@@ -26,6 +26,7 @@ export type AnalyticsEvent =
   | "project-source"
   | "skill-highlight"
   | "home-playfield"
+  | "queue-lab"
   | "language-change"
   | "theme-change";
 

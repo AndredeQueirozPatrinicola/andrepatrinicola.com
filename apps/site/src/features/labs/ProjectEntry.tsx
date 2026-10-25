@@ -57,7 +57,7 @@ export function ProjectEntry({ project, index }: { project: Project; index: numb
             ) : (
               <li key={link.href}>
                 <Link to={link.href}>
-                  {text.page}
+                  {link.kind === "lab" ? text.lab : text.page}
                   <PixelIcon name="arrow" size={12} />
                 </Link>
               </li>

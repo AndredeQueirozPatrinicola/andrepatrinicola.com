@@ -11,7 +11,7 @@ function toProject(entry: ProjectEntry, locale: Locale): Project {
     summary: localize(entry.summary, locale),
     explored: localize(entry.explored, locale),
     links: entry.links.map((link) =>
-      link.kind === "page" ? { ...link, href: localePath(locale, link.href) } : link,
+      link.kind !== "source" ? { ...link, href: localePath(locale, link.href) } : link,
     ),
   };
 }

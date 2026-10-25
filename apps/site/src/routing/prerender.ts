@@ -6,7 +6,7 @@ import { localePath } from "../i18n/paths";
 
 /** Paths below the locale prefix that exist in every language. */
 export function localizedPaths(): string[] {
-  return ["", "/games", ...games.map((game) => `/games/${game.slug}`), "/labs", "/blog", "/about", "/resume"];
+  return ["", "/games", ...games.map((game) => `/games/${game.slug}`), "/labs", "/labs/distributed-systems", "/blog", "/about", "/resume"];
 }
 
 /**

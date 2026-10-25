@@ -14,6 +14,7 @@ export default [
     route("games", "routes/games.tsx"),
     route("games/:slug", "routes/game.tsx"),
     route("labs", "routes/labs.tsx"),
+    route("labs/distributed-systems", "routes/lab-distributed-systems.tsx"),
     route("about", "routes/about.tsx"),
     route("resume", "routes/resume.tsx"),
     route("blog", "routes/blog.tsx"),

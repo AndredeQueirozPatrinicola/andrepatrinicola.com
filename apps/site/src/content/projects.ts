@@ -4,7 +4,7 @@ import type { Project } from "../domain/project";
 export type ProjectEntry = Omit<Project, "summary" | "explored" | "links"> & {
   summary: Localized;
   explored: Localized<string[]>;
-  /** `page` links are paths below the locale prefix. */
+  /** `page` and `lab` links are paths below the locale prefix. */
   links: Project["links"];
 };
 
@@ -12,6 +12,42 @@ const GITHUB = "https://github.com/AndredeQueirozPatrinicola";
 
 /** Labs: personal projects and experiments that are not (only) games. */
 export const projects: ProjectEntry[] = [
+  {
+    slug: "distributed-systems",
+    title: "Distributed Systems Playground",
+    status: "experiment",
+    year: 2026,
+    tech: ["TypeScript", "React", "Amazon SQS", "AWS Lambda", "DynamoDB", "Terraform"],
+    links: [
+      { kind: "lab", href: "/labs/distributed-systems" },
+      { kind: "source", href: `${GITHUB}/andrepatrinicola.com/tree/main/apps/site/src/features/queue-lab` },
+    ],
+    summary: {
+      pt: "Uma fila Amazon SQS que roda no navegador: consumers, falhas, retries, visibility timeout, dead-letter queue e idempotência, com cenários prontos e métricas da simulação.",
+      en: "An Amazon SQS queue that runs in the browser: consumers, failures, retries, visibility timeout, a dead-letter queue and idempotency, with ready-made scenarios and simulation metrics.",
+      es: "Una cola Amazon SQS que corre en el navegador: consumers, fallos, reintentos, visibility timeout, dead-letter queue e idempotencia, con escenarios listos y métricas de la simulación.",
+    },
+    explored: {
+      pt: [
+        "Simulação por eventos discretos, determinística com seed e separada do React",
+        "Visibility timeout, receive count e redrive para a DLQ como no SQS Standard",
+        "Entregas duplicadas (at-least-once) e um consumer idempotente para comparar",
+        "Versão real com acesso restrito: API Gateway, Lambda, SQS com DLQ e respostas parciais de lote",
+      ],
+      en: [
+        "Discrete-event simulation, deterministic with a seed and separate from React",
+        "Visibility timeout, receive count and redrive to the DLQ as in SQS Standard",
+        "Duplicate deliveries (at-least-once) and an idempotent consumer to compare",
+        "A real version with restricted access: API Gateway, Lambda, SQS with a DLQ and partial batch responses",
+      ],
+      es: [
+        "Simulación por eventos discretos, determinista con seed y separada de React",
+        "Visibility timeout, receive count y redrive a la DLQ como en SQS Standard",
+        "Entregas duplicadas (at-least-once) y un consumer idempotente para comparar",
+        "Versión real con acceso restringido: API Gateway, Lambda, SQS con DLQ y respuestas parciales de lote",
+      ],
+    },
+  },
   {
     slug: "andevengine",
     title: "andevengine",
