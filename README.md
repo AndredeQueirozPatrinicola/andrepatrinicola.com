@@ -127,4 +127,13 @@ AWS Live Mode is admin-only (`/admin/labs`, `features/queue-lab/live/`), uses
 the Studio API and login, and only works when the API's `queue_lab_enabled`
 is on. The lesson behind both is the API's `docs/DISTRIBUTED_SYSTEMS_LAB.md`.
 
+**Cloud Architecture Studio.** `/{pt,en,es}/labs/architecture-studio`
+(`apps/site/src/features/architecture-studio/`): an AWS architecture diagram
+editor built on React Flow, entirely in the browser. The start page is
+pre-rendered; the editor is a lazy chunk loaded when a diagram opens.
+Diagrams are saved in `localStorage` and exported as JSON or PNG; templates
+include this portfolio's real architecture with guided flows. It needs no
+variable and makes no requests. Details in
+[docs/ARCHITECTURE_STUDIO.md](docs/ARCHITECTURE_STUDIO.md).
+
 More on the design decisions in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
