@@ -1,0 +1,1280 @@
+/*
+ * Cloud Architecture Studio: the editor workspace. Loaded with the editor
+ * chunk only (see components/Workspace.tsx), after React Flow's stylesheet,
+ * whose --xy-* variables are mapped to the site's tokens here.
+ */
+
+.studio-workspace {
+  --studio-sync: var(--color-ink-muted);
+  --studio-async: var(--color-accent-ink);
+  --studio-data: light-dark(#8a5a12, #e0b060);
+  --studio-tone: transparent;
+  --studio-panel: 17rem;
+
+  --xy-background-color: var(--color-bg);
+  --xy-background-pattern-dots-color: var(--color-line);
+  --xy-edge-stroke: var(--studio-sync);
+  --xy-edge-stroke-selected: var(--color-ink);
+  --xy-connectionline-stroke: var(--color-accent-ink);
+  --xy-connectionline-stroke-width: 1.5;
+  --xy-handle-background-color: var(--color-surface);
+  --xy-handle-border-color: var(--color-accent-ink);
+  --xy-selection-background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  --xy-selection-border: 1px dashed var(--color-accent-ink);
+  --xy-controls-button-background-color: var(--color-surface);
+  --xy-controls-button-background-color-hover: var(--color-bg);
+  --xy-controls-button-color: var(--color-ink);
+  --xy-controls-button-color-hover: var(--color-ink);
+  --xy-controls-button-border-color: var(--color-line);
+  --xy-controls-box-shadow: 0 0 0 1px var(--color-line);
+  --xy-minimap-background-color: var(--color-surface);
+  --xy-minimap-mask-background-color: color-mix(in srgb, var(--color-bg) 70%, transparent);
+  --xy-minimap-node-background-color: var(--color-line);
+  --xy-attribution-background-color: color-mix(in srgb, var(--color-bg) 70%, transparent);
+  --xy-resize-background-color: var(--color-accent-ink);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+/* ------------------------------------------------------------------ toolbar */
+
+.studio-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border);
+  background: var(--color-surface);
+}
+
+.studio-toolbar-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+}
+
+.studio-toolbar-group:first-child {
+  flex: 1 1 18rem;
+}
+
+.studio-exit-icon {
+  transform: scaleX(-1);
+}
+
+.studio-title {
+  flex: 1 1 10rem;
+  min-width: 0;
+  max-width: 28rem;
+  min-height: 2.25rem;
+  padding: 0 var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: inherit;
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+}
+
+.studio-title:hover:not([readonly]),
+.studio-title:focus {
+  border-color: var(--color-line-strong);
+  background: var(--color-bg);
+}
+
+.studio-status {
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+}
+
+.studio-status[data-status="error"] {
+  color: light-dark(#8f2a2a, #f0a5a5);
+}
+
+.studio-button,
+.studio-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 2.25rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.studio-icon-button {
+  min-width: 2.25rem;
+  padding: 0;
+  font-size: var(--text-lg);
+}
+
+.studio-button:hover:not(:disabled),
+.studio-icon-button:hover {
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+}
+
+.studio-button[data-variant="primary"] {
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-bg);
+}
+
+.studio-button[data-variant="primary"]:hover:not(:disabled) {
+  color: var(--color-bg);
+}
+
+/* Panel toggles: pressed means the panel is open. */
+.studio-button[aria-pressed="true"] {
+  border-color: var(--color-ink);
+  box-shadow: inset 0 -3px 0 var(--color-accent);
+}
+
+.studio-button[data-variant="danger"] {
+  border-color: light-dark(#a33a3a, #e08a8a);
+  color: light-dark(#8f2a2a, #f0a5a5);
+}
+
+.studio-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.studio-segmented {
+  display: inline-flex;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius);
+}
+
+.studio-segmented button {
+  min-height: calc(2.25rem - 2px);
+  padding: 0 var(--space-3);
+  border: 0;
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.studio-segmented button[aria-pressed="true"] {
+  background: var(--color-ink);
+  color: var(--color-bg);
+}
+
+.studio-menu {
+  position: relative;
+}
+
+.studio-menu-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 20;
+  min-width: 13rem;
+  margin: 0;
+  padding: var(--space-1) 0;
+  border: 1px solid var(--color-line-strong);
+  background: var(--color-surface);
+  list-style: none;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.12);
+}
+
+.studio-menu-list button {
+  width: 100%;
+  padding: var(--space-2) var(--space-4);
+  border: 0;
+  background: none;
+  font-size: var(--text-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.studio-menu-list button:hover,
+.studio-menu-list button:focus-visible {
+  background: var(--color-bg);
+  color: var(--color-accent-ink);
+}
+
+.studio-banner {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid light-dark(#a33a3a, #e08a8a);
+  background: light-dark(#fbeaea, #2a1717);
+  font-size: var(--text-sm);
+}
+
+/* --------------------------------------------------------------- body grid */
+
+.studio-body {
+  position: relative;
+  flex: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 0;
+}
+
+.studio-panel {
+  display: flex;
+  flex-direction: column;
+  width: var(--studio-panel);
+  min-height: 0;
+  background: var(--color-surface);
+}
+
+.studio-panel[hidden] {
+  display: none;
+}
+
+.studio-panel-left {
+  border-right: var(--border);
+}
+
+.studio-panel-right {
+  border-left: var(--border);
+}
+
+.studio-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  padding: 0 var(--space-2) 0 var(--space-3);
+  border-bottom: var(--border);
+}
+
+.studio-tabs {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.studio-tabs [role="tab"] {
+  padding: var(--space-2);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+}
+
+.studio-tabs [role="tab"][aria-selected="true"] {
+  border-bottom-color: var(--color-accent);
+  color: var(--color-ink);
+}
+
+.studio-panel-close {
+  display: none;
+}
+
+.studio-panel-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-3);
+  overscroll-behavior: contain;
+}
+
+.studio-stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.studio-canvas,
+.studio-canvas .react-flow {
+  width: 100%;
+  height: 100%;
+}
+
+.studio-canvas .react-flow {
+  background: var(--color-bg);
+}
+
+/* The site's base styles cap every svg at 100% of its parent; React Flow's
+   edge layer is a zero-size svg that relies on overflow, so it must not be. */
+.studio-canvas .react-flow svg {
+  max-width: none;
+}
+
+.studio-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-top: var(--border);
+  background: var(--color-surface);
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+}
+
+.studio-footer label {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  cursor: pointer;
+}
+
+.studio-hint {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
+/* ------------------------------------------------------------------ palette */
+
+.studio-search {
+  width: 100%;
+  min-height: 2.25rem;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: inherit;
+  font: inherit;
+  font-size: var(--text-sm);
+}
+
+.studio-palette > .studio-hint {
+  margin: var(--space-2) 0 var(--space-3);
+  font-size: var(--text-xs);
+}
+
+.studio-palette-group + .studio-palette-group {
+  margin-top: var(--space-4);
+}
+
+.studio-palette-group ul,
+.studio-outline ul,
+.studio-flows ol,
+.studio-connections,
+.studio-links,
+.studio-library,
+.studio-template-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.studio-palette-group ul {
+  display: grid;
+  gap: 2px;
+  margin-top: var(--space-2);
+}
+
+.studio-palette-item,
+.studio-outline-item,
+.studio-flow-item {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  width: 100%;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: none;
+  font-size: var(--text-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.studio-palette-item {
+  cursor: grab;
+}
+
+.studio-palette-item:hover,
+.studio-outline-item:hover,
+.studio-flow-item:hover {
+  border-color: var(--color-line-strong);
+  background: var(--color-bg);
+}
+
+.studio-outline ul ul {
+  padding-left: var(--space-4);
+  border-left: 1px dotted var(--color-line-strong);
+  margin-left: var(--space-3);
+}
+
+.studio-outline-item[aria-current="true"],
+.studio-flow-item[aria-current="true"] {
+  border-color: var(--color-accent);
+  background: var(--color-bg);
+}
+
+.studio-flows ol {
+  display: grid;
+  gap: var(--space-1);
+  margin-top: var(--space-3);
+  counter-reset: flow;
+}
+
+.studio-flow-item {
+  display: grid;
+  gap: 0;
+  padding: var(--space-2) var(--space-3);
+  border-color: var(--color-line);
+}
+
+.studio-flow-item span:first-child {
+  font-weight: 600;
+}
+
+.studio-flow-item .studio-hint {
+  font-size: var(--text-xs);
+}
+
+/* ------------------------------------------------------------ properties */
+
+.studio-props {
+  display: grid;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.studio-props-service {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.studio-props-service p,
+.studio-inspector-title {
+  font-weight: 600;
+}
+
+.studio-inspector-title {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+}
+
+.studio-description {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.studio-subhead {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+
+.studio-field {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.studio-field label,
+.studio-field legend {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+
+.studio-field input:not([type="radio"], [type="checkbox"]),
+.studio-field select,
+.studio-field textarea,
+.studio-rename input {
+  width: 100%;
+  min-height: 2.25rem;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: inherit;
+  font: inherit;
+  font-size: var(--text-sm);
+}
+
+.studio-field textarea {
+  resize: vertical;
+}
+
+.studio-position {
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.studio-position legend {
+  grid-column: 1 / -1;
+  margin-bottom: var(--space-1);
+}
+
+.studio-position label {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.studio-connect {
+  padding: var(--space-3);
+  border: 1px dashed var(--color-line-strong);
+}
+
+.studio-connect legend {
+  padding: 0 var(--space-1);
+}
+
+.studio-modes label {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  padding: var(--space-2);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  font-weight: 400;
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.studio-modes label:has(input:checked) {
+  border-color: var(--color-ink);
+}
+
+.studio-modes span {
+  display: grid;
+}
+
+.studio-modes small {
+  color: var(--color-ink-muted);
+}
+
+.studio-props-actions,
+.studio-dialog-actions,
+.studio-library-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.studio-edge-ends {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+}
+
+.studio-edge-ends dt {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+
+.studio-edge-ends dd {
+  margin: 0;
+}
+
+.studio-link,
+.studio-link-button {
+  color: var(--color-accent-ink);
+}
+
+.studio-link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.studio-connections {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.studio-links {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.studio-legend ul {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-xs);
+}
+
+.studio-legend li {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.studio-legend line {
+  stroke-width: 2;
+}
+
+.studio-legend [data-mode="synchronous"] line {
+  stroke: var(--studio-sync);
+}
+
+.studio-legend [data-mode="asynchronous"] line {
+  stroke: var(--studio-async);
+  stroke-dasharray: 6 4;
+}
+
+.studio-legend [data-mode="data-flow"] line {
+  stroke: var(--studio-data);
+  stroke-dasharray: 2 4;
+}
+
+/* -------------------------------------------------------------------- nodes */
+
+.studio-icon {
+  flex: none;
+  display: block;
+}
+
+.studio-icon-generic {
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--radius);
+  background: var(--color-ink);
+  color: var(--color-bg);
+}
+
+.studio-node {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: center;
+  width: 184px;
+  min-height: 64px;
+  padding: var(--space-3);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: inset 4px 0 0 var(--studio-tone);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  transition: opacity var(--duration-base) ease, box-shadow var(--duration-base) ease;
+}
+
+.studio-node-text {
+  display: grid;
+  min-width: 0;
+}
+
+.studio-node-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.studio-node-service {
+  margin-top: 2px;
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+/* A described component has more to read in the side panel. */
+.studio-node-more {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 4px;
+  height: 4px;
+  background: var(--color-accent);
+}
+
+[data-tone="blue"] {
+  --studio-tone: light-dark(#2f5c9e, #8aaeea);
+}
+
+[data-tone="green"] {
+  --studio-tone: light-dark(#2e7d4f, #7fcf9f);
+}
+
+[data-tone="orange"] {
+  --studio-tone: light-dark(#a8551a, #f0a868);
+}
+
+[data-tone="red"] {
+  --studio-tone: light-dark(#a33a3a, #e08a8a);
+}
+
+[data-tone="purple"] {
+  --studio-tone: light-dark(#6b46a8, #b79ae8);
+}
+
+.react-flow__node.selected .studio-node,
+.react-flow__node:focus-visible .studio-node {
+  border-color: var(--color-accent-ink);
+  box-shadow:
+    inset 4px 0 0 var(--studio-tone),
+    0 0 0 2px var(--color-accent);
+}
+
+.react-flow__node:focus-visible {
+  outline: none;
+}
+
+/* React Flow's defaults for its own "group" type do not apply to ours. */
+.studio-workspace .react-flow__node-group {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none !important;
+  font-size: inherit;
+  text-align: left;
+  color: inherit;
+}
+
+.studio-group {
+  --studio-frame: var(--color-line-strong);
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid var(--studio-frame);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--studio-frame) 5%, transparent);
+  transition: opacity var(--duration-base) ease;
+}
+
+.studio-group[data-frame="dashed"] {
+  border-style: dashed;
+}
+
+.studio-group[data-service="group-aws-cloud"] {
+  --studio-frame: var(--color-ink-muted);
+  background: none;
+}
+
+.studio-group[data-service="group-region"],
+.studio-group[data-service="group-private-subnet"] {
+  --studio-frame: light-dark(#00797b, #3cc6c8);
+}
+
+.studio-group[data-service="aws-vpc"] {
+  --studio-frame: light-dark(#7a3fe0, #b393ff);
+}
+
+.studio-group[data-service="group-public-subnet"] {
+  --studio-frame: light-dark(#5b7a0f, #a3cf3b);
+}
+
+.studio-group[data-tone]:not([data-tone="default"]) {
+  --studio-frame: var(--studio-tone);
+}
+
+.studio-group-head {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  max-width: 100%;
+  padding: var(--space-1) var(--space-2) var(--space-1) 0;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+.studio-group-head span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.react-flow__node.selected .studio-group,
+.react-flow__node:focus-visible .studio-group {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.studio-note {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  padding: var(--space-3);
+  border: 1px solid light-dark(#d9c98a, #5a5028);
+  background: light-dark(#fff8d6, #2a2614);
+  box-shadow: inset 0 3px 0 var(--studio-tone);
+  font-size: var(--text-sm);
+  transition: opacity var(--duration-base) ease;
+}
+
+.studio-note-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.studio-note-body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+}
+
+.react-flow__node.selected .studio-note {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.studio-handle.react-flow__handle {
+  width: 9px;
+  height: 9px;
+  border-width: 1.5px;
+  border-radius: 1px;
+  opacity: 0;
+  transition: opacity var(--duration-fast) ease;
+}
+
+.studio-workspace[data-mode="edit"] .react-flow__node:hover .studio-handle,
+.studio-workspace[data-mode="edit"] .react-flow__node.selected .studio-handle,
+.studio-workspace[data-mode="edit"] .react-flow.connecting .studio-handle {
+  opacity: 1;
+}
+
+.studio-workspace[data-mode="explore"] .studio-handle {
+  visibility: hidden;
+}
+
+.studio-resize-handle.react-flow__resize-control.handle {
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+}
+
+/* -------------------------------------------------------------------- edges */
+
+.studio-edge {
+  color: var(--studio-sync);
+}
+
+.studio-edge[data-mode="asynchronous"] {
+  color: var(--studio-async);
+}
+
+.studio-edge[data-mode="data-flow"] {
+  color: var(--studio-data);
+}
+
+.studio-edge .react-flow__edge-path {
+  stroke: currentColor;
+  stroke-width: 1.5;
+  transition: opacity var(--duration-base) ease;
+}
+
+.studio-edge[data-mode="asynchronous"] .react-flow__edge-path {
+  stroke-dasharray: 7 5;
+}
+
+.studio-edge[data-mode="data-flow"] .react-flow__edge-path {
+  stroke-dasharray: 2 4;
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.react-flow__edge.selected .studio-edge .react-flow__edge-path,
+.react-flow__edge:focus-visible .studio-edge .react-flow__edge-path {
+  stroke-width: 3;
+}
+
+.studio-edge-label {
+  position: absolute;
+  max-width: 11rem;
+  padding: 1px var(--space-2);
+  border: 1px solid currentColor;
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--studio-sync);
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: all;
+  cursor: pointer;
+  transition: opacity var(--duration-base) ease;
+}
+
+.studio-edge-label[data-mode="asynchronous"] {
+  color: var(--studio-async);
+}
+
+.studio-edge-label[data-mode="data-flow"] {
+  color: var(--studio-data);
+}
+
+.studio-edge-label[data-selected] {
+  outline: 2px solid var(--color-accent);
+}
+
+/* ---------------------------------------------------------- guided flows */
+
+[data-highlight="off"].studio-node,
+[data-highlight="off"].studio-note,
+[data-highlight="off"].studio-edge-label,
+.studio-edge[data-highlight="off"] {
+  opacity: 0.18;
+}
+
+[data-highlight="off"].studio-group {
+  opacity: 0.45;
+}
+
+[data-highlight="on"].studio-node {
+  border-color: var(--color-accent-ink);
+  box-shadow:
+    inset 4px 0 0 var(--studio-tone),
+    0 0 0 3px color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+
+.studio-edge[data-highlight="on"] {
+  color: var(--color-accent-ink);
+}
+
+.studio-edge[data-highlight="on"] .react-flow__edge-path {
+  stroke-width: 2.5;
+  stroke-dasharray: 8 6;
+  animation: studio-flow 0.8s linear infinite;
+}
+
+.studio-edge-label[data-highlight="on"] {
+  color: var(--color-accent-ink);
+  font-weight: 600;
+}
+
+@keyframes studio-flow {
+  to {
+    stroke-dashoffset: -14;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .studio-edge[data-highlight="on"] .react-flow__edge-path {
+    animation: none;
+  }
+}
+
+/* Exported images show the diagram as drawn, not the current highlight. */
+[data-exporting] [data-highlight] {
+  opacity: 1 !important;
+}
+
+[data-exporting] .studio-edge[data-highlight="on"] .react-flow__edge-path {
+  animation: none;
+}
+
+.studio-player {
+  position: absolute;
+  bottom: var(--space-4);
+  left: 50%;
+  z-index: 10;
+  display: grid;
+  gap: var(--space-2);
+  width: min(36rem, calc(100% - 2 * var(--space-4)));
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-ink);
+  border-left: 4px solid var(--color-accent);
+  background: var(--color-surface);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.14);
+  transform: translateX(-50%);
+}
+
+.studio-player header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+  align-items: baseline;
+}
+
+.studio-player h2 {
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+}
+
+.studio-player p {
+  font-size: var(--text-sm);
+}
+
+.studio-player-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* ------------------------------------------------------------ canvas chrome */
+
+.studio-empty {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  gap: var(--space-2);
+  width: min(26rem, calc(100% - 2rem));
+  padding: var(--space-4);
+  border: 1px dashed var(--color-line-strong);
+  background: var(--color-surface);
+  text-align: center;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.studio-empty strong {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.studio-empty p {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
+.studio-canvas .react-flow__controls {
+  border: 1px solid var(--color-line);
+}
+
+.studio-canvas .react-flow__controls-button svg {
+  fill: currentColor;
+}
+
+.studio-minimap {
+  border: 1px solid var(--color-line);
+}
+
+.studio-minimap .react-flow__minimap-node {
+  fill: var(--color-line-strong);
+}
+
+.studio-minimap .studio-minimap-group {
+  fill: none;
+  stroke: var(--color-line-strong);
+  stroke-width: 4;
+}
+
+.studio-minimap .studio-minimap-note {
+  fill: light-dark(#e8dca6, #5a5028);
+}
+
+.studio-canvas .react-flow__attribution a {
+  color: var(--color-ink-muted);
+}
+
+.studio-toast {
+  position: absolute;
+  bottom: 3rem;
+  left: 50%;
+  z-index: 30;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.studio-toast p {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-bg);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ dialogs */
+
+.studio-dialog {
+  width: min(40rem, calc(100vw - 2rem));
+  max-height: min(42rem, calc(100dvh - 2rem));
+  padding: 0;
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.studio-dialog::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+
+.studio-dialog-body {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-6) var(--space-6);
+}
+
+.studio-dialog-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.studio-dialog-head h2 {
+  font-size: var(--text-lg);
+  text-transform: uppercase;
+}
+
+.studio-library,
+.studio-template-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.studio-library li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  align-items: center;
+  padding: var(--space-3);
+  border: var(--border);
+}
+
+.studio-library li[data-status="corrupt"] {
+  border-style: dashed;
+}
+
+.studio-badge {
+  margin-left: var(--space-2);
+  padding: 0 var(--space-1);
+  border: 1px solid var(--color-accent-ink);
+  font-size: var(--text-xs);
+  color: var(--color-accent-ink);
+}
+
+.studio-rename {
+  display: flex;
+  flex: 1 1 14rem;
+  gap: var(--space-2);
+}
+
+.studio-rename label {
+  flex: 1;
+}
+
+.studio-template-list li {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+  padding: var(--space-3);
+  border: var(--border);
+}
+
+.studio-template-list p {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
+.studio-load-error {
+  display: grid;
+  place-items: center;
+  padding: var(--space-8);
+}
+
+.studio-load-error [role="alert"] {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: center;
+  max-width: 32rem;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------ narrow */
+
+@media (max-width: 63.99rem) {
+  .studio-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .studio-panel {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 15;
+    width: min(20rem, 88vw);
+    box-shadow: 0 0 24px rgb(0 0 0 / 0.2);
+  }
+
+  .studio-panel-left {
+    left: 0;
+  }
+
+  .studio-panel-right {
+    right: 0;
+  }
+
+  .studio-panel-close {
+    display: inline-flex;
+  }
+
+  .studio-footer-minimap {
+    display: none !important;
+  }
+
+  .studio-title {
+    max-width: none;
+  }
+}
+
+@media (max-width: 40rem) {
+  /* One scrollable row of actions keeps the canvas tall on phones. */
+  .studio-toolbar-group:last-child {
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  /* Fixed at its static position: not clipped by the scrolling row. */
+  .studio-menu-list {
+    position: fixed;
+    top: auto;
+    left: auto;
+  }
+
+  .studio-toolbar .studio-button {
+    flex: none;
+    min-height: 2.25rem;
+    padding: 0 var(--space-2);
+  }
+
+  .studio-status {
+    display: none;
+  }
+
+  .studio-player {
+    bottom: var(--space-2);
+  }
+
+}
