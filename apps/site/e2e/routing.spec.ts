@@ -45,7 +45,7 @@ test("trailing slashes redirect to the canonical URL", async ({ page }) => {
 
 test("sitemap and robots are published", async ({ request }) => {
   const sitemap = await (await request.get("/sitemap.xml")).text();
-  // 12 pages in 3 languages; blog posts (tested in blog.spec.ts) come on top.
-  expect(sitemap.match(/<loc>[^<]+<\/loc>/g)?.filter((loc) => !loc.includes("/blog/"))).toHaveLength(36);
+  // 13 pages in 3 languages; blog posts (tested in blog.spec.ts) come on top.
+  expect(sitemap.match(/<loc>[^<]+<\/loc>/g)?.filter((loc) => !loc.includes("/blog/"))).toHaveLength(39);
   expect(await (await request.get("/robots.txt")).text()).toContain("Sitemap:");
 });

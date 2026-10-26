@@ -14,7 +14,7 @@ test.describe("Distributed Systems Playground", () => {
 
   test("is reached from the Labs page", async ({ page }) => {
     await page.goto("/en/labs");
-    await page.getByRole("link", { name: "Open the lab" }).click();
+    await page.getByRole("article", { name: "Distributed Systems Playground" }).getByRole("link", { name: "Open the lab" }).click();
     await expect(page.getByRole("heading", { level: 1, name: "Distributed Systems Playground" })).toBeVisible();
     await expect(page).toHaveURL(/\/en\/labs\/distributed-systems$/);
   });
