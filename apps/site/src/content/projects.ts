@@ -13,6 +13,42 @@ const GITHUB = "https://github.com/AndredeQueirozPatrinicola";
 /** Labs: personal projects and experiments that are not (only) games. */
 export const projects: ProjectEntry[] = [
   {
+    slug: "architecture-studio",
+    title: "Cloud Architecture Studio",
+    status: "experiment",
+    year: 2026,
+    tech: ["TypeScript", "React", "React Flow", "Zod", "AWS"],
+    links: [
+      { kind: "lab", href: "/labs/architecture-studio" },
+      { kind: "source", href: `${GITHUB}/andrepatrinicola.com/tree/main/apps/site/src/features/architecture-studio` },
+    ],
+    summary: {
+      pt: "Um editor de arquiteturas AWS no navegador: desenhe com serviços AWS e elementos de system design, explore a arquitetura real deste site com fluxos guiados e exporte em JSON ou PNG.",
+      en: "An AWS architecture editor in the browser: draw with AWS services and system design elements, explore this site's real architecture with guided flows and export JSON or PNG.",
+      es: "Un editor de arquitecturas AWS en el navegador: dibuja con servicios AWS y elementos de system design, explora la arquitectura real de este sitio con flujos guiados y exporta en JSON o PNG.",
+    },
+    explored: {
+      pt: [
+        "Canvas com React Flow: nós personalizados, grupos aninhados (região, VPC, sub-rede) e conexões síncronas, assíncronas e de dados",
+        "Formato JSON próprio e versionado, validado com Zod, com limites e checagem de integridade do grafo",
+        "Desfazer e refazer com checkpoints: um arraste ou a digitação de um nome é um passo só",
+        "Salvo só no navegador, sem backend e sem nenhuma chamada à AWS; editor carregado sob demanda",
+      ],
+      en: [
+        "A React Flow canvas: custom nodes, nested groups (Region, VPC, subnet) and synchronous, asynchronous and data connections",
+        "Its own versioned JSON format, validated with Zod, with limits and graph integrity checks",
+        "Undo and redo with checkpoints: a drag or typing a name is a single step",
+        "Saved only in the browser, with no backend and no calls to AWS; the editor loads on demand",
+      ],
+      es: [
+        "Un lienzo con React Flow: nodos personalizados, grupos anidados (región, VPC, subred) y conexiones síncronas, asíncronas y de datos",
+        "Formato JSON propio y versionado, validado con Zod, con límites y verificación de integridad del grafo",
+        "Deshacer y rehacer con checkpoints: un arrastre o escribir un nombre es un solo paso",
+        "Guardado solo en el navegador, sin backend y sin llamadas a AWS; el editor se carga bajo demanda",
+      ],
+    },
+  },
+  {
     slug: "distributed-systems",
     title: "Distributed Systems Playground",
     status: "experiment",
